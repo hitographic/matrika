@@ -8,21 +8,41 @@
     canvas { border: 1px solid #000; cursor: crosshair; }
     button { padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
     button:hover { background: #0056b3; }
+    
+    /* Styling untuk halaman login */
+    #loginSection { max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; text-align: center; background: #f9f9f9; }
+    #loginSection input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    #loginSection button { width: 90%; margin-top: 10px; }
+    
+    /* Menyembunyikan form utama saat pertama load */
+    #mainApp { display: none; }
   </style>
 </head>
 <body>
 
-  <h2>Form Audit Internal Pabrik</h2>
-  
-  <form id="auditForm" onsubmit="submitForm(event)">
+  <!-- Bagian Login -->
+  <div id="loginSection">
+    <h2>Login Auditor</h2>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <input type="text" id="loginNik" placeholder="NIK" required><br>
+      <input type="password" id="loginPassword" placeholder="Password" required><br>
+      <button type="submit" id="btnLogin">Masuk</button>
+    </form>
+  </div>
+
+  <!-- Bagian Utama Aplikasi Audit -->
+  <div id="mainApp">
+    <h2>Form Audit Internal Pabrik</h2>
     
-    <!-- Informasi Dasar -->
-    <div class="form-section">
-      <label>Nama Auditor:</label><br>
-      <input type="text" id="auditorName" required><br><br>
-      <label>Nama Auditee:</label><br>
-      <input type="text" id="auditeeName" required>
-    </div>
+    <form id="auditForm" onsubmit="submitForm(event)">
+      
+      <!-- Informasi Dasar -->
+      <div class="form-section">
+        <label>Nama Auditor:</label><br>
+        <input type="text" id="auditorName" required readonly style="background-color: #e9ecef;"><br><br>
+        <label>Nama Auditee:</label><br>
+        <input type="text" id="auditeeName" required>
+      </div>
 
     <!-- 1. Checklist -->
     <div class="form-section">
@@ -61,10 +81,45 @@
 
     <button type="submit" id="btnSubmit">Kirim Laporan Audit</button>
   </form>
+  </div>
 
   <script>
     // URL Web App Google Apps Script
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqOlCf8qddQ_eCiTzrcbm256kAsQCTrytOS_cLbva9GAgWHPWJHmw-OwnjZiAfAh75/exec';
+
+    // Fungsi Handle Login
+    function handleLogin(event) {
+      event.preventDefault();
+      const nik = document.getElementById('loginNik').value;
+      const pass = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('btnLogin');
+      
+      btn.innerText = "Memverifikasi...";
+      btn.disabled = true;
+      
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'login', nik: nik, password: pass })
+      })
+      .then(response => response.json())
+      .then(response => {
+        btn.innerText = "Masuk";
+        btn.disabled = false;
+        if(response.success) {
+          document.getElementById('loginSection').style.display = 'none';
+          document.getElementById('mainApp').style.display = 'block';
+          document.getElementById('auditorName').value = response.nama;
+        } else {
+          alert(response.message);
+        }
+      })
+      .catch(error => {
+        btn.innerText = "Masuk";
+        btn.disabled = false;
+        alert("Gagal menghubungi server: " + error.message);
+      });
+    }
 
     // Setup Canvas untuk Tanda Tangan
     function setupCanvas(canvasId) {
