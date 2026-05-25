@@ -51,3 +51,30 @@ function processAuditForm(formData) {
     return { success: false, message: "Terjadi kesalahan: " + error.message };
   }
 }
+
+// Fungsi untuk mengecek login menggunakan NIK dan Password
+function checkLogin(nik, password) {
+  try {
+    const sheetId = "1Cmccso6hkwHPJNX1jZy5arK5OAOLnhMBCp89JwJBG50";
+    const ss = SpreadsheetApp.openById(sheetId);
+    const userSheet = ss.getSheetByName("user");
+    
+    if (!userSheet) return { success: false, message: "Sheet 'user' tidak ditemukan di database." };
+    
+    const data = userSheet.getDataRange().getValues();
+    
+    // Looping data mulai dari baris 2 (indeks 1) karena baris 1 adalah Header (NIK | Password | Nama)
+    for (let i = 1; i < data.length; i++) {
+      let sheetNik = String(data[i][0]).trim();
+      let sheetPass = String(data[i][1]).trim();
+      let sheetNama = String(data[i][2]).trim();
+      
+      if (sheetNik === String(nik).trim() && sheetPass === String(password).trim()) {
+        return { success: true, nama: sheetNama, message: "Login Berhasil!" };
+      }
+    }
+    return { success: false, message: "NIK atau Password salah!" };
+  } catch (error) {
+    return { success: false, message: "Terjadi kesalahan sistem: " + error.message };
+  }
+}

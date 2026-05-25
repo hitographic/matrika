@@ -8,61 +8,113 @@
     canvas { border: 1px solid #000; cursor: crosshair; }
     button { padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
     button:hover { background: #0056b3; }
+    
+    /* Styling untuk halaman login */
+    #loginSection { max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; text-align: center; background: #f9f9f9; }
+    #loginSection input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    #loginSection button { width: 90%; margin-top: 10px; }
+    
+    /* Menyembunyikan form utama saat pertama load */
+    #mainApp { display: none; }
   </style>
 </head>
 <body>
 
-  <h2>Form Audit Internal Pabrik</h2>
-  
-  <form id="auditForm" onsubmit="submitForm(event)">
+  <!-- Bagian Login -->
+  <div id="loginSection">
+    <h2>Login Auditor</h2>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <input type="text" id="loginNik" placeholder="NIK" required><br>
+      <input type="password" id="loginPassword" placeholder="Password" required><br>
+      <button type="submit" id="btnLogin">Masuk</button>
+    </form>
+  </div>
+
+  <!-- Bagian Utama Aplikasi Audit -->
+  <div id="mainApp">
+    <h2>Form Audit Internal Pabrik</h2>
     
-    <!-- Informasi Dasar -->
-    <div class="form-section">
-      <label>Nama Auditor:</label><br>
-      <input type="text" id="auditorName" required><br><br>
-      <label>Nama Auditee:</label><br>
-      <input type="text" id="auditeeName" required>
-    </div>
-
-    <!-- 1. Checklist -->
-    <div class="form-section">
-      <h3>1. Checklist Audit</h3>
-      <input type="checkbox" id="check1" value="K3 Terpenuhi"> K3 Terpenuhi<br>
-      <input type="checkbox" id="check2" value="SOP Dijalankan"> SOP Dijalankan<br>
-    </div>
-
-    <!-- 2. Form Pengamatan -->
-    <div class="form-section">
-      <h3>2. Form Pengamatan</h3>
-      <textarea id="pengamatan" rows="4" cols="50" placeholder="Tuliskan hasil pengamatan..."></textarea>
-    </div>
-
-    <!-- 3. Form LKS -->
-    <div class="form-section">
-      <h3>3. Form LKS (Lembar Ketidaksesuaian)</h3>
-      <textarea id="lks" rows="4" cols="50" placeholder="Tuliskan ketidaksesuaian (jika ada)..."></textarea>
-    </div>
-
-    <!-- Tanda Tangan Digital -->
-    <div class="form-section">
-      <h3>Tanda Tangan</h3>
-      <div>
-        <label>Tanda Tangan Auditor:</label><br>
-        <canvas id="auditorCanvas" width="300" height="150"></canvas>
-        <button type="button" onclick="clearCanvas(auditorCtx, auditorCanvas)">Hapus</button>
+    <form id="auditForm" onsubmit="submitForm(event)">
+      
+      <!-- Informasi Dasar -->
+      <div class="form-section">
+        <label>Nama Auditor:</label><br>
+        <!-- Input dibuat readonly karena akan otomatis diisi dari data login -->
+        <input type="text" id="auditorName" required readonly style="background-color: #e9ecef;"><br><br>
+        <label>Nama Auditee:</label><br>
+        <input type="text" id="auditeeName" required>
       </div>
-      <br>
-      <div>
-        <label>Tanda Tangan Auditee:</label><br>
-        <canvas id="auditeeCanvas" width="300" height="150"></canvas>
-        <button type="button" onclick="clearCanvas(auditeeCtx, auditeeCanvas)">Hapus</button>
-      </div>
-    </div>
 
-    <button type="submit" id="btnSubmit">Kirim Laporan Audit</button>
-  </form>
+      <!-- 1. Checklist -->
+      <div class="form-section">
+        <h3>1. Checklist Audit</h3>
+        <input type="checkbox" id="check1" value="K3 Terpenuhi"> K3 Terpenuhi<br>
+        <input type="checkbox" id="check2" value="SOP Dijalankan"> SOP Dijalankan<br>
+      </div>
+
+      <!-- 2. Form Pengamatan -->
+      <div class="form-section">
+        <h3>2. Form Pengamatan</h3>
+        <textarea id="pengamatan" rows="4" cols="50" placeholder="Tuliskan hasil pengamatan..."></textarea>
+      </div>
+
+      <!-- 3. Form LKS -->
+      <div class="form-section">
+        <h3>3. Form LKS (Lembar Ketidaksesuaian)</h3>
+        <textarea id="lks" rows="4" cols="50" placeholder="Tuliskan ketidaksesuaian (jika ada)..."></textarea>
+      </div>
+
+      <!-- Tanda Tangan Digital -->
+      <div class="form-section">
+        <h3>Tanda Tangan</h3>
+        <div>
+          <label>Tanda Tangan Auditor:</label><br>
+          <canvas id="auditorCanvas" width="300" height="150"></canvas>
+          <button type="button" onclick="clearCanvas(auditorCtx, auditorCanvas)">Hapus</button>
+        </div>
+        <br>
+        <div>
+          <label>Tanda Tangan Auditee:</label><br>
+          <canvas id="auditeeCanvas" width="300" height="150"></canvas>
+          <button type="button" onclick="clearCanvas(auditeeCtx, auditeeCanvas)">Hapus</button>
+        </div>
+      </div>
+
+      <button type="submit" id="btnSubmit">Kirim Laporan Audit</button>
+    </form>
+  </div>
 
   <script>
+    // Fungsi Handle Login
+    function handleLogin(event) {
+      event.preventDefault();
+      const nik = document.getElementById('loginNik').value;
+      const pass = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('btnLogin');
+      
+      btn.innerText = "Memverifikasi...";
+      btn.disabled = true;
+      
+      google.script.run
+        .withSuccessHandler(function(response) {
+          btn.innerText = "Masuk";
+          btn.disabled = false;
+          if(response.success) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('auditorName').value = response.nama;
+          } else {
+            alert(response.message);
+          }
+        })
+        .withFailureHandler(function(error) {
+          btn.innerText = "Masuk";
+          btn.disabled = false;
+          alert("Gagal menghubungi server: " + error.message);
+        })
+        .checkLogin(nik, pass);
+    }
+
     // Setup Canvas untuk Tanda Tangan
     function setupCanvas(canvasId) {
       const canvas = document.getElementById(canvasId);
@@ -131,16 +183,9 @@
       google.script.run
         .withSuccessHandler(function(response) {
           alert(response.message);
-          if(response.success) {
-            document.getElementById('auditForm').reset();
-            clearCanvas(auditorCtx, auditorCanvas);
-            clearCanvas(auditeeCtx, auditeeCanvas);
-          }
-          document.getElementById('btnSubmit').innerText = "Kirim Laporan Audit";
-          document.getElementById('btnSubmit').disabled = false;
-        })
-        .withFailureHandler(function(error) {
-          alert("Terjadi kegagalan koneksi/sistem: " + error.message);
+          if(response.success) document.getElementById('auditForm').reset();
+          clearCanvas(auditorCtx, auditorCanvas);
+          clearCanvas(auditeeCtx, auditeeCanvas);
           document.getElementById('btnSubmit').innerText = "Kirim Laporan Audit";
           document.getElementById('btnSubmit').disabled = false;
         })
