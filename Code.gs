@@ -78,3 +78,20 @@ function checkLogin(nik, password) {
     return { success: false, message: "Terjadi kesalahan sistem: " + error.message };
   }
 }
+
+// Fungsi ini menangani request POST (fetch) dari GitHub Pages
+function doPost(e) {
+  try {
+    const postData = JSON.parse(e.postData.contents);
+    
+    if (postData.action === "login") {
+      const result = checkLogin(postData.nik, postData.password);
+      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+    } else if (postData.action === "submitAudit") {
+      const result = processAuditForm(postData.formData);
+      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, message: error.message })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
