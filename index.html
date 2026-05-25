@@ -131,9 +131,16 @@
       google.script.run
         .withSuccessHandler(function(response) {
           alert(response.message);
-          if(response.success) document.getElementById('auditForm').reset();
-          clearCanvas(auditorCtx, auditorCanvas);
-          clearCanvas(auditeeCtx, auditeeCanvas);
+          if(response.success) {
+            document.getElementById('auditForm').reset();
+            clearCanvas(auditorCtx, auditorCanvas);
+            clearCanvas(auditeeCtx, auditeeCanvas);
+          }
+          document.getElementById('btnSubmit').innerText = "Kirim Laporan Audit";
+          document.getElementById('btnSubmit').disabled = false;
+        })
+        .withFailureHandler(function(error) {
+          alert("Terjadi kegagalan koneksi/sistem: " + error.message);
           document.getElementById('btnSubmit').innerText = "Kirim Laporan Audit";
           document.getElementById('btnSubmit').disabled = false;
         })
