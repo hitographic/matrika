@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    .form-section { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+    canvas { border: 1px solid #000; cursor: crosshair; }
+    button { padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+
+  <h2>Form Audit Internal Pabrik</h2>
+  
+  <form id="auditForm" onsubmit="submitForm(event)">
+    
+    <!-- Informasi Dasar -->
+    <div class="form-section">
+      <label>Nama Auditor:</label><br>
+      <input type="text" id="auditorName" required><br><br>
+      <label>Nama Auditee:</label><br>
+      <input type="text" id="auditeeName" required>
+    </div>
+
+    <!-- 1. Checklist -->
+    <div class="form-section">
+      <h3>1. Checklist Audit</h3>
+      <input type="checkbox" id="check1" value="K3 Terpenuhi"> K3 Terpenuhi<br>
+      <input type="checkbox" id="check2" value="SOP Dijalankan"> SOP Dijalankan<br>
+    </div>
+
+    <!-- 2. Form Pengamatan -->
+    <div class="form-section">
+      <h3>2. Form Pengamatan</h3>
+      <textarea id="pengamatan" rows="4" cols="50" placeholder="Tuliskan hasil pengamatan..."></textarea>
+    </div>
+
+    <!-- 3. Form LKS -->
+    <div class="form-section">
+      <h3>3. Form LKS (Lembar Ketidaksesuaian)</h3>
+      <textarea id="lks" rows="4" cols="50" placeholder="Tuliskan ketidaksesuaian (jika ada)..."></textarea>
+    </div>
+
+    <!-- Tanda Tangan Digital -->
+    <div class="form-section">
+      <h3>Tanda Tangan</h3>
+      <div>
+        <label>Tanda Tangan Auditor:</label><br>
+        <canvas id="auditorCanvas" width="300" height="150"></canvas>
+        <button type="button" onclick="clearCanvas(auditorCtx, auditorCanvas)">Hapus</button>
+      </div>
+      <br>
+      <div>
+        <label>Tanda Tangan Auditee:</label><br>
+        <canvas id="auditeeCanvas" width="300" height="150"></canvas>
+        <button type="button" onclick="clearCanvas(auditeeCtx, auditeeCanvas)">Hapus</button>
+      </div>
+    </div>
+
+    <button type="submit" id="btnSubmit">Kirim Laporan Audit</button>
+  </form>
+
+  <script>
+    // Setup Canvas untuk Tanda Tangan
+    function setupCanvas(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      let painting = false;
+
+      function startPosition(e) { painting = true; draw(e); }
+      function endPosition() { painting = false; ctx.beginPath(); }
+      function draw(e) {
+        if (!painting) return;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        
+        // Sesuaikan koordinat untuk mouse & touch (mobile)
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.touches[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+      }
+
+      canvas.addEventListener('mousedown', startPosition);
+      canvas.addEventListener('mouseup', endPosition);
+      canvas.addEventListener('mousemove', draw);
+      
+      // Dukungan Mobile/Touch
+      canvas.addEventListener('touchstart', startPosition);
+      canvas.addEventListener('touchend', endPosition);
+      canvas.addEventListener('touchmove', draw);
+
+      return { canvas, ctx };
+    }
+
+    const { canvas: auditorCanvas, ctx: auditorCtx } = setupCanvas('auditorCanvas');
+    const { canvas: auditeeCanvas, ctx: auditeeCtx } = setupCanvas('auditeeCanvas');
+
+    function clearCanvas(ctx, canvas) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Mengirim Form ke Google Apps Script
+    function submitForm(event) {
+      event.preventDefault();
+      document.getElementById('btnSubmit').innerText = "Mengirim...";
+      document.getElementById('btnSubmit').disabled = true;
+
+      // Ambil checklist
+      const checks = [];
+      if(document.getElementById('check1').checked) checks.push('K3 Terpenuhi');
+      if(document.getElementById('check2').checked) checks.push('SOP Dijalankan');
+
+      const formData = {
+        auditorName: document.getElementById('auditorName').value,
+        auditeeName: document.getElementById('auditeeName').value,
+        checklistData: checks.join(', '),
+        pengamatan: document.getElementById('pengamatan').value,
+        lks: document.getElementById('lks').value,
+        auditorSignature: auditorCanvas.toDataURL('image/png'),
+        auditeeSignature: auditeeCanvas.toDataURL('image/png')
+      };
+
+      // Memanggil fungsi di Code.gs
+      google.script.run
+        .withSuccessHandler(function(response) {
+          alert(response.message);
+          if(response.success) document.getElementById('auditForm').reset();
+          clearCanvas(auditorCtx, auditorCanvas);
+          clearCanvas(auditeeCtx, auditeeCanvas);
+          document.getElementById('btnSubmit').innerText = "Kirim Laporan Audit";
+          document.getElementById('btnSubmit').disabled = false;
+        })
+        .processAuditForm(formData);
+    }
+  </script>
+</body>
+</html>
