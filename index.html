@@ -123,21 +123,16 @@
         /* --- PRINT / PREVIEW STYLES (Mirip Contoh 3.png) --- */
         #previewArea {
             background: white; padding: 20px; color: black; font-family: 'Times New Roman', Times, serif;
-            font-size: 12px; border: 1px solid #ccc;
+            font-size: 13px; width: 794px; min-height: 1123px; display: flex; flex-direction: column;
+            box-sizing: border-box; margin: 0 auto;
         }
-        .print-header { border-collapse: collapse; width: 100%; border: 2px solid black; margin-bottom: 10px; }
-        .print-header td { border: 1px solid black; padding: 5px; }
-        .print-title-area { display: flex; align-items: center; font-weight: bold; font-size: 14px; margin-top: 10px; border: 2px solid black; border-bottom: none; padding: 5px;}
-        .print-info { display: flex; justify-content: space-between; border: 2px solid black; border-top: none; border-bottom: none; padding: 5px;}
-        .print-table { width: 100%; border-collapse: collapse; border: 2px solid black; }
-        .print-table th, .print-table td { border: 1px solid black; padding: 8px; vertical-align: top;}
-        .print-table th { text-align: center; }
-        .print-footer { display: flex; justify-content: space-between; border: 2px solid black; border-top: none; padding: 10px 20px; }
-        .sign-box { text-align: center; width: 150px; }
-        .sign-canvas { border: 1px dashed #ccc; width: 100%; height: 80px; margin: 10px 0; background: #fafafa; cursor: crosshair;}
+        .check-box { display: inline-block; width: 25px; height: 18px; border: 2px solid black; text-align: center; line-height: 18px; vertical-align: middle; margin-right: 5px; }
         
-        /* Checkbox Box in Print */
-        .check-box { display: inline-block; width: 20px; height: 15px; border: 1px solid black; text-align: center; line-height: 15px;}
+        #previewTableBody td {
+            border-right: 2px solid black; border-bottom: none; border-top: none; padding: 10px; vertical-align: top;
+        }
+        #previewTableBody td:last-child { border-right: none; }
+        .sign-canvas { width: 100%; height: 80px; margin: 10px 0; cursor: crosshair;}
     </style>
 </head>
 <body>
@@ -280,71 +275,84 @@
             
             <!-- Area yang akan di-print ke PDF -->
             <div id="previewArea">
-                <!-- Header -->
-                <table class="print-header">
-                    <tr>
-                        <td width="60%" rowspan="4" style="text-align: center; font-weight: bold; font-size: 14px;">
+                <div style="border: 2px solid black; display: flex; flex-direction: column; flex-grow: 1; box-sizing: border-box;">
+                    
+                    <!-- HEADER ROW 1 -->
+                    <div style="display: flex; border-bottom: 2px solid black;">
+                        <div style="width: 55%; border-right: 2px solid black; padding: 15px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; font-size: 16px;">
                             PT INDOFOOD CBP SUKSES MAKMUR Tbk<br>
                             DIVISI NOODLE - PABRIK CIBITUNG
-                        </td>
-                        <td width="15%">Kode Form</td>
-                        <td width="25%">: MGT - 003</td>
-                    </tr>
-                    <tr><td>No. Terbitan</td><td>: 2.0</td></tr>
-                    <tr><td>Tgl. Efektif</td><td>: 02 Oktober 2023</td></tr>
-                    <tr><td>Halaman</td><td>: 1/1</td></tr>
-                </table>
+                        </div>
+                        <div style="width: 45%; padding: 10px; font-weight: bold; font-size: 14px;">
+                            <table style="width: 100%; border: none; font-weight: bold;">
+                                <tr><td style="border:none; padding: 2px 0; width: 120px;">Kode Form</td><td style="border:none; padding: 2px 0;">: MGT - 003</td></tr>
+                                <tr><td style="border:none; padding: 2px 0;">No. Terbitan</td><td style="border:none; padding: 2px 0;">: 2.0</td></tr>
+                                <tr><td style="border:none; padding: 2px 0;">Tgl. Efektif</td><td style="border:none; padding: 2px 0;">: 02 Oktober 2023</td></tr>
+                                <tr><td style="border:none; padding: 2px 0;">Halaman</td><td style="border:none; padding: 2px 0;">: 1 / 1</td></tr>
+                            </table>
+                        </div>
+                    </div>
 
-                <div class="print-title-area">
-                    <div style="width: 40%">PENGAMATAN INTERNAL AUDIT</div>
-                    <div style="width: 60%; font-weight: normal; font-size: 10px; display: flex; flex-wrap: wrap; gap: 5px;" id="previewCheckboxes">
-                        <!-- JS renders checkboxes here -->
+                    <!-- HEADER ROW 2: Title and Checkboxes -->
+                    <div style="display: flex; border-bottom: 2px solid black;">
+                        <div style="width: 45%; padding: 15px; font-weight: bold; font-size: 16px; display: flex; align-items: center;">
+                            PENGAMATAN INTERNAL AUDIT
+                        </div>
+                        <div style="width: 55%; padding: 10px;" id="previewCheckboxes">
+                            <!-- Javascript will inject table or flexbox here -->
+                        </div>
                     </div>
-                </div>
-                
-                <div class="print-info">
-                    <div>Departemen : <span id="prevDept"></span></div>
-                </div>
-                <div class="print-info" style="border-top: none;">
-                    <div>Tanggal &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span id="prevDate"></span></div>
-                </div>
 
-                <table class="print-table">
-                    <thead>
-                        <tr>
-                            <th width="5%">NO.</th>
-                            <th width="65%">HASIL PENGAMATAN</th>
-                            <th width="15%">ELEMEN / KLAUSUL</th>
-                            <th width="15%">KATEGORI</th>
-                        </tr>
-                    </thead>
-                    <tbody id="previewTableBody">
-                        <!-- JS renders data here -->
-                    </tbody>
-                </table>
+                    <!-- HEADER ROW 3: Dept and Date -->
+                    <div style="padding: 10px 15px; border-bottom: 2px solid black; font-weight: bold;">
+                        <table style="width: 100%; border: none; font-weight: bold; font-size: 14px;">
+                            <tr><td style="border:none; width: 120px; padding: 2px 0;">Departemen</td><td style="border:none; padding: 2px 0;">: <span id="prevDept"></span></td></tr>
+                            <tr><td style="border:none; padding: 2px 0;">Tanggal</td><td style="border:none; padding: 2px 0;">: <span id="prevDate"></span></td></tr>
+                        </table>
+                    </div>
 
-                <div class="print-footer">
-                    <div class="sign-box">
-                        <div style="text-align: left;">Auditor</div>
-                        <canvas id="canvasAuditor" class="sign-canvas" width="150" height="80"></canvas>
-                        <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditor')">Ulangi TTD</div>
-                        <div style="border-bottom: 1px solid black; margin-top: 5px;"><span id="prevAuditorName"></span></div>
-                        <!-- <div>QC RM/FG Spv.</div> -->
+                    <!-- TABLE -->
+                    <div style="flex-grow: 1; display: flex; flex-direction: column;">
+                        <table style="width: 100%; border-collapse: collapse; height: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="border-right: 2px solid black; border-bottom: 2px solid black; padding: 10px; width: 5%;">NO.</th>
+                                    <th style="border-right: 2px solid black; border-bottom: 2px solid black; padding: 10px; width: 65%;">HASIL PENGAMATAN</th>
+                                    <th style="border-right: 2px solid black; border-bottom: 2px solid black; padding: 10px; width: 15%;">ELEMEN /<br>KLAUSUL</th>
+                                    <th style="border-bottom: 2px solid black; padding: 10px; width: 15%;">KATEGORI</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewTableBody">
+                                <!-- Javascript injects TRs here -->
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="sign-box">
-                        <div style="text-align: left;">Auditee</div>
-                        <canvas id="canvasAuditee" class="sign-canvas" width="150" height="80"></canvas>
-                        <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditee')">Ulangi TTD</div>
-                        <div style="border-bottom: 1px solid black; margin-top: 5px;"><span id="prevAuditeeName"></span></div>
-                        <!-- <div>PSS 3</div> -->
+
+                    <!-- FOOTER: Signatures -->
+                    <div style="display: flex; border-top: 2px solid black; padding: 15px;">
+                        <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                            <div style="font-weight: bold; margin-bottom: 10px;">Auditor</div>
+                            <canvas id="canvasAuditor" class="sign-canvas" width="150" height="80"></canvas>
+                            <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditor')">Ulangi TTD</div>
+                            <div style="border-bottom: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold;"><span id="prevAuditorName"></span></div>
+                        </div>
+                        <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                            <div style="font-weight: bold; margin-bottom: 10px;">Auditee</div>
+                            <canvas id="canvasAuditee" class="sign-canvas" width="150" height="80"></canvas>
+                            <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditee')">Ulangi TTD</div>
+                            <div style="border-bottom: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold;"><span id="prevAuditeeName"></span></div>
+                        </div>
+                        <div style="flex: 1; font-size: 12px; font-weight: bold; padding-left: 20px;">
+                            <div style="margin-bottom: 5px;">Kategori :</div>
+                            <table style="border: none;">
+                                <tr><td style="border:none; padding:2px;">C</td><td style="border:none; padding:2px;">= Conformance</td></tr>
+                                <tr><td style="border:none; padding:2px;">Minor</td><td style="border:none; padding:2px;">= Temuan Minor</td></tr>
+                                <tr><td style="border:none; padding:2px;">Major</td><td style="border:none; padding:2px;">= Temuan Major</td></tr>
+                                <tr><td style="border:none; padding:2px;">Kritis</td><td style="border:none; padding:2px;">= Temuan Kritis</td></tr>
+                            </table>
+                        </div>
                     </div>
-                    <div style="font-size: 10px;">
-                        <div>Kategori :</div>
-                        <div>C = Conformance</div>
-                        <div>Minor = Temuan Minor</div>
-                        <div>Major = Temuan Major</div>
-                        <div>Kritis = Temuan Kritis</div>
-                    </div>
+
                 </div>
             </div>
 
@@ -663,12 +671,25 @@
             if(!cData) return; // Validation failed
             
             // Set Header Info
-            const categories = ['Halal', 'SMK3', 'ISO', 'SML', 'FSSC', 'SME'];
-            let cbHtml = '';
-            categories.forEach(c => {
-                let check = (c.toUpperCase() === currentCategory.toUpperCase()) ? 'V' : '&nbsp;&nbsp;&nbsp;';
-                cbHtml += `<span class="check-box">${check}</span> ${c}&nbsp;&nbsp;&nbsp;`;
-            });
+            const cbHtml = `
+                <table style="width:100%; border:none; font-weight:bold; font-size: 14px;">
+                    <tr>
+                        <td style="border:none; padding:2px;"><div class="check-box">${currentCategory==='Halal'?'V':'&nbsp;'}</div> Halal</td>
+                        <td style="border:none; padding:2px;"><div class="check-box">${currentCategory==='SMK3'?'V':'&nbsp;'}</div> SMK3</td>
+                        <td style="border:none; padding:2px;"><div class="check-box" style="width:40px;">&nbsp;</div> .........</td>
+                    </tr>
+                    <tr>
+                        <td style="border:none; padding:2px;"><div class="check-box">${currentCategory==='ISO'?'V':'&nbsp;'}</div> ISO</td>
+                        <td style="border:none; padding:2px;"><div class="check-box">${currentCategory==='SML'?'V':'&nbsp;'}</div> SML</td>
+                        <td style="border:none; padding:2px;"></td>
+                    </tr>
+                    <tr>
+                        <td style="border:none; padding:2px;"><div class="check-box">${currentCategory==='FSSC'?'V':'&nbsp;'}</div> FSSC</td>
+                        <td style="border:none; padding:2px;"><div class="check-box">${currentCategory==='SME'?'V':'&nbsp;'}</div> SME</td>
+                        <td style="border:none; padding:2px;"></td>
+                    </tr>
+                </table>
+            `;
             document.getElementById('previewCheckboxes').innerHTML = cbHtml;
             document.getElementById('prevDept').innerText = currentDept;
             
@@ -683,13 +704,19 @@
             cData.forEach(row => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="text-align:center">${row.no}</td>
+                    <td style="text-align:center; font-weight:bold;">${row.no}.</td>
                     <td>${row.hasilPengamatan}</td>
-                    <td style="text-align:center">${row.klausal}</td>
-                    <td style="text-align:center">${row.kategoriVal}</td>
+                    <td style="text-align:center;">${row.klausal}</td>
+                    <td style="text-align:center;">${row.kategoriVal}</td>
                 `;
                 tbody.appendChild(tr);
             });
+            
+            // Filler row untuk mendorong baris data ke atas tapi garis tetap memanjang ke bawah
+            const fillerTr = document.createElement('tr');
+            fillerTr.style.height = '100%';
+            fillerTr.innerHTML = '<td></td><td></td><td></td><td></td>';
+            tbody.appendChild(fillerTr);
 
             // Names
             document.getElementById('prevAuditorName').innerText = currentUser.nama;
