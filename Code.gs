@@ -93,7 +93,23 @@ function handleGetChecklist(kategori) {
 function handleSaveData(formData, status) {
   try {
     const sheet = getSheet("data_pengamatan");
-    const id = Utilities.getUuid();
+    let id = formData.id;
+    let isUpdate = false;
+    let rowIndex = -1;
+    
+    // Jika ada ID, berarti update
+    if (id) {
+      isUpdate = true;
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (data[i][0] === id) {
+          rowIndex = i + 1;
+          break;
+        }
+      }
+    } else {
+      id = Utilities.getUuid();
+    }
     
     // Handle Signatures only if Submit Final
     let urlAuditor = "";
@@ -103,7 +119,7 @@ function handleSaveData(formData, status) {
        urlAuditee = saveImageToDrive(formData.auditeeSignature, id + "_auditee.png");
     }
 
-    sheet.appendRow([
+    const rowData = [
       id,
       new Date(),
       formData.auditorName,
@@ -113,7 +129,15 @@ function handleSaveData(formData, status) {
       status, // 'Draft' atau 'Submitted'
       urlAuditor,
       urlAuditee
-    ]);
+    ];
+
+    if (isUpdate && rowIndex > -1) {
+      // Overwrite baris yang ada
+      sheet.getRange(rowIndex, 1, 1, rowData.length).setValues([rowData]);
+    } else {
+      // Baris baru
+      sheet.appendRow(rowData);
+    }
     
     return { success: true, message: `Data berhasil disimpan sebagai ${status}!` };
   } catch(e) {
@@ -128,18 +152,16 @@ function handleGetList(auditorName) {
     let list = [];
     
     for (let i = 1; i < data.length; i++) {
-      // Filter by auditor if needed, for now return all or just match name
-      // If we want auditor to see only their data: if(data[i][2] === auditorName)
       list.push({
         id: data[i][0],
         tanggal: data[i][1],
         auditor: data[i][2],
         auditee: data[i][3],
         kategori: data[i][4],
+        checklistData: data[i][5], // Kirim string JSON agar bisa diproses Export di client
         status: data[i][6]
       });
     }
-    // Balik urutan agar yang terbaru di atas
     list.reverse();
     return { success: true, data: list };
   } catch(e) {
@@ -147,6 +169,45 @@ function handleGetList(auditorName) {
   }
 }
 
+function handleDeleteData(id) {
+  try {
+    const sheet = getSheet("data_pengamatan");
+    const data = sheet.getDataRange().getValues();
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === id) {
+        sheet.deleteRow(i + 1);
+        return { success: true, message: "Data berhasil dihapus!" };
+      }
+    }
+    return { success: false, message: "Data tidak ditemukan." };
+  } catch(e) {
+    return { success: false, message: e.message };
+  }
+}
+
+function handleGetDetail(id) {
+  try {
+    const sheet = getSheet("data_pengamatan");
+    const data = sheet.getDataRange().getValues();
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === id) {
+        return { 
+          success: true, 
+          data: {
+            id: data[i][0],
+            auditeeName: data[i][3],
+            kategori: data[i][4],
+            checklistData: JSON.parse(data[i][5]),
+            status: data[i][6]
+          }
+        };
+      }
+    }
+    return { success: false, message: "Data tidak ditemukan." };
+  } catch(e) {
+    return { success: false, message: e.message };
+  }
+}
 
 // --- POST Entry Point ---
 function doPost(e) {
@@ -169,6 +230,12 @@ function doPost(e) {
         break;
       case "getList":
         result = handleGetList(postData.auditorName);
+        break;
+      case "getDetail":
+        result = handleGetDetail(postData.id);
+        break;
+      case "deleteData":
+        result = handleDeleteData(postData.id);
         break;
       default:
         result = { success: false, message: "Action tidak dikenal." };

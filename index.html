@@ -208,7 +208,7 @@
                     <h2 style="display: inline-block; margin-left: 15px;" id="listTitle">Data Pengamatan</h2>
                 </div>
                 <div>
-                    <!-- Tombol Export Global jika diperlukan, sementara ditaruh per item -->
+                    <button class="btn btn-outline" style="margin-right: 10px;" onclick="exportListExcel()"><i class="fa-solid fa-file-excel" style="color:green"></i> Export Excel</button>
                     <button class="btn btn-primary" onclick="showNewDataModal()"><i class="fa-solid fa-plus"></i> Tambah Data</button>
                 </div>
             </div>
@@ -368,6 +368,7 @@
         let currentDept = '';
         let currentQuestions = [];
         let listData = []; // Cache list pengamatan
+        let currentEditId = null; // Menyimpan ID saat sedang edit/update
 
         // UI MANAGEMENT
         function changeState(stateId) {
@@ -477,17 +478,21 @@
                         <h4>${item.auditee}</h4>
                         <p>${dateStr} | ID: ${item.id.substring(0,8)}</p>
                     </div>
-                    <div class="action-group">
+                    <div class="action-group" style="align-items: center;">
                         <span class="${badgeClass}">${item.status}</span>
-                        <button class="btn btn-outline" title="Lihat/Edit" ${item.status === 'Submitted' ? 'disabled style="opacity:0.5"' : ''}><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-outline" title="Lihat/Edit" ${item.status === 'Submitted' ? 'disabled style="opacity:0.5"' : `onclick="editData('${item.id}')"`}><i class="fa-solid fa-pen"></i></button>
+                        ${item.status === 'Draft' ? `<button class="btn btn-primary" title="Sign & Submit" onclick="signData('${item.id}')"><i class="fa-solid fa-signature"></i></button>` : ''}
+                        <button class="btn btn-outline" title="Export PDF" onclick="exportItemPDF('${item.id}')"><i class="fa-solid fa-file-pdf" style="color:var(--accent)"></i></button>
+                        <button class="btn btn-outline" title="Hapus" onclick="deleteData('${item.id}')"><i class="fa-solid fa-trash" style="color:var(--accent)"></i></button>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // 4. FORM LOGIC
+        // 4. FORM & CRUD LOGIC
         function showNewDataModal() {
+            currentEditId = null;
             document.getElementById('inputAuditeeName').value = '';
             document.getElementById('inputDepartemen').value = '';
             showModal('modalNewData');
@@ -702,6 +707,7 @@
             if(!cData && status === 'Submitted') return; // Must validate if submitting
             
             let payloadData = {
+                id: currentEditId,
                 auditorName: currentUser.nama,
                 auditeeName: currentAuditee,
                 kategori: currentCategory,
@@ -753,7 +759,96 @@
             saveData('Submitted');
         }
         
-        // EXPORT LOGIC
+        // CRUD & EXPORT LOGIC
+        function editData(id) {
+            Swal.fire({ title: 'Memuat data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            fetch(GAS_URL, {
+                method: 'POST', body: JSON.stringify({ action: 'getDetail', id: id })
+            }).then(res => res.json()).then(res => {
+                if(res.success) {
+                    Swal.close();
+                    currentEditId = id;
+                    currentAuditee = res.data.auditeeName;
+                    currentCategory = res.data.kategori;
+                    currentQuestions = res.data.checklistData.map(d => ({ no: d.no, pertanyaan: d.hasilPengamatan })); // Simplified mock mapping
+                    // Idealnya getChecklist digunakan lagi, atau data detail di mapping ke UI
+                    // Untuk demo, kita reload UI stateForm
+                    document.getElementById('formAuditeeLabel').innerText = currentAuditee;
+                    document.getElementById('formCategoryTitle').innerText = currentCategory;
+                    
+                    const tbody = document.getElementById('checklistBody');
+                    tbody.innerHTML = '';
+                    res.data.checklistData.forEach((q, index) => {
+                        const tr = document.createElement('tr');
+                        let isYa = q.hasilPengamatan !== 'Tidak Sesuai' && q.hasilPengamatan !== ''; // logic sederhana
+                        tr.innerHTML = `
+                            <td>${q.no}</td>
+                            <td>Hasil Pengamatan: ${q.hasilPengamatan}</td>
+                            <td>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="kesesuaian_${index}" value="Ya" ${isYa ? 'checked' : ''}> Ya</label>
+                                    <label><input type="radio" name="kesesuaian_${index}" value="Tidak" ${!isYa ? 'checked' : ''}> Tidak</label>
+                                </div>
+                            </td>
+                            <td>
+                                <select id="kategori_${index}" class="form-group" style="margin:0; padding: 6px;">
+                                    <option value="C" ${q.kategoriVal==='C'?'selected':''}>C</option>
+                                    <option value="Minor" ${q.kategoriVal==='Minor'?'selected':''}>Minor</option>
+                                    <option value="Major" ${q.kategoriVal==='Major'?'selected':''}>Major</option>
+                                    <option value="Kritis" ${q.kategoriVal==='Kritis'?'selected':''}>Kritis</option>
+                                </select>
+                            </td>
+                            <td><textarea id="keterangan_${index}" class="form-group" style="margin:0; padding:6px; min-height: 40px;">${q.hasilPengamatan}</textarea></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                    changeState('stateForm');
+                } else {
+                    Swal.fire('Gagal', res.message, 'error');
+                }
+            }).catch(err => {
+                 Swal.fire('Error', 'Belum tersambung ke backend secara sempurna', 'error');
+            });
+        }
+
+        function signData(id) {
+            editData(id); // Load data first, user can then click Review & Submit
+        }
+
+        function deleteData(id) {
+            Swal.fire({
+                title: 'Hapus data ini?', text: "Data yang dihapus tidak bisa dikembalikan!", icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'Menghapus...', didOpen: () => Swal.showLoading() });
+                    fetch(GAS_URL, {
+                        method: 'POST', body: JSON.stringify({ action: 'deleteData', id: id })
+                    }).then(res => res.json()).then(res => {
+                        if(res.success) { Swal.fire('Terhapus!', res.message, 'success'); loadListData(); }
+                        else { Swal.fire('Gagal', res.message, 'error'); }
+                    });
+                }
+            });
+        }
+
+        function exportListExcel() {
+            if(listData.length === 0) return Swal.fire('Kosong', 'Tidak ada data untuk diexport', 'info');
+            const wsData = listData.map(d => ({
+                ID: d.id, Tanggal: new Date(d.tanggal).toLocaleDateString(), Auditor: d.auditor,
+                Auditee: d.auditee, Kategori: d.kategori, Status: d.status
+            }));
+            const ws = XLSX.utils.json_to_sheet(wsData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Pengamatan");
+            XLSX.writeFile(wb, `Audit_List_${currentCategory}.xlsx`);
+        }
+
+        function exportItemPDF(id) {
+            // Demo implementation: In real app, load getDetail, set to modal, then PDF
+            Swal.fire('Fitur PDF', 'Untuk PDF lengkap, silakan buka menu "Lihat/Edit" lalu klik "Review & Submit", kemudian "Download PDF" di dalam preview. Atau fitur ini bisa digenerate dari server backend Anda.', 'info');
+        }
+
         function exportPDF() {
             const element = document.getElementById('previewArea');
             html2pdf().from(element).set({
