@@ -480,7 +480,7 @@
                     </div>
                     <div class="action-group" style="align-items: center;">
                         <span class="${badgeClass}">${item.status}</span>
-                        <button class="btn btn-outline" title="Lihat/Edit" ${item.status === 'Submitted' ? 'disabled style="opacity:0.5"' : `onclick="editData('${item.id}')"`}><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-outline" title="Lihat/Edit" onclick="editData('${item.id}')"><i class="fa-solid fa-pen"></i></button>
                         ${item.status === 'Draft' ? `<button class="btn btn-primary" title="Sign & Submit" onclick="signData('${item.id}')"><i class="fa-solid fa-signature"></i></button>` : ''}
                         <button class="btn btn-outline" title="Export PDF" onclick="exportItemPDF('${item.id}')"><i class="fa-solid fa-file-pdf" style="color:var(--accent)"></i></button>
                         <button class="btn btn-outline" title="Hapus" onclick="deleteData('${item.id}')"><i class="fa-solid fa-trash" style="color:var(--accent)"></i></button>
