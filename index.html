@@ -287,6 +287,21 @@
         </div>
     </div>
 
+    <!-- MODAL: REGISTER SIGNATURE -->
+    <div id="modalRegisterSignature" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>Daftarkan Tanda Tangan Anda</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Anda belum memiliki data tanda tangan di browser ini. Silakan buat tanda tangan digital Anda di bawah ini untuk digunakan pada laporan.</p>
+            <div style="border: 2px dashed #ccc; background: #fafafa; margin-bottom: 15px;">
+                <canvas id="canvasRegisterSign" class="sign-canvas" width="400" height="150" style="width:100%; height: 150px; border:none; margin:0;"></canvas>
+            </div>
+            <div style="font-size: 12px; cursor: pointer; color: blue; margin-bottom: 15px; text-align: center;" onclick="clearCanvas('canvasRegisterSign')">Hapus / Ulangi TTD</div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn btn-primary" onclick="saveRegisteredSignature()">Simpan Tanda Tangan</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: PREVIEW & SIGN -->
     <div id="modalPreview" class="modal-overlay hidden">
         <div class="modal-content modal-large">
@@ -336,12 +351,18 @@
                     <!-- TABLE -->
                     <div style="flex-grow: 1; display: flex; flex-direction: column;">
                         <table style="width: 100%; border-collapse: collapse; height: 100%;">
+                            <colgroup>
+                                <col style="width: 5%; border-right: 2px solid black;">
+                                <col style="width: 65%; border-right: 2px solid black;">
+                                <col style="width: 15%; border-right: 2px solid black;">
+                                <col style="width: 15%;">
+                            </colgroup>
                             <thead>
                                 <tr>
-                                    <th style="border-right: 2px solid black; border-bottom: 2px solid black; padding: 10px; width: 5%;">NO.</th>
-                                    <th style="border-right: 2px solid black; border-bottom: 2px solid black; padding: 10px; width: 65%;">HASIL PENGAMATAN</th>
-                                    <th style="border-right: 2px solid black; border-bottom: 2px solid black; padding: 10px; width: 15%;">ELEMEN /<br>KLAUSUL</th>
-                                    <th style="border-bottom: 2px solid black; padding: 10px; width: 15%;">KATEGORI</th>
+                                    <th style="border-bottom: 2px solid black; padding: 10px;">NO.</th>
+                                    <th style="border-bottom: 2px solid black; padding: 10px;">HASIL PENGAMATAN</th>
+                                    <th style="border-bottom: 2px solid black; padding: 10px;">ELEMEN /<br>KLAUSUL</th>
+                                    <th style="border-bottom: 2px solid black; padding: 10px;">KATEGORI</th>
                                 </tr>
                             </thead>
                             <tbody id="previewTableBody">
@@ -354,8 +375,21 @@
                     <div style="display: flex; border-top: 2px solid black; padding: 15px;">
                         <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center;">
                             <div style="font-weight: bold; margin-bottom: 10px;">Auditor</div>
-                            <canvas id="canvasAuditor" class="sign-canvas" width="150" height="80"></canvas>
-                            <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditor')">Ulangi TTD</div>
+                            
+                            <div id="auditorSignControls" style="display: flex; gap: 10px; margin-bottom: 5px; font-size: 10px; justify-content: center;">
+                                <label><input type="radio" name="auditorSignMode" value="saved" onchange="toggleAuditorSignMode()"> Pakai yg sudah ada</label>
+                                <label><input type="radio" name="auditorSignMode" value="new" onchange="toggleAuditorSignMode()"> TTD Ulang</label>
+                            </div>
+                            
+                            <div id="auditorSavedSignWrapper" style="width: 150px; height: 80px; margin: 10px 0; display: none; align-items:center; justify-content:center;">
+                                <img id="auditorSavedSignImg" style="max-height: 100%; max-width: 100%;" src="">
+                            </div>
+                            
+                            <div id="auditorNewSignWrapper" style="display: block; width: 150px;">
+                                <canvas id="canvasAuditor" class="sign-canvas" width="150" height="80"></canvas>
+                                <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditor')">Ulangi TTD</div>
+                            </div>
+                            
                             <div style="border-bottom: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold;"><span id="prevAuditorName"></span></div>
                         </div>
                         <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center;">
@@ -434,6 +468,7 @@
                     currentUser = { nik, nama: res.nama };
                     document.getElementById('navAuditorName').innerText = res.nama;
                     changeState('stateMenu');
+                    if(!localStorage.getItem('signature_' + currentUser.nik)) showModal('modalRegisterSignature');
                 } else {
                     Swal.fire('Gagal', res.message, 'error');
                 }
@@ -445,6 +480,7 @@
                 currentUser = { nik: 'guest', nama: 'Auditor Demo' };
                 document.getElementById('navAuditorName').innerText = currentUser.nama;
                 changeState('stateMenu');
+                if(!localStorage.getItem('signature_' + currentUser.nik)) showModal('modalRegisterSignature');
             })
             .finally(() => {
                 btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk';
@@ -674,18 +710,46 @@
             return canvas;
         }
 
-        let canvasAuditor, canvasAuditee;
+        let canvasAuditor, canvasAuditee, canvasRegisterSign;
         
         // Initialize once
         document.addEventListener('DOMContentLoaded', () => {
             canvasAuditor = setupCanvas('canvasAuditor');
             canvasAuditee = setupCanvas('canvasAuditee');
+            canvasRegisterSign = setupCanvas('canvasRegisterSign');
         });
 
         function clearCanvas(id) {
             const canvas = document.getElementById(id);
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function saveRegisteredSignature() {
+            const canvas = document.getElementById('canvasRegisterSign');
+            const dataUrl = canvas.toDataURL('image/png');
+            // Basic blank check
+            const blankCanvas = document.createElement('canvas');
+            blankCanvas.width = canvas.width;
+            blankCanvas.height = canvas.height;
+            if(dataUrl === blankCanvas.toDataURL()) {
+                Swal.fire('Peringatan', 'Tanda tangan masih kosong!', 'warning');
+                return;
+            }
+            localStorage.setItem('signature_' + currentUser.nik, dataUrl);
+            closeModal('modalRegisterSignature');
+            Swal.fire('Berhasil', 'Tanda tangan berhasil disimpan di perangkat ini.', 'success');
+        }
+
+        function toggleAuditorSignMode() {
+            const mode = document.querySelector('input[name="auditorSignMode"]:checked').value;
+            if(mode === 'saved') {
+                document.getElementById('auditorSavedSignWrapper').style.display = 'flex';
+                document.getElementById('auditorNewSignWrapper').style.display = 'none';
+            } else {
+                document.getElementById('auditorSavedSignWrapper').style.display = 'none';
+                document.getElementById('auditorNewSignWrapper').style.display = 'block';
+            }
         }
 
         function showPreview() {
@@ -725,6 +789,7 @@
             tbody.innerHTML = '';
             cData.forEach(row => {
                 const tr = document.createElement('tr');
+                tr.style.height = '1px'; // Force minimum height so filler row absorbs the rest
                 tr.innerHTML = `
                     <td style="text-align:center; font-weight:bold;">${row.no}.</td>
                     <td>${row.hasilPengamatan}</td>
@@ -736,8 +801,7 @@
             
             // Filler row untuk mendorong baris data ke atas tapi garis tetap memanjang ke bawah
             const fillerTr = document.createElement('tr');
-            fillerTr.style.height = '100%';
-            fillerTr.innerHTML = '<td></td><td></td><td></td><td></td>';
+            fillerTr.innerHTML = '<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>';
             tbody.appendChild(fillerTr);
 
             // Names
@@ -747,6 +811,19 @@
             // Clear Signatures for new preview
             clearCanvas('canvasAuditor');
             clearCanvas('canvasAuditee');
+            
+            // Signature Logic
+            const savedSign = localStorage.getItem('signature_' + currentUser.nik);
+            if(savedSign) {
+                document.getElementById('auditorSavedSignImg').src = savedSign;
+                document.querySelector('input[name="auditorSignMode"][value="saved"]').checked = true;
+                document.getElementById('auditorSignControls').style.display = 'flex';
+                toggleAuditorSignMode();
+            } else {
+                document.querySelector('input[name="auditorSignMode"][value="new"]').checked = true;
+                document.getElementById('auditorSignControls').style.display = 'none';
+                toggleAuditorSignMode();
+            }
 
             showModal('modalPreview');
         }
