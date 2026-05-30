@@ -133,6 +133,28 @@
         }
         #previewTableBody td:last-child { border-right: none; }
         .sign-canvas { width: 100%; height: 80px; margin: 10px 0; cursor: crosshair;}
+        
+        /* --- NATIVE PRINT CSS UNTUK EXPORT PDF VECTOR (TEKS BISA DIBACA) --- */
+        @media print {
+            @page { margin: 10mm; size: A4 portrait; }
+            body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            /* Sembunyikan elemen utama */
+            #navbar, .container { display: none !important; }
+            
+            /* Tampilkan dan reset Modal Overlay */
+            #modalPreview { 
+                position: relative; background: none; display: flex !important; 
+                padding: 0; margin: 0; align-items: flex-start; justify-content: center;
+            }
+            .modal-content { box-shadow: none; padding: 0; width: 100%; max-width: 100%; }
+            #previewArea { width: 100%; margin: 0; padding: 0; min-height: 0; } /* Biarkan mengalir */
+            
+            /* Sembunyikan tombol dan teks interaktif */
+            .btn, div[onclick], .modal-content > div:first-child { display: none !important; }
+            
+            /* Pastikan border canvas dan tabel tercetak */
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
     </style>
 </head>
 <body>
@@ -877,14 +899,18 @@
         }
 
         function exportPDF() {
-            const element = document.getElementById('previewArea');
-            html2pdf().from(element).set({
-                margin: 10,
-                filename: `Audit_${currentAuditee}_${currentCategory}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            }).save();
+            // Menggunakan fitur print bawaan browser
+            // agar hasil PDF adalah PDF vector (teks bisa diselect dan copy-paste)
+            // bukan PDF raster (gambar)
+            
+            const originalTitle = document.title;
+            // Ubah nama file sementara saat dialog print terbuka
+            document.title = `Audit_${currentAuditee}_${currentCategory}`; 
+            
+            window.print();
+            
+            // Kembalikan nama title web semula
+            document.title = originalTitle;
         }
 
     </script>
