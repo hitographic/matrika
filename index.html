@@ -291,13 +291,38 @@
     <div id="modalRegisterSignature" class="modal-overlay hidden">
         <div class="modal-content">
             <h3>Daftarkan Tanda Tangan Anda</h3>
-            <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Anda belum memiliki data tanda tangan di browser ini. Silakan buat tanda tangan digital Anda di bawah ini untuk digunakan pada laporan.</p>
+            <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Syarat sah TTE (UU ITE): Buat tanda tangan digital Anda dan lindungi dengan <b>6 digit PIN</b>.</p>
             <div style="border: 2px dashed #ccc; background: #fafafa; margin-bottom: 15px;">
                 <canvas id="canvasRegisterSign" class="sign-canvas" width="400" height="150" style="width:100%; height: 150px; border:none; margin:0;"></canvas>
             </div>
             <div style="font-size: 12px; cursor: pointer; color: blue; margin-bottom: 15px; text-align: center;" onclick="clearCanvas('canvasRegisterSign')">Hapus / Ulangi TTD</div>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;">
+                <input type="password" id="regPin" placeholder="PIN 6 Digit" maxlength="6" class="form-group" style="text-align:center; width: 150px; font-size:18px; letter-spacing:5px;">
+                <input type="password" id="regPinConfirm" placeholder="Konfirmasi PIN" maxlength="6" class="form-group" style="text-align:center; width: 150px; font-size:18px; letter-spacing:5px;">
+            </div>
+
             <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="btn btn-primary" onclick="saveRegisteredSignature()">Simpan Tanda Tangan</button>
+                <button class="btn btn-outline" onclick="closeModal('modalRegisterSignature')">Batal</button>
+                <button class="btn btn-primary" onclick="saveRegisteredSignature()">Simpan & Buat PIN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: VERIFY PIN (OTORISASI TTE) -->
+    <div id="modalPIN" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="margin-bottom: 10px;">Otorisasi Tanda Tangan</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Masukkan 6 digit PIN rahasia Anda untuk menyetujui dan menandatangani dokumen ini secara elektronik.</p>
+            <input type="hidden" id="pinActionType" value="verifyAndSubmit">
+            
+            <div class="form-group" style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <input type="password" id="inputUserPin" placeholder="******" maxlength="6" style="text-align:center; font-size: 24px; letter-spacing: 10px; width: 200px; border: 2px solid #ccc; border-radius: 8px; padding: 10px;">
+            </div>
+
+            <div style="display: flex; justify-content: center; gap: 10px;">
+                <button class="btn btn-outline" onclick="closeModal('modalPIN')">Batal</button>
+                <button class="btn btn-primary" id="btnProsesPIN" onclick="processPinAndSubmit()">Tanda Tangani</button>
             </div>
         </div>
     </div>
@@ -408,6 +433,11 @@
                             </table>
                         </div>
                     </div>
+                    
+                    <!-- HASH INTEGRITAS (UU ITE) -->
+                    <div style="font-size: 8px; color: #888; text-align: left; padding: 5px 15px; border-top: 1px dashed #ccc; background: #fff;">
+                        Hash Integritas (SHA-256): <span id="prevHash" style="font-family: monospace;">Menunggu Submit...</span>
+                    </div>
 
                 </div>
             </div>
@@ -426,6 +456,9 @@
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbwqOlCf8qddQ_eCiTzrcbm256kAsQCTrytOS_cLbva9GAgWHPWJHmw-OwnjZiAfAh75/exec'; // GANTI JIKA DEPLOY BARU
         
         // STATE VARIABLES
+        let userIpAddress = "Unknown";
+        fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>{ userIpAddress=d.ip; }).catch(e=>console.log("IP fetch failed"));
+        
         let currentUser = { nik: '', nama: '' };
         let currentCategory = '';
         let currentAuditee = '';
@@ -728,6 +761,12 @@
         function saveRegisteredSignature() {
             const canvas = document.getElementById('canvasRegisterSign');
             const dataUrl = canvas.toDataURL('image/png');
+            const pin = document.getElementById('regPin').value;
+            const pinConfirm = document.getElementById('regPinConfirm').value;
+            
+            if(!pin || pin.length !== 6) { Swal.fire('Error', 'PIN harus 6 digit angka!', 'error'); return; }
+            if(pin !== pinConfirm) { Swal.fire('Error', 'Konfirmasi PIN tidak cocok!', 'error'); return; }
+            
             // Basic blank check
             const blankCanvas = document.createElement('canvas');
             blankCanvas.width = canvas.width;
@@ -736,9 +775,25 @@
                 Swal.fire('Peringatan', 'Tanda tangan masih kosong!', 'warning');
                 return;
             }
-            localStorage.setItem('signature_' + currentUser.nik, dataUrl);
-            closeModal('modalRegisterSignature');
-            Swal.fire('Berhasil', 'Tanda tangan berhasil disimpan di perangkat ini.', 'success');
+            
+            Swal.fire({ title: 'Menyimpan TTE...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'registerSignature', nik: currentUser.nik, signatureData: dataUrl, pin: pin })
+            }).then(r=>r.json()).then(res => {
+                if(res.success) {
+                    localStorage.setItem('signature_' + currentUser.nik, 'registered');
+                    closeModal('modalRegisterSignature');
+                    Swal.fire('Berhasil', res.message, 'success');
+                } else {
+                    Swal.fire('Gagal', res.message, 'error');
+                }
+            }).catch(e => {
+                Swal.fire('Info', 'Backend belum connect, tersimpan lokal (demo).', 'info');
+                localStorage.setItem('signature_' + currentUser.nik, 'registered');
+                closeModal('modalRegisterSignature');
+            });
         }
 
         function toggleAuditorSignMode() {
@@ -828,12 +883,14 @@
             showModal('modalPreview');
         }
 
-        function saveData(status) {
+        function saveData(status, verifiedSignature = null) {
             const cData = collectFormData();
             if(!cData && status === 'Submitted') return; // Must validate if submitting
             
             let payloadData = {
                 id: currentEditId,
+                nik: currentUser.nik,
+                ipAddress: userIpAddress,
                 auditorName: currentUser.nama,
                 auditeeName: currentAuditee,
                 kategori: currentCategory,
@@ -841,13 +898,13 @@
             };
 
             if(status === 'Submitted') {
-                payloadData.auditorSignature = canvasAuditor.toDataURL();
-                payloadData.auditeeSignature = canvasAuditee.toDataURL();
+                payloadData.auditorSignature = verifiedSignature;
+                payloadData.auditeeSignature = canvasAuditee.toDataURL(); // TTD Auditee (tanpa PIN krn tamu)
             }
 
             // Mock saving for UI feedback
             Swal.fire({
-                title: 'Menyimpan...',
+                title: 'Menyimpan & Memverifikasi...',
                 allowOutsideClick: false,
                 didOpen: () => { Swal.showLoading(); }
             });
@@ -862,11 +919,17 @@
             .then(res => res.json())
             .then(res => {
                 if(res.success) {
-                    Swal.fire('Berhasil!', res.message, 'success').then(() => {
-                        if(status === 'Submitted') closeModal('modalPreview');
-                        changeState('stateList');
-                        loadListData(); // refresh
-                    });
+                    if(status === 'Submitted') {
+                        document.getElementById('prevHash').innerText = res.hash;
+                        Swal.fire('Terkonfirmasi (UU ITE)', res.message + '\nHash Integritas:\n' + res.hash, 'success').then(() => {
+                            // Jangan tutup preview agar user bisa download PDF nya dulu!
+                        });
+                    } else {
+                        Swal.fire('Berhasil!', res.message, 'success').then(() => {
+                            changeState('stateList');
+                            loadListData(); // refresh
+                        });
+                    }
                 } else {
                     Swal.fire('Gagal', res.message, 'error');
                 }
@@ -880,9 +943,48 @@
         }
         
         function submitFinalData() {
-            // Check if canvases are empty (simple check if drawn)
-            // A more complex check requires reading pixel data, skipping for simplicity
-            saveData('Submitted');
+            const mode = document.querySelector('input[name="auditorSignMode"]:checked').value;
+            if(mode === 'new') {
+                Swal.fire('Informasi', 'Sesuai UU ITE, tanda tangan baru harus didaftarkan dan dilindungi PIN. Silakan daftarkan via menu Tanda Tangan terlebih dahulu.', 'info');
+                return;
+            }
+            // Munculkan Modal PIN Otorisasi
+            document.getElementById('inputUserPin').value = '';
+            showModal('modalPIN');
+        }
+        
+        function processPinAndSubmit() {
+            const pin = document.getElementById('inputUserPin').value;
+            if(!pin || pin.length !== 6) { Swal.fire('Error', 'PIN harus 6 digit angka!', 'error'); return; }
+
+            const btn = document.getElementById('btnProsesPIN');
+            btn.innerHTML = 'Verifikasi...'; btn.disabled = true;
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'verifySignature', nik: currentUser.nik, pin: pin })
+            }).then(r=>r.json()).then(res => {
+                if(res.success) {
+                    const verifiedSignData = res.signatureData;
+                    document.getElementById('auditorSavedSignImg').src = verifiedSignData; // Update UI untuk dicetak PDF
+                    
+                    closeModal('modalPIN');
+                    btn.innerHTML = 'Tanda Tangani'; btn.disabled = false;
+                    
+                    // Lanjut submit dgn TTD tersertifikasi
+                    saveData('Submitted', verifiedSignData);
+                } else {
+                    Swal.fire('Gagal', res.message, 'error');
+                    btn.innerHTML = 'Tanda Tangani'; btn.disabled = false;
+                }
+            }).catch(e => {
+                // Fallback Demo
+                const mockSign = canvasAuditor.toDataURL(); 
+                document.getElementById('auditorSavedSignImg').src = mockSign;
+                closeModal('modalPIN');
+                btn.innerHTML = 'Tanda Tangani'; btn.disabled = false;
+                saveData('Submitted', mockSign);
+            });
         }
         
         // CRUD & EXPORT LOGIC

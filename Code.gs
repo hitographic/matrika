@@ -22,7 +22,13 @@ function getSheet(sheetName) {
        sheet.appendRow(['Kategori', 'No', 'Pertanyaan']);
     } else if (sheetName === 'data_pengamatan') {
        sheet = ss.insertSheet(sheetName);
-       sheet.appendRow(['ID', 'Timestamp', 'Auditor', 'Auditee', 'Kategori Menu', 'Data Checklist (JSON)', 'Status', 'Tanda Tangan Auditor', 'Tanda Tangan Auditee']);
+       sheet.appendRow(['ID', 'Timestamp', 'Auditor', 'Auditee', 'Kategori Menu', 'Data Checklist (JSON)', 'Status', 'Tanda Tangan Auditor', 'Tanda Tangan Auditee', 'Hash_Integritas']);
+    } else if (sheetName === 'signatures_db') {
+       sheet = ss.insertSheet(sheetName);
+       sheet.appendRow(['NIK', 'TandaTanganBase64', 'PIN_Hash', 'Created_At']);
+    } else if (sheetName === 'audit_trail') {
+       sheet = ss.insertSheet(sheetName);
+       sheet.appendRow(['Timestamp', 'Action', 'NIK', 'IP_Address', 'Target_ID', 'Data_Hash']);
     }
   }
   return sheet;
@@ -38,6 +44,70 @@ function saveImageToDrive(base64Data, filename) {
     return file.getUrl();
   } catch(e) {
     return "Error Upload: " + e.message;
+  }
+}
+
+// --- Fungsi Kriptografi & Audit (UU ITE) ---
+function hashSHA256(text) {
+  const rawHash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, text);
+  let txtHash = '';
+  for (let i = 0; i < rawHash.length; i++) {
+    let hashVal = rawHash[i];
+    if (hashVal < 0) {
+      hashVal += 256;
+    }
+    if (hashVal.toString(16).length == 1) {
+      txtHash += '0';
+    }
+    txtHash += hashVal.toString(16);
+  }
+  return txtHash;
+}
+
+function logAuditTrail(action, nik, ipAddress, targetId, dataHash) {
+  const sheet = getSheet("audit_trail");
+  sheet.appendRow([new Date(), action, nik, ipAddress || "Unknown", targetId, dataHash || ""]);
+}
+
+function handleRegisterSignature(nik, signatureData, pin) {
+  try {
+    const sheet = getSheet("signatures_db");
+    const data = sheet.getDataRange().getValues();
+    const pinHash = hashSHA256(pin);
+    
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][0]).trim() === String(nik).trim()) {
+        sheet.getRange(i + 1, 2).setValue(signatureData);
+        sheet.getRange(i + 1, 3).setValue(pinHash);
+        sheet.getRange(i + 1, 4).setValue(new Date());
+        return { success: true, message: "Tanda tangan berhasil diperbarui!" };
+      }
+    }
+    sheet.appendRow([nik, signatureData, pinHash, new Date()]);
+    return { success: true, message: "Tanda tangan berhasil didaftarkan!" };
+  } catch (e) {
+    return { success: false, message: e.message };
+  }
+}
+
+function handleVerifySignature(nik, pin) {
+  try {
+    const sheet = getSheet("signatures_db");
+    const data = sheet.getDataRange().getValues();
+    const pinHash = hashSHA256(pin);
+    
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][0]).trim() === String(nik).trim()) {
+        if (String(data[i][2]).trim() === pinHash) {
+          return { success: true, signatureData: data[i][1], message: "Verifikasi berhasil!" };
+        } else {
+          return { success: false, message: "PIN Salah!" };
+        }
+      }
+    }
+    return { success: false, message: "Tanda tangan tidak ditemukan." };
+  } catch (e) {
+    return { success: false, message: e.message };
   }
 }
 
@@ -97,7 +167,6 @@ function handleSaveData(formData, status) {
     let isUpdate = false;
     let rowIndex = -1;
     
-    // Jika ada ID, berarti update
     if (id) {
       isUpdate = true;
       const data = sheet.getDataRange().getValues();
@@ -111,12 +180,32 @@ function handleSaveData(formData, status) {
       id = Utilities.getUuid();
     }
     
-    // Handle Signatures only if Submit Final
-    let urlAuditor = "";
-    let urlAuditee = "";
+    let urlAuditor = formData.auditorSignature || "";
+    let urlAuditee = formData.auditeeSignature || "";
+    let hashIntegritas = "";
+
     if (status === 'Submitted') {
-       urlAuditor = saveImageToDrive(formData.auditorSignature, id + "_auditor.png");
-       urlAuditee = saveImageToDrive(formData.auditeeSignature, id + "_auditee.png");
+       if (urlAuditor.startsWith('data:image')) {
+         urlAuditor = saveImageToDrive(urlAuditor, id + "_auditor.png");
+       }
+       if (urlAuditee.startsWith('data:image')) {
+         urlAuditee = saveImageToDrive(urlAuditee, id + "_auditee.png");
+       }
+       
+       // Generate Hash Integritas Dokumen (Pasal 11 UU ITE)
+       const documentDataString = JSON.stringify({
+         id: id,
+         auditor: formData.auditorName,
+         auditee: formData.auditeeName,
+         kategori: formData.kategori,
+         checklist: formData.checklistData
+       });
+       hashIntegritas = hashSHA256(documentDataString);
+       
+       // Record Audit Trail
+       logAuditTrail("SUBMIT_REPORT_SIGNED", formData.nik || "Unknown", formData.ipAddress, id, hashIntegritas);
+    } else {
+       logAuditTrail("SAVE_DRAFT", formData.nik || "Unknown", formData.ipAddress, id, "");
     }
 
     const rowData = [
@@ -125,21 +214,20 @@ function handleSaveData(formData, status) {
       formData.auditorName,
       formData.auditeeName,
       formData.kategori,
-      JSON.stringify(formData.checklistData), // Simpan array objek sebagai JSON
-      status, // 'Draft' atau 'Submitted'
+      JSON.stringify(formData.checklistData),
+      status,
       urlAuditor,
-      urlAuditee
+      urlAuditee,
+      hashIntegritas
     ];
 
     if (isUpdate && rowIndex > -1) {
-      // Overwrite baris yang ada
       sheet.getRange(rowIndex, 1, 1, rowData.length).setValues([rowData]);
     } else {
-      // Baris baru
       sheet.appendRow(rowData);
     }
     
-    return { success: true, message: `Data berhasil disimpan sebagai ${status}!` };
+    return { success: true, hash: hashIntegritas, message: `Data berhasil disimpan sebagai ${status}!` };
   } catch(e) {
     return { success: false, message: e.message };
   }
@@ -218,6 +306,12 @@ function doPost(e) {
     switch (postData.action) {
       case "login":
         result = handleLogin(postData.nik, postData.password);
+        break;
+      case "registerSignature":
+        result = handleRegisterSignature(postData.nik, postData.signatureData, postData.pin);
+        break;
+      case "verifySignature":
+        result = handleVerifySignature(postData.nik, postData.pin);
         break;
       case "getChecklist":
         result = handleGetChecklist(postData.kategori);
