@@ -41,7 +41,10 @@ function saveImageToDrive(base64Data, filename) {
     const data = base64Data.split(',')[1];
     const blob = Utilities.newBlob(Utilities.base64Decode(data), 'image/png', filename);
     const file = folder.createFile(blob);
-    return file.getUrl();
+    
+    // Set permission agar image bisa diload di tag HTML <img>
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    return "https://drive.google.com/uc?export=view&id=" + file.getId();
   } catch(e) {
     return "Error Upload: " + e.message;
   }
@@ -75,15 +78,21 @@ function handleRegisterSignature(nik, signatureData, pin) {
     const data = sheet.getDataRange().getValues();
     const pinHash = hashSHA256(pin);
     
+    // Konversi Base64 ke URL Google Drive
+    let finalSignatureUrl = signatureData;
+    if (signatureData && signatureData.startsWith('data:image')) {
+      finalSignatureUrl = saveImageToDrive(signatureData, `TTD_${nik}_${new Date().getTime()}.png`);
+    }
+    
     for (let i = 1; i < data.length; i++) {
       if (String(data[i][0]).trim() === String(nik).trim()) {
-        sheet.getRange(i + 1, 2).setValue(signatureData);
+        sheet.getRange(i + 1, 2).setValue(finalSignatureUrl);
         sheet.getRange(i + 1, 3).setValue(pinHash);
         sheet.getRange(i + 1, 4).setValue(new Date());
         return { success: true, message: "Tanda tangan berhasil diperbarui!" };
       }
     }
-    sheet.appendRow([nik, signatureData, pinHash, new Date()]);
+    sheet.appendRow([nik, finalSignatureUrl, pinHash, new Date()]);
     return { success: true, message: "Tanda tangan berhasil didaftarkan!" };
   } catch (e) {
     return { success: false, message: e.message };
