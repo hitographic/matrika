@@ -292,10 +292,15 @@ function handleGetDetail(id) {
           success: true, 
           data: {
             id: data[i][0],
+            tanggal: data[i][1],
+            auditorName: data[i][2],
             auditeeName: data[i][3],
             kategori: data[i][4],
             checklistData: JSON.parse(data[i][5]),
-            status: data[i][6]
+            status: data[i][6],
+            auditorSignature: data[i][7],
+            auditeeSignature: data[i][8],
+            hashIntegritas: data[i][9]
           }
         };
       }

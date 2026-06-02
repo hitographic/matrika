@@ -745,8 +745,6 @@
       </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-        <button class="btn btn-outline" style="margin-right: auto;" onclick="exportPDF()"><i
-            class="fa-solid fa-file-pdf"></i> Download PDF</button>
         <button class="btn btn-outline" onclick="closeModal('modalPreview')">Kembali Edit</button>
         <button class="btn btn-primary" onclick="submitFinalData()"><i class="fa-solid fa-check-double"></i> Simpan
           Semua</button>
@@ -1408,8 +1406,112 @@
     }
 
     function exportItemPDF(id) {
-      // Demo implementation: In real app, load getDetail, set to modal, then PDF
-      Swal.fire('Fitur PDF', 'Untuk PDF lengkap, silakan buka menu "Lihat/Edit" lalu klik "Review & Submit", kemudian "Download PDF" di dalam preview. Atau fitur ini bisa digenerate dari server backend Anda.', 'info');
+      Swal.fire({ title: 'Menyiapkan PDF...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      fetch(GAS_URL, {
+        method: 'POST', body: JSON.stringify({ action: 'getDetail', id: id })
+      }).then(res => res.json()).then(res => {
+        if (res.success) {
+          Swal.close();
+          const d = res.data;
+          
+          // Set Header Info
+          const cbHtml = `
+                <table style="width:100%; border:none; font-weight:bold; font-size: 14px;">
+                    <tr>
+                        <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'Halal' ? 'V' : '&nbsp;'}</div> Halal</td>
+                        <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'SMK3' ? 'V' : '&nbsp;'}</div> SMK3</td>
+                        <td style="border:none; padding:2px;"><div class="check-box" style="width:40px;">&nbsp;</div> .........</td>
+                    </tr>
+                    <tr>
+                        <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'ISO' ? 'V' : '&nbsp;'}</div> ISO</td>
+                        <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'SML' ? 'V' : '&nbsp;'}</div> SML</td>
+                        <td style="border:none; padding:2px;"></td>
+                    </tr>
+                    <tr>
+                        <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'FSSC' ? 'V' : '&nbsp;'}</div> FSSC</td>
+                        <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'SME' ? 'V' : '&nbsp;'}</div> SME</td>
+                        <td style="border:none; padding:2px;"></td>
+                    </tr>
+                </table>
+            `;
+          document.getElementById('previewCheckboxes').innerHTML = cbHtml;
+          document.getElementById('prevDept').innerText = "-"; // Departemen tidak tersimpan di DB
+          
+          const dt = new Date(d.tanggal || new Date());
+          const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+          document.getElementById('prevDate').innerText = `${dt.getDate()} ${months[dt.getMonth()]} ${dt.getFullYear()}`;
+
+          // Table Body
+          const tbody = document.getElementById('previewTableBody');
+          tbody.innerHTML = '';
+          d.checklistData.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.style.height = '1px';
+            tr.innerHTML = `
+                        <td style="text-align:center; font-weight:bold;">${row.no}.</td>
+                        <td>${row.hasilPengamatan}</td>
+                        <td style="text-align:center;">${row.klausal || '-'}</td>
+                        <td style="text-align:center;">${row.kategoriVal || '-'}</td>
+                    `;
+            tbody.appendChild(tr);
+          });
+
+          const fillerTr = document.createElement('tr');
+          fillerTr.style.height = '100%'; 
+          fillerTr.innerHTML = '<td></td><td></td><td></td><td></td>';
+          tbody.appendChild(fillerTr);
+
+          document.getElementById('prevAuditorName').innerText = d.auditorName || currentUser.nama;
+          document.getElementById('prevAuditeeName').innerText = d.auditeeName;
+
+          // Set Signatures
+          document.getElementById('auditorSignControls').style.display = 'none';
+          document.getElementById('auditorNewSignWrapper').style.display = 'none';
+          document.getElementById('auditorSavedSignWrapper').style.display = 'flex';
+          
+          if(d.auditorSignature) {
+              document.getElementById('auditorSavedSignImg').src = d.auditorSignature;
+          } else {
+              document.getElementById('auditorSavedSignImg').src = '';
+          }
+
+          document.getElementById('prevHash').innerText = d.hashIntegritas || "Belum disubmit";
+
+          function triggerPrint() {
+              const originalTitle = document.title;
+              document.title = \`Audit_\${d.auditeeName}_\${d.kategori}\`;
+              setTimeout(() => {
+                  window.print();
+                  document.title = originalTitle;
+              }, 300);
+          }
+
+          // Auditee signature
+          const cAuditee = document.getElementById('canvasAuditee');
+          const ctxA = cAuditee.getContext('2d');
+          ctxA.clearRect(0,0,cAuditee.width, cAuditee.height);
+          if(d.auditeeSignature) {
+              const img = new Image();
+              img.crossOrigin = "Anonymous";
+              img.onload = () => {
+                  ctxA.drawImage(img, 0, 0, cAuditee.width, cAuditee.height);
+                  triggerPrint();
+              };
+              img.onerror = () => {
+                  // Fallback jika gagal load gambar dari drive
+                  triggerPrint();
+              };
+              img.src = d.auditeeSignature;
+          } else {
+              triggerPrint();
+          }
+
+        } else {
+          Swal.fire('Gagal', res.message, 'error');
+        }
+      }).catch(err => {
+         Swal.fire('Error', 'Gagal memuat data PDF.', 'error');
+      });
     }
 
     function exportPDF() {
