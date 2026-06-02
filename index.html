@@ -385,8 +385,8 @@
       body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       #navbar, .container { display: none !important; }
       #modalPreview { position: relative; background: none; display: flex !important; padding: 0; margin: 0; align-items: flex-start; justify-content: center; }
-      .modal-content { box-shadow: none; padding: 0; width: 100%; max-width: 100%; }
-      #previewArea { width: 100%; margin: 0; padding: 0; min-height: 0; }
+      .modal-content { box-shadow: none; padding: 0; width: 100%; max-width: 100%; max-height: none; overflow: visible; }
+      #previewArea { width: 100%; margin: 0; padding: 0; min-height: 277mm; }
       .btn, div[onclick], .modal-content>div:first-child { display: none !important; }
       .sign-canvas { border: none !important; background: transparent; }
       * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -1117,7 +1117,7 @@
         body: JSON.stringify({ action: 'registerSignature', nik: currentUser.nik, signatureData: dataUrl, pin: pin })
       }).then(r => r.json()).then(res => {
         if (res.success) {
-          localStorage.setItem('signature_' + currentUser.nik, 'registered');
+          localStorage.setItem('signature_' + currentUser.nik, dataUrl);
           closeModal('modalRegisterSignature');
           Swal.fire('Berhasil', res.message, 'success');
         } else {
@@ -1125,7 +1125,7 @@
         }
       }).catch(e => {
         Swal.fire('Info', 'Backend belum connect, tersimpan lokal (demo).', 'info');
-        localStorage.setItem('signature_' + currentUser.nik, 'registered');
+        localStorage.setItem('signature_' + currentUser.nik, dataUrl);
         closeModal('modalRegisterSignature');
       });
     }
@@ -1204,7 +1204,7 @@
 
       // Signature Logic
       const savedSign = localStorage.getItem('signature_' + currentUser.nik);
-      if (savedSign) {
+      if (savedSign && savedSign !== 'registered') {
         document.getElementById('auditorSavedSignImg').src = savedSign;
         document.querySelector('input[name="auditorSignMode"][value="saved"]').checked = true;
         document.getElementById('auditorSignControls').style.display = 'flex';
