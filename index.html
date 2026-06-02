@@ -1479,7 +1479,7 @@
 
           function triggerPrint() {
               const originalTitle = document.title;
-              document.title = \`Audit_\${d.auditeeName}_\${d.kategori}\`;
+              document.title = `Audit_${d.auditeeName}_${d.kategori}`;
               setTimeout(() => {
                   window.print();
                   document.title = originalTitle;
