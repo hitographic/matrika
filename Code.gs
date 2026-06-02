@@ -44,7 +44,7 @@ function saveImageToDrive(base64Data, filename) {
     
     // Set permission agar image bisa diload di tag HTML <img>
     file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    return "https://drive.google.com/uc?export=view&id=" + file.getId();
+    return "https://drive.google.com/thumbnail?id=" + file.getId() + "&sz=w1000";
   } catch(e) {
     return "Error Upload: " + e.message;
   }

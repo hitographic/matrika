@@ -547,18 +547,18 @@
       <h3>Daftarkan Tanda Tangan Anda</h3>
       <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Syarat sah TTE (UU ITE): Buat tanda tangan digital
         Anda dan lindungi dengan <b>6 digit PIN</b>.</p>
-      <div style="border: 2px dashed #ccc; background: #fafafa; margin-bottom: 15px;">
+      <div style="background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 15px; overflow: hidden; position: relative;">
         <canvas id="canvasRegisterSign" class="sign-canvas" width="400" height="150"
-          style="width:100%; height: 150px; border:none; margin:0;"></canvas>
+          style="width:100%; height: 150px; border:none; margin:0; display: block;"></canvas>
       </div>
-      <div style="font-size: 12px; cursor: pointer; color: blue; margin-bottom: 15px; text-align: center;"
-        onclick="clearCanvas('canvasRegisterSign')">Hapus / Ulangi TTD</div>
+      <div style="font-size: 13px; cursor: pointer; color: var(--secondary); font-weight: 500; margin-bottom: 25px; text-align: center;"
+        onclick="clearCanvas('canvasRegisterSign')"><i class="fa-solid fa-eraser"></i> Hapus / Ulangi Goresan</div>
 
-      <div style="display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;">
-        <input type="password" id="regPin" placeholder="PIN 6 Digit" maxlength="6" class="form-group"
-          style="text-align:center; width: 150px; font-size:18px; letter-spacing:5px;">
-        <input type="password" id="regPinConfirm" placeholder="Konfirmasi PIN" maxlength="6" class="form-group"
-          style="text-align:center; width: 150px; font-size:18px; letter-spacing:5px;">
+      <div style="display: flex; gap: 15px; margin-bottom: 25px; justify-content: center;">
+        <input type="password" id="regPin" placeholder="PIN" maxlength="6" class="form-group"
+          style="text-align:center; width: 140px; font-size:24px; letter-spacing:8px; padding: 12px; margin-bottom: 0;">
+        <input type="password" id="regPinConfirm" placeholder="Ulangi" maxlength="6" class="form-group"
+          style="text-align:center; width: 140px; font-size:24px; letter-spacing:8px; padding: 12px; margin-bottom: 0;">
       </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 10px;">
@@ -1190,7 +1190,8 @@
 
       // Filler row untuk mendorong baris data ke atas tapi garis tetap memanjang ke bawah
       const fillerTr = document.createElement('tr');
-      fillerTr.innerHTML = '<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>';
+      fillerTr.style.height = '100%'; // Pastikan ini yang memakan seluruh sisa tinggi tabel
+      fillerTr.innerHTML = '<td></td><td></td><td></td><td></td>';
       tbody.appendChild(fillerTr);
 
       // Names
