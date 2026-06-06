@@ -776,17 +776,15 @@
               <table style="width: 100%; border-collapse: collapse; height: 100%; flex-grow: 1;">
                 <colgroup>
                   <col style="width: 5%; border-right: 2px solid black;">
-                  <col style="width: 55%; border-right: 2px solid black;">
-                  <col style="width: 10%; border-right: 2px solid black;">
+                  <col style="width: 65%; border-right: 2px solid black;">
                   <col style="width: 15%; border-right: 2px solid black;">
                   <col style="width: 15%;">
                 </colgroup>
                 <thead>
                   <tr>
                     <th style="border-bottom: 2px solid black; padding: 10px;">NO.</th>
-                    <th style="border-bottom: 2px solid black; padding: 10px;">PARAMETER / DOKUMEN</th>
-                    <th style="border-bottom: 2px solid black; padding: 10px;">KRITERIA<br>SJPH NO.</th>
                     <th style="border-bottom: 2px solid black; padding: 10px;">HASIL PENGAMATAN</th>
+                    <th style="border-bottom: 2px solid black; padding: 10px;">ELEMEN /<br>KLAUSUL</th>
                     <th style="border-bottom: 2px solid black; padding: 10px;">KATEGORI</th>
                   </tr>
                 </thead>
@@ -1325,14 +1323,13 @@
             tr.style.backgroundColor = '#f1f5f9';
             tr.innerHTML = `
                 <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
-                <td colspan="4" style="font-weight:bold; border-bottom: 1px solid black; padding-left: 10px;">${row.pertanyaan || ''}</td>
+                <td colspan="3" style="font-weight:bold; border-bottom: 1px solid black; padding-left: 10px;">${row.pertanyaan || ''}</td>
             `;
           } else {
             tr.innerHTML = `
                 <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
-                <td style="border-bottom: 1px solid black; padding-left: 10px;">${row.pertanyaan || ''}</td>
+                <td style="border-bottom: 1px solid black; padding-left: 10px;">${row.hasilPengamatan || ''}</td>
                 <td style="text-align:center; border-bottom: 1px solid black;">${row.kriteria || ''}</td>
-                <td style="text-align:center; border-bottom: 1px solid black;">${row.hasilPengamatan || ''}</td>
                 <td style="text-align:center; border-bottom: 1px solid black;">${row.kategoriVal || ''}</td>
             `;
           }
@@ -1342,7 +1339,7 @@
         // Filler row untuk mendorong baris data ke atas tapi garis tetap memanjang ke bawah
         const fillerTr = document.createElement('tr');
         fillerTr.style.height = '100%'; // Pastikan ini yang memakan seluruh sisa tinggi tabel
-        fillerTr.innerHTML = '<td></td><td></td><td></td><td></td><td></td>';
+        fillerTr.innerHTML = '<td></td><td></td><td></td><td></td>';
         tbody.appendChild(fillerTr);
 
         // Names
@@ -1613,14 +1610,13 @@
                 tr.style.backgroundColor = '#f1f5f9';
                 tr.innerHTML = `
                     <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
-                    <td colspan="4" style="font-weight:bold; border-bottom: 1px solid black; padding-left: 10px;">${row.pertanyaan || ''}</td>
+                    <td colspan="3" style="font-weight:bold; border-bottom: 1px solid black; padding-left: 10px;">${row.pertanyaan || ''}</td>
                 `;
               } else {
                 tr.innerHTML = `
                     <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
-                    <td style="border-bottom: 1px solid black; padding-left: 10px;">${row.pertanyaan || ''}</td>
+                    <td style="border-bottom: 1px solid black; padding-left: 10px;">${row.hasilPengamatan || ''}</td>
                     <td style="text-align:center; border-bottom: 1px solid black;">${row.kriteria || '-'}</td>
-                    <td style="text-align:center; border-bottom: 1px solid black;">${row.hasilPengamatan || ''}</td>
                     <td style="text-align:center; border-bottom: 1px solid black;">${row.kategoriVal || '-'}</td>
                 `;
               }
@@ -1629,7 +1625,7 @@
 
             const fillerTr = document.createElement('tr');
             fillerTr.style.height = '100%';
-            fillerTr.innerHTML = '<td></td><td></td><td></td><td></td><td></td>';
+            fillerTr.innerHTML = '<td></td><td></td><td></td><td></td>';
             tbody.appendChild(fillerTr);
 
             document.getElementById('prevAuditorName').innerText = d.auditorName || currentUser.nama;
