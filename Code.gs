@@ -376,8 +376,8 @@ function importWarehouseData() {
     { no: "4.2.b", pertanyaan: "Dapat dilakukan penelusuran produk dengan baik terhadap bahan yang digunakan dan proses yang dilakukan untuk produk tersebut" }
   ];
   
-  // Menggunakan kategori 'LKS : Halal' agar sinkron dengan tombol di aplikasi
-  const kategori = "LKS : Halal"; 
+  // Menggunakan kategori 'Halal' agar sinkron dengan tombol di aplikasi
+  const kategori = "Halal"; 
 
   questions.forEach((q) => {
     sheet.appendRow([kategori, q.no, q.pertanyaan]);
