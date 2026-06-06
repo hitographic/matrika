@@ -1320,19 +1320,15 @@
           const tr = document.createElement('tr');
           tr.style.height = '1px'; // Force minimum height so filler row absorbs the rest
           if (row.type == 1 || row.type == 2 || row.type == 3) {
-            tr.style.backgroundColor = '#f1f5f9';
-            tr.innerHTML = `
-                <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
-                <td colspan="3" style="font-weight:bold; border-bottom: 1px solid black; padding-left: 10px;">${row.pertanyaan || ''}</td>
-            `;
-          } else {
-            tr.innerHTML = `
-                <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
-                <td style="border-bottom: 1px solid black; padding-left: 10px;">${row.hasilPengamatan || ''}</td>
-                <td style="text-align:center; border-bottom: 1px solid black;">${row.kriteria || ''}</td>
-                <td style="text-align:center; border-bottom: 1px solid black;">${row.kategoriVal || ''}</td>
-            `;
+            return; // Jangan tampilkan tipe heading di PDF/Preview
           }
+          
+          tr.innerHTML = `
+              <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
+              <td style="border-bottom: 1px solid black; padding-left: 10px;">${row.hasilPengamatan || ''}</td>
+              <td style="text-align:center; border-bottom: 1px solid black;">${row.kriteria || ''}</td>
+              <td style="text-align:center; border-bottom: 1px solid black;">${row.kategoriVal || ''}</td>
+          `;
           tbody.appendChild(tr);
         });
 
@@ -1607,19 +1603,15 @@
               const tr = document.createElement('tr');
               tr.style.height = '1px';
               if (row.type == 1 || row.type == 2 || row.type == 3) {
-                tr.style.backgroundColor = '#f1f5f9';
-                tr.innerHTML = `
-                    <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
-                    <td colspan="3" style="font-weight:bold; border-bottom: 1px solid black; padding-left: 10px;">${row.pertanyaan || ''}</td>
-                `;
-              } else {
-                tr.innerHTML = `
-                    <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
-                    <td style="border-bottom: 1px solid black; padding-left: 10px;">${row.hasilPengamatan || ''}</td>
-                    <td style="text-align:center; border-bottom: 1px solid black;">${row.kriteria || '-'}</td>
-                    <td style="text-align:center; border-bottom: 1px solid black;">${row.kategoriVal || '-'}</td>
-                `;
+                return; // Jangan tampilkan tipe heading di PDF/Preview
               }
+
+              tr.innerHTML = `
+                  <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
+                  <td style="border-bottom: 1px solid black; padding-left: 10px;">${row.hasilPengamatan || ''}</td>
+                  <td style="text-align:center; border-bottom: 1px solid black;">${row.kriteria || '-'}</td>
+                  <td style="text-align:center; border-bottom: 1px solid black;">${row.kategoriVal || '-'}</td>
+              `;
               tbody.appendChild(tr);
             });
 
