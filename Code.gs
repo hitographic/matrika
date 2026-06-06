@@ -149,7 +149,9 @@ function handleGetChecklist(kategori) {
       if (String(data[i][0]).trim().toUpperCase() === kategori.toUpperCase()) {
         questions.push({
           no: data[i][1],
-          pertanyaan: data[i][2]
+          type: data[i][2],
+          kriteria: data[i][3],
+          pertanyaan: data[i][4]
         });
       }
     }
@@ -157,9 +159,9 @@ function handleGetChecklist(kategori) {
     // Fallback Mock Data jika sheet kosong (untuk demo)
     if (questions.length === 0) {
       questions = [
-        { no: 1, pertanyaan: "Apakah manajemen puncak telah membuat Kebijakan Halal tertulis untuk hanya memproduksi produk halal secara konsisten dan berkesinambungan?" },
-        { no: 2, pertanyaan: "Apakah ada kegiatan sosialisasi Kebijakan Halal ? Sebutkan bentuk sosialisasinya." },
-        { no: 3, pertanyaan: "Apakah bangunan bebas dari bahan najis/haram?" }
+        { no: "1.", type: 1, kriteria: "", pertanyaan: "KOMITMEN DAN TANGGUNG JAWAB" },
+        { no: "1.1.", type: 2, kriteria: "", pertanyaan: "KEBIJAKAN HALAL" },
+        { no: "1.1.c", type: 4, kriteria: "1", pertanyaan: "Ada kegiatan sosialisasi Kebijakan Halal; sebutkan bentuk sosialisasinya" }
       ];
     }
     

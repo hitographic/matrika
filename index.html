@@ -78,7 +78,7 @@
       background: rgba(255, 255, 255, 0.8);
       transform: translateY(-2px);
     }
-    
+
     .btn-danger {
       background: var(--accent);
       color: white;
@@ -105,10 +105,17 @@
       padding: 0 20px;
       animation: fadeIn 0.5s ease-out;
     }
-    
+
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Glassmorphism Classes */
@@ -228,22 +235,37 @@
       align-items: center;
       transition: transform 0.2s;
     }
-    
+
     .data-card:hover {
       transform: translateX(5px);
     }
 
-    .data-info h4 { margin-bottom: 6px; font-size: 16px; }
-    .data-info p { color: var(--text-light); font-size: 14px; }
-    
+    .data-info h4 {
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .data-info p {
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
     .badge {
       padding: 4px 12px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
     }
-    .badge.draft { background: rgba(254, 243, 199, 0.8); color: #b45309; }
-    .badge.submitted { background: rgba(220, 252, 231, 0.8); color: #15803d; }
+
+    .badge.draft {
+      background: rgba(254, 243, 199, 0.8);
+      color: #b45309;
+    }
+
+    .badge.submitted {
+      background: rgba(220, 252, 231, 0.8);
+      color: #15803d;
+    }
 
     /* Form Checklist State */
     .table-responsive {
@@ -254,11 +276,12 @@
       background: var(--card-bg);
       backdrop-filter: var(--card-blur);
     }
-    
+
     .checklist-table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 800px; /* Forces horizontal scroll on mobile */
+      min-width: 800px;
+      /* Forces horizontal scroll on mobile */
     }
 
     .checklist-table th,
@@ -299,7 +322,10 @@
     /* Modal Overlay */
     .modal-overlay {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: rgba(15, 23, 42, 0.6);
       backdrop-filter: blur(8px);
       display: flex;
@@ -310,7 +336,7 @@
       visibility: hidden;
       transition: all 0.3s ease;
     }
-    
+
     .modal-overlay:not(.hidden) {
       opacity: 1;
       visibility: visible;
@@ -328,12 +354,14 @@
       transform: scale(0.95);
       transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    
+
     .modal-overlay:not(.hidden) .modal-content {
       transform: scale(1);
     }
 
-    .modal-large { max-width: 900px; }
+    .modal-large {
+      max-width: 900px;
+    }
 
     /* --- PRINT / PREVIEW STYLES --- */
     #previewArea {
@@ -352,7 +380,8 @@
 
     .check-box {
       display: inline-block;
-      width: 25px; height: 18px;
+      width: 25px;
+      height: 18px;
       border: 2px solid black;
       text-align: center;
       line-height: 18px;
@@ -362,44 +391,128 @@
 
     #previewTableBody td {
       border-right: 2px solid black;
-      border-bottom: none; border-top: none;
-      padding: 10px; vertical-align: top;
+      border-bottom: none;
+      border-top: none;
+      padding: 10px;
+      vertical-align: top;
     }
 
-    #previewTableBody td:last-child { border-right: none; }
+    #previewTableBody td:last-child {
+      border-right: none;
+    }
 
     .sign-canvas {
       width: 100%;
       border-radius: 8px;
       cursor: crosshair;
       touch-action: none;
-      background: rgba(0,0,0,0.02);
+      background: rgba(0, 0, 0, 0.02);
       border: 1px dashed #ccc !important;
     }
-    
-    #canvasRegisterSign { height: 150px; }
-    #canvasAuditor, #canvasAuditee { height: 80px; }
+
+    #canvasRegisterSign {
+      height: 150px;
+    }
+
+    #canvasAuditor,
+    #canvasAuditee {
+      height: 80px;
+    }
 
     @media print {
-      @page { margin: 10mm; size: A4 portrait; }
-      body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      #navbar, .container { display: none !important; }
-      #modalPreview { position: relative; background: none; display: flex !important; padding: 0; margin: 0; align-items: flex-start; justify-content: center; opacity: 1 !important; visibility: visible !important; }
-      .modal-content { box-shadow: none; padding: 0; width: 100%; max-width: 100%; max-height: none; overflow: visible; transform: none !important; }
-      #previewArea { width: 100%; margin: 0; padding: 0; min-height: 260mm; box-sizing: border-box; }
-      .btn, div[onclick], .modal-content>div:first-child { display: none !important; }
-      .sign-canvas { border: none !important; background: transparent; }
-      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      @page {
+        margin: 10mm;
+        size: A4 portrait;
+      }
+
+      body {
+        background: white;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      #navbar,
+      .container {
+        display: none !important;
+      }
+
+      #modalPreview {
+        position: relative;
+        background: none;
+        display: flex !important;
+        padding: 0;
+        margin: 0;
+        align-items: flex-start;
+        justify-content: center;
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+
+      .modal-content {
+        box-shadow: none;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+        max-height: none;
+        overflow: visible;
+        transform: none !important;
+      }
+
+      #previewArea {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        min-height: 260mm;
+        box-sizing: border-box;
+      }
+
+      .btn,
+      div[onclick],
+      .modal-content>div:first-child {
+        display: none !important;
+      }
+
+      .sign-canvas {
+        border: none !important;
+        background: transparent;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
     }
-    
+
     /* Responsive tweaks */
     @media (max-width: 768px) {
-      .data-card { flex-direction: column; align-items: flex-start; gap: 15px; }
-      .action-group { width: 100%; justify-content: space-between; }
-      .header-action { flex-direction: column; align-items: flex-start; }
-      .navbar { padding: 15px; }
-      .modal-large { padding: 15px; }
-      .preview-wrapper { overflow-x: auto; width: 100%; }
+      .data-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .action-group {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .header-action {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .navbar {
+        padding: 15px;
+      }
+
+      .modal-large {
+        padding: 15px;
+      }
+
+      .preview-wrapper {
+        overflow-x: auto;
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -500,10 +613,11 @@
           <thead>
             <tr>
               <th width="5%">No</th>
-              <th width="45%">Daftar Pertanyaan</th>
+              <th width="40%">Parameter / dokumen</th>
+              <th width="10%">Kriteria SJPH no.</th>
               <th width="15%">Kesesuaian</th>
               <th width="15%">Kategori</th>
-              <th width="20%">Keterangan</th>
+              <th width="15%">Keterangan</th>
             </tr>
           </thead>
           <tbody id="checklistBody">
@@ -547,11 +661,13 @@
       <h3>Daftarkan Tanda Tangan Anda</h3>
       <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Syarat sah TTE (UU ITE): Buat tanda tangan digital
         Anda dan lindungi dengan <b>6 digit PIN</b>.</p>
-      <div style="background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 15px; overflow: hidden; position: relative;">
+      <div
+        style="background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 15px; overflow: hidden; position: relative;">
         <canvas id="canvasRegisterSign" class="sign-canvas" width="400" height="150"
           style="width:100%; height: 150px; border:none; margin:0; display: block;"></canvas>
       </div>
-      <div style="font-size: 13px; cursor: pointer; color: var(--secondary); font-weight: 500; margin-bottom: 25px; text-align: center;"
+      <div
+        style="font-size: 13px; cursor: pointer; color: var(--secondary); font-weight: 500; margin-bottom: 25px; text-align: center;"
         onclick="clearCanvas('canvasRegisterSign')"><i class="fa-solid fa-eraser"></i> Hapus / Ulangi Goresan</div>
 
       <div style="display: flex; gap: 15px; margin-bottom: 25px; justify-content: center;">
@@ -598,283 +714,287 @@
 
       <div class="preview-wrapper">
         <div id="previewArea">
-            <div style="border: 2px solid black; display: flex; flex-direction: column; flex-grow: 1; box-sizing: border-box;">
-
-          <!-- HEADER ROW 1 -->
-          <div style="display: flex; border-bottom: 2px solid black;">
-            <div
-              style="width: 55%; border-right: 2px solid black; padding: 15px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; font-size: 16px;">
-              PT INDOFOOD CBP SUKSES MAKMUR Tbk<br>
-              DIVISI NOODLE - PABRIK CIBITUNG
-            </div>
-            <div style="width: 45%; padding: 10px; font-weight: bold; font-size: 14px;">
-              <table style="width: 100%; border: none; font-weight: bold;">
-                <tr>
-                  <td style="border:none; padding: 2px 0; width: 120px;">Kode Form</td>
-                  <td style="border:none; padding: 2px 0;">: MGT - 003</td>
-                </tr>
-                <tr>
-                  <td style="border:none; padding: 2px 0;">No. Terbitan</td>
-                  <td style="border:none; padding: 2px 0;">: 2.0</td>
-                </tr>
-                <tr>
-                  <td style="border:none; padding: 2px 0;">Tgl. Efektif</td>
-                  <td style="border:none; padding: 2px 0;">: 02 Oktober 2023</td>
-                </tr>
-                <tr>
-                  <td style="border:none; padding: 2px 0;">Halaman</td>
-                  <td style="border:none; padding: 2px 0;">: 1 / 1</td>
-                </tr>
-              </table>
-            </div>
-          </div>
-
-          <!-- HEADER ROW 2: Title and Checkboxes -->
-          <div style="display: flex; border-bottom: 2px solid black;">
-            <div
-              style="width: 45%; padding: 15px; font-weight: bold; font-size: 16px; display: flex; align-items: center;">
-              PENGAMATAN INTERNAL AUDIT
-            </div>
-            <div style="width: 55%; padding: 10px;" id="previewCheckboxes">
-              <!-- Javascript will inject table or flexbox here -->
-            </div>
-          </div>
-
-          <!-- HEADER ROW 3: Dept and Date -->
-          <div style="padding: 10px 15px; border-bottom: 2px solid black; font-weight: bold;">
-            <table style="width: 100%; border: none; font-weight: bold; font-size: 14px;">
-              <tr>
-                <td style="border:none; width: 120px; padding: 2px 0;">Departemen</td>
-                <td style="border:none; padding: 2px 0;">: <span id="prevDept"></span></td>
-              </tr>
-              <tr>
-                <td style="border:none; padding: 2px 0;">Tanggal</td>
-                <td style="border:none; padding: 2px 0;">: <span id="prevDate"></span></td>
-              </tr>
-            </table>
-          </div>
-
-          <!-- TABLE -->
-          <div style="flex-grow: 1; display: flex; flex-direction: column;">
-            <table style="width: 100%; border-collapse: collapse; height: 100%; flex-grow: 1;">
-              <colgroup>
-                <col style="width: 5%; border-right: 2px solid black;">
-                <col style="width: 65%; border-right: 2px solid black;">
-                <col style="width: 15%; border-right: 2px solid black;">
-                <col style="width: 15%;">
-              </colgroup>
-              <thead>
-                <tr>
-                  <th style="border-bottom: 2px solid black; padding: 10px;">NO.</th>
-                  <th style="border-bottom: 2px solid black; padding: 10px;">HASIL PENGAMATAN</th>
-                  <th style="border-bottom: 2px solid black; padding: 10px;">ELEMEN /<br>KLAUSUL</th>
-                  <th style="border-bottom: 2px solid black; padding: 10px;">KATEGORI</th>
-                </tr>
-              </thead>
-              <tbody id="previewTableBody">
-                <!-- Javascript injects TRs here -->
-              </tbody>
-            </table>
-          </div>
-
-          <!-- FOOTER: Signatures -->
-          <div style="display: flex; border-top: 2px solid black; padding: 15px;">
-            <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center;">
-              <div style="font-weight: bold; margin-bottom: 10px;">Auditor</div>
-
-              <div id="auditorSignControls"
-                style="display: flex; gap: 10px; margin-bottom: 5px; font-size: 10px; justify-content: center;">
-                <label><input type="radio" name="auditorSignMode" value="saved" onchange="toggleAuditorSignMode()">
-                  Pakai yg sudah ada</label>
-                <label><input type="radio" name="auditorSignMode" value="new" onchange="toggleAuditorSignMode()"> TTD
-                  Ulang</label>
-              </div>
-
-              <div id="auditorSavedSignWrapper"
-                style="width: 150px; height: 80px; margin: 10px 0; display: none; align-items:center; justify-content:center;">
-                <img id="auditorSavedSignImg" style="max-height: 100%; max-width: 100%;" src="">
-              </div>
-
-              <div id="auditorNewSignWrapper" style="display: block; width: 150px;">
-                <canvas id="canvasAuditor" class="sign-canvas" width="150" height="80"></canvas>
-                <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditor')">
-                  Ulangi TTD</div>
-              </div>
-
-              <div style="border-bottom: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold;"><span
-                  id="prevAuditorName"></span></div>
-            </div>
-            <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center;">
-              <div style="font-weight: bold; margin-bottom: 10px;">Auditee</div>
-              <canvas id="canvasAuditee" class="sign-canvas" width="150" height="80"></canvas>
-              <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditee')">Ulangi
-                TTD</div>
-              <div style="border-bottom: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold;"><span
-                  id="prevAuditeeName"></span></div>
-            </div>
-            <div style="flex: 1; font-size: 12px; font-weight: bold; padding-left: 20px;">
-              <div style="margin-bottom: 5px;">Kategori :</div>
-              <table style="border: none;">
-                <tr>
-                  <td style="border:none; padding:2px;">C</td>
-                  <td style="border:none; padding:2px;">= Conformance</td>
-                </tr>
-                <tr>
-                  <td style="border:none; padding:2px;">Minor</td>
-                  <td style="border:none; padding:2px;">= Temuan Minor</td>
-                </tr>
-                <tr>
-                  <td style="border:none; padding:2px;">Major</td>
-                  <td style="border:none; padding:2px;">= Temuan Major</td>
-                </tr>
-                <tr>
-                  <td style="border:none; padding:2px;">Kritis</td>
-                  <td style="border:none; padding:2px;">= Temuan Kritis</td>
-                </tr>
-              </table>
-            </div>
-          </div>
-
-          <!-- HASH INTEGRITAS (UU ITE) -->
           <div
-            style="font-size: 8px; color: #888; text-align: left; padding: 5px 15px; border-top: 1px dashed #ccc; background: #fff;">
-            Hash Integritas (SHA-256): <span id="prevHash" style="font-family: monospace;">Menunggu Submit...</span>
-          </div>
+            style="border: 2px solid black; display: flex; flex-direction: column; flex-grow: 1; box-sizing: border-box;">
 
+            <!-- HEADER ROW 1 -->
+            <div style="display: flex; border-bottom: 2px solid black;">
+              <div
+                style="width: 55%; border-right: 2px solid black; padding: 15px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; font-size: 16px;">
+                PT INDOFOOD CBP SUKSES MAKMUR Tbk<br>
+                DIVISI NOODLE - PABRIK CIBITUNG
+              </div>
+              <div style="width: 45%; padding: 10px; font-weight: bold; font-size: 14px;">
+                <table style="width: 100%; border: none; font-weight: bold;">
+                  <tr>
+                    <td style="border:none; padding: 2px 0; width: 120px;">Kode Form</td>
+                    <td style="border:none; padding: 2px 0;">: MGT - 003</td>
+                  </tr>
+                  <tr>
+                    <td style="border:none; padding: 2px 0;">No. Terbitan</td>
+                    <td style="border:none; padding: 2px 0;">: 2.0</td>
+                  </tr>
+                  <tr>
+                    <td style="border:none; padding: 2px 0;">Tgl. Efektif</td>
+                    <td style="border:none; padding: 2px 0;">: 02 Oktober 2023</td>
+                  </tr>
+                  <tr>
+                    <td style="border:none; padding: 2px 0;">Halaman</td>
+                    <td style="border:none; padding: 2px 0;">: 1 / 1</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <!-- HEADER ROW 2: Title and Checkboxes -->
+            <div style="display: flex; border-bottom: 2px solid black;">
+              <div
+                style="width: 45%; padding: 15px; font-weight: bold; font-size: 16px; display: flex; align-items: center;">
+                PENGAMATAN INTERNAL AUDIT
+              </div>
+              <div style="width: 55%; padding: 10px;" id="previewCheckboxes">
+                <!-- Javascript will inject table or flexbox here -->
+              </div>
+            </div>
+
+            <!-- HEADER ROW 3: Dept and Date -->
+            <div style="padding: 10px 15px; border-bottom: 2px solid black; font-weight: bold;">
+              <table style="width: 100%; border: none; font-weight: bold; font-size: 14px;">
+                <tr>
+                  <td style="border:none; width: 120px; padding: 2px 0;">Departemen</td>
+                  <td style="border:none; padding: 2px 0;">: <span id="prevDept"></span></td>
+                </tr>
+                <tr>
+                  <td style="border:none; padding: 2px 0;">Tanggal</td>
+                  <td style="border:none; padding: 2px 0;">: <span id="prevDate"></span></td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- TABLE -->
+            <div style="flex-grow: 1; display: flex; flex-direction: column;">
+              <table style="width: 100%; border-collapse: collapse; height: 100%; flex-grow: 1;">
+                <colgroup>
+                  <col style="width: 5%; border-right: 2px solid black;">
+                  <col style="width: 55%; border-right: 2px solid black;">
+                  <col style="width: 10%; border-right: 2px solid black;">
+                  <col style="width: 15%; border-right: 2px solid black;">
+                  <col style="width: 15%;">
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th style="border-bottom: 2px solid black; padding: 10px;">NO.</th>
+                    <th style="border-bottom: 2px solid black; padding: 10px;">PARAMETER / DOKUMEN</th>
+                    <th style="border-bottom: 2px solid black; padding: 10px;">KRITERIA<br>SJPH NO.</th>
+                    <th style="border-bottom: 2px solid black; padding: 10px;">HASIL PENGAMATAN</th>
+                    <th style="border-bottom: 2px solid black; padding: 10px;">KATEGORI</th>
+                  </tr>
+                </thead>
+                <tbody id="previewTableBody">
+                  <!-- Javascript injects TRs here -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- FOOTER: Signatures -->
+            <div style="display: flex; border-top: 2px solid black; padding: 15px;">
+              <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                <div style="font-weight: bold; margin-bottom: 10px;">Auditor</div>
+
+                <div id="auditorSignControls"
+                  style="display: flex; gap: 10px; margin-bottom: 5px; font-size: 10px; justify-content: center;">
+                  <label><input type="radio" name="auditorSignMode" value="saved" onchange="toggleAuditorSignMode()">
+                    Pakai yg sudah ada</label>
+                  <label><input type="radio" name="auditorSignMode" value="new" onchange="toggleAuditorSignMode()"> TTD
+                    Ulang</label>
+                </div>
+
+                <div id="auditorSavedSignWrapper"
+                  style="width: 150px; height: 80px; margin: 10px 0; display: none; align-items:center; justify-content:center;">
+                  <img id="auditorSavedSignImg" style="max-height: 100%; max-width: 100%;" src="">
+                </div>
+
+                <div id="auditorNewSignWrapper" style="display: block; width: 150px;">
+                  <canvas id="canvasAuditor" class="sign-canvas" width="150" height="80"></canvas>
+                  <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditor')">
+                    Ulangi TTD</div>
+                </div>
+
+                <div style="border-bottom: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold;"><span
+                    id="prevAuditorName"></span></div>
+              </div>
+              <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                <div style="font-weight: bold; margin-bottom: 10px;">Auditee</div>
+                <canvas id="canvasAuditee" class="sign-canvas" width="150" height="80"></canvas>
+                <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditee')">
+                  Ulangi
+                  TTD</div>
+                <div style="border-bottom: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold;"><span
+                    id="prevAuditeeName"></span></div>
+              </div>
+              <div style="flex: 1; font-size: 12px; font-weight: bold; padding-left: 20px;">
+                <div style="margin-bottom: 5px;">Kategori :</div>
+                <table style="border: none;">
+                  <tr>
+                    <td style="border:none; padding:2px;">C</td>
+                    <td style="border:none; padding:2px;">= Conformance</td>
+                  </tr>
+                  <tr>
+                    <td style="border:none; padding:2px;">Minor</td>
+                    <td style="border:none; padding:2px;">= Temuan Minor</td>
+                  </tr>
+                  <tr>
+                    <td style="border:none; padding:2px;">Major</td>
+                    <td style="border:none; padding:2px;">= Temuan Major</td>
+                  </tr>
+                  <tr>
+                    <td style="border:none; padding:2px;">Kritis</td>
+                    <td style="border:none; padding:2px;">= Temuan Kritis</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <!-- HASH INTEGRITAS (UU ITE) -->
+            <div
+              style="font-size: 8px; color: #888; text-align: left; padding: 5px 15px; border-top: 1px dashed #ccc; background: #fff;">
+              Hash Integritas (SHA-256): <span id="prevHash" style="font-family: monospace;">Menunggu Submit...</span>
+            </div>
+
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button class="btn btn-outline" onclick="closeModal('modalPreview')">Kembali Edit</button>
+          <button class="btn btn-primary" onclick="submitFinalData()"><i class="fa-solid fa-check-double"></i> Simpan
+            Semua</button>
         </div>
       </div>
-
-      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-        <button class="btn btn-outline" onclick="closeModal('modalPreview')">Kembali Edit</button>
-        <button class="btn btn-primary" onclick="submitFinalData()"><i class="fa-solid fa-check-double"></i> Simpan
-          Semua</button>
-      </div>
     </div>
-  </div>
 
 
-  <script>
-    // CONFIG
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxY1sv-_fsBka5RNXWOS2mZNysrwpTiSTS4WIAoYrnjEmztfe1_Ri-qzNeyg99OA8xN/exec'; // GANTI JIKA DEPLOY BARU
+    <script>
+      // CONFIG
+      const GAS_URL = 'https://script.google.com/macros/s/AKfycbzGSzvsRZgb2XPkGoUIo83Lldy_K9cFfAyDPkJEo4OmmoaMJgxz3S-H7ZVygWcBMD2h/exec'; // GANTI JIKA DEPLOY BARU
 
-    // STATE VARIABLES
-    let userIpAddress = "Unknown";
-    fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => { userIpAddress = d.ip; }).catch(e => console.log("IP fetch failed"));
+      // STATE VARIABLES
+      let userIpAddress = "Unknown";
+      fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => { userIpAddress = d.ip; }).catch(e => console.log("IP fetch failed"));
 
-    let currentUser = { nik: '', nama: '' };
-    let currentCategory = '';
-    let currentAuditee = '';
-    let currentDept = '';
-    let currentQuestions = [];
-    let listData = []; // Cache list pengamatan
-    let currentEditId = null; // Menyimpan ID saat sedang edit/update
+      let currentUser = { nik: '', nama: '' };
+      let currentCategory = '';
+      let currentAuditee = '';
+      let currentDept = '';
+      let currentQuestions = [];
+      let listData = []; // Cache list pengamatan
+      let currentEditId = null; // Menyimpan ID saat sedang edit/update
 
-    // UI MANAGEMENT
-    function changeState(stateId) {
-      ['stateLogin', 'stateMenu', 'stateList', 'stateForm'].forEach(id => {
-        document.getElementById(id).classList.add('hidden');
-      });
-      document.getElementById(stateId).classList.remove('hidden');
-
-      if (stateId === 'stateLogin') document.getElementById('navbar').classList.add('hidden');
-      else document.getElementById('navbar').classList.remove('hidden');
-    }
-
-    function showModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
-    function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
-
-    // 1. LOGIN LOGIC
-    function handleLogin(e) {
-      e.preventDefault();
-      const btn = document.getElementById('btnLogin');
-      const nik = document.getElementById('loginNik').value;
-      const pass = document.getElementById('loginPassword').value;
-
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Proses...';
-      btn.disabled = true;
-
-      fetch(GAS_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'login', nik, password: pass })
-      })
-        .then(res => res.json())
-        .then(res => {
-          if (res.success) {
-            currentUser = { nik, nama: res.nama };
-            document.getElementById('navAuditorName').innerText = res.nama;
-            changeState('stateMenu');
-            if (!localStorage.getItem('signature_' + currentUser.nik)) showModal('modalRegisterSignature');
-          } else {
-            Swal.fire('Gagal', res.message, 'error');
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          // Fallback Mock Login for testing frontend without backend update
-          Swal.fire('Info', 'Mode Demo (Backend belum diperbarui). Login sebagai Guest.', 'info');
-          currentUser = { nik: 'guest', nama: 'Auditor Demo' };
-          document.getElementById('navAuditorName').innerText = currentUser.nama;
-          changeState('stateMenu');
-          if (!localStorage.getItem('signature_' + currentUser.nik)) showModal('modalRegisterSignature');
-        })
-        .finally(() => {
-          btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk';
-          btn.disabled = false;
+      // UI MANAGEMENT
+      function changeState(stateId) {
+        ['stateLogin', 'stateMenu', 'stateList', 'stateForm'].forEach(id => {
+          document.getElementById(id).classList.add('hidden');
         });
-    }
+        document.getElementById(stateId).classList.remove('hidden');
 
-    function logout() {
-      currentUser = { nik: '', nama: '' };
-      document.getElementById('loginForm').reset();
-      changeState('stateLogin');
-    }
-
-    // 2. MENU LOGIC
-    function openCategory(kategori) {
-      currentCategory = kategori;
-      document.getElementById('listTitle').innerText = `Data Pengamatan - ${kategori}`;
-      changeState('stateList');
-      loadListData();
-    }
-
-    // 3. LIST DATA LOGIC
-    function loadListData() {
-      const container = document.getElementById('listContainer');
-      container.innerHTML = '<div style="text-align:center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin fa-2x text-light"></i><br>Memuat data...</div>';
-
-      fetch(GAS_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'getList', auditorName: currentUser.nama })
-      })
-        .then(res => res.json())
-        .then(res => {
-          if (res.success) {
-            listData = res.data.filter(d => d.kategori === currentCategory); // Filter lokal
-            renderList();
-          }
-        })
-        .catch(err => {
-          container.innerHTML = '<div style="text-align:center; padding: 20px; color:red;">Gagal memuat data dari server. Menampilkan data lokal (Demo).</div>';
-          // Mock data
-          listData = [{ id: '123', tanggal: new Date().toISOString(), auditor: currentUser.nama, auditee: 'Pak Budi', kategori: currentCategory, status: 'Draft' }];
-          setTimeout(renderList, 1000);
-        });
-    }
-
-    function renderList() {
-      const container = document.getElementById('listContainer');
-      if (listData.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-light);">Belum ada data pengamatan.</div>';
-        return;
+        if (stateId === 'stateLogin') document.getElementById('navbar').classList.add('hidden');
+        else document.getElementById('navbar').classList.remove('hidden');
       }
 
-      container.innerHTML = '';
-      listData.forEach(item => {
-        const dateStr = new Date(item.tanggal).toLocaleDateString('id-ID');
-        const badgeClass = item.status === 'Draft' ? 'badge draft' : 'badge submitted';
-        const card = document.createElement('div');
-        card.className = 'glass-card data-card';
-        card.innerHTML = `
+      function showModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
+      function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+
+      // 1. LOGIN LOGIC
+      function handleLogin(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnLogin');
+        const nik = document.getElementById('loginNik').value;
+        const pass = document.getElementById('loginPassword').value;
+
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Proses...';
+        btn.disabled = true;
+
+        fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'login', nik, password: pass })
+        })
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) {
+              currentUser = { nik, nama: res.nama };
+              document.getElementById('navAuditorName').innerText = res.nama;
+              changeState('stateMenu');
+              if (!localStorage.getItem('signature_' + currentUser.nik)) showModal('modalRegisterSignature');
+            } else {
+              Swal.fire('Gagal', res.message, 'error');
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            // Fallback Mock Login for testing frontend without backend update
+            Swal.fire('Info', 'Mode Demo (Backend belum diperbarui). Login sebagai Guest.', 'info');
+            currentUser = { nik: 'guest', nama: 'Auditor Demo' };
+            document.getElementById('navAuditorName').innerText = currentUser.nama;
+            changeState('stateMenu');
+            if (!localStorage.getItem('signature_' + currentUser.nik)) showModal('modalRegisterSignature');
+          })
+          .finally(() => {
+            btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk';
+            btn.disabled = false;
+          });
+      }
+
+      function logout() {
+        currentUser = { nik: '', nama: '' };
+        document.getElementById('loginForm').reset();
+        changeState('stateLogin');
+      }
+
+      // 2. MENU LOGIC
+      function openCategory(kategori) {
+        currentCategory = kategori;
+        document.getElementById('listTitle').innerText = `Data Pengamatan - ${kategori}`;
+        changeState('stateList');
+        loadListData();
+      }
+
+      // 3. LIST DATA LOGIC
+      function loadListData() {
+        const container = document.getElementById('listContainer');
+        container.innerHTML = '<div style="text-align:center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin fa-2x text-light"></i><br>Memuat data...</div>';
+
+        fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'getList', auditorName: currentUser.nama })
+        })
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) {
+              listData = res.data.filter(d => d.kategori === currentCategory); // Filter lokal
+              renderList();
+            }
+          })
+          .catch(err => {
+            container.innerHTML = '<div style="text-align:center; padding: 20px; color:red;">Gagal memuat data dari server. Menampilkan data lokal (Demo).</div>';
+            // Mock data
+            listData = [{ id: '123', tanggal: new Date().toISOString(), auditor: currentUser.nama, auditee: 'Pak Budi', kategori: currentCategory, status: 'Draft' }];
+            setTimeout(renderList, 1000);
+          });
+      }
+
+      function renderList() {
+        const container = document.getElementById('listContainer');
+        if (listData.length === 0) {
+          container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-light);">Belum ada data pengamatan.</div>';
+          return;
+        }
+
+        container.innerHTML = '';
+        listData.forEach(item => {
+          const dateStr = new Date(item.tanggal).toLocaleDateString('id-ID');
+          const badgeClass = item.status === 'Draft' ? 'badge draft' : 'badge submitted';
+          const card = document.createElement('div');
+          card.className = 'glass-card data-card';
+          card.innerHTML = `
                     <div class="data-info">
                         <h4>Auditee: ${item.auditee}</h4>
                         <p><i class="fa-regular fa-calendar"></i> ${dateStr} &nbsp; <span class="${badgeClass}">${item.status}</span></p>
@@ -886,265 +1006,289 @@
                         <button class="btn btn-danger" onclick="deleteData('${item.id}')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
-        container.appendChild(card);
-      });
-    }
+          container.appendChild(card);
+        });
+      }
 
-    // 4. FORM & CRUD LOGIC
-    function showNewDataModal() {
-      currentEditId = null;
-      document.getElementById('inputAuditeeName').value = '';
-      document.getElementById('inputDepartemen').value = '';
-      showModal('modalNewData');
-    }
+      // 4. FORM & CRUD LOGIC
+      function showNewDataModal() {
+        currentEditId = null;
+        document.getElementById('inputAuditeeName').value = '';
+        document.getElementById('inputDepartemen').value = '';
+        showModal('modalNewData');
+      }
 
-    function startNewAudit() {
-      const auditee = document.getElementById('inputAuditeeName').value;
-      const dept = document.getElementById('inputDepartemen').value;
-      if (!auditee) { Swal.fire('Peringatan', 'Nama Auditee wajib diisi!', 'warning'); return; }
+      function startNewAudit() {
+        const auditee = document.getElementById('inputAuditeeName').value;
+        const dept = document.getElementById('inputDepartemen').value;
+        if (!auditee) { Swal.fire('Peringatan', 'Nama Auditee wajib diisi!', 'warning'); return; }
 
-      currentAuditee = auditee;
-      currentDept = dept;
-      document.getElementById('formAuditeeLabel').innerText = auditee;
-      document.getElementById('formCategoryTitle').innerText = currentCategory;
+        currentAuditee = auditee;
+        currentDept = dept;
+        document.getElementById('formAuditeeLabel').innerText = auditee;
+        document.getElementById('formCategoryTitle').innerText = currentCategory;
 
-      closeModal('modalNewData');
-      changeState('stateForm');
-      loadChecklistQuestions();
-    }
+        closeModal('modalNewData');
+        changeState('stateForm');
+        loadChecklistQuestions();
+      }
 
-    function loadChecklistQuestions() {
-      const tbody = document.getElementById('checklistBody');
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Memuat pertanyaan...</td></tr>';
+      function loadChecklistQuestions() {
+        const tbody = document.getElementById('checklistBody');
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Memuat pertanyaan...</td></tr>';
 
-      fetch(GAS_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'getChecklist', kategori: currentCategory })
-      })
-        .then(res => res.json())
-        .then(res => {
-          if (res.success) {
-            currentQuestions = res.data;
-            renderChecklist();
-          }
+        fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'getChecklist', kategori: currentCategory })
         })
-        .catch(err => {
-          // Mock
-          currentQuestions = [
-            { no: 1, pertanyaan: "Apakah manajemen puncak telah membuat Kebijakan tertulis?" },
-            { no: 2, pertanyaan: "Apakah ada kegiatan sosialisasi Kebijakan?" }
-          ];
-          renderChecklist();
-        });
-    }
-
-    function renderChecklist() {
-      const tbody = document.getElementById('checklistBody');
-      tbody.innerHTML = '';
-      currentQuestions.forEach((q, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-                    <td>${q.no}</td>
-                    <td>${q.pertanyaan}</td>
-                    <td>
-                        <div class="radio-group">
-                            <label><input type="radio" name="kesesuaian_${index}" value="Ya" onchange="checkKeterangan(${index})"> Ya</label>
-                            <label><input type="radio" name="kesesuaian_${index}" value="Tidak" onchange="checkKeterangan(${index})"> Tidak</label>
-                        </div>
-                    </td>
-                    <td>
-                        <select id="kategori_${index}" class="form-group" style="margin:0; padding: 6px;">
-                            <option value="">- Pilih -</option>
-                            <option value="C">C (Conformance)</option>
-                            <option value="Minor">Minor</option>
-                            <option value="Major">Major</option>
-                            <option value="Kritis">Kritis</option>
-                        </select>
-                    </td>
-                    <td>
-                        <textarea id="keterangan_${index}" class="form-group" style="margin:0; padding:6px; min-height: 40px;" placeholder="Isi jika diperlukan..."></textarea>
-                    </td>
-                `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function checkKeterangan(index) {
-      const radioVal = document.querySelector(`input[name="kesesuaian_${index}"]:checked`)?.value;
-      const ketEl = document.getElementById(`keterangan_${index}`);
-      if (radioVal === 'Tidak') {
-        ketEl.placeholder = "Wajib diisi (Temuan)!";
-        ketEl.style.borderColor = "var(--accent)";
-      } else {
-        ketEl.placeholder = "Opsional...";
-        ketEl.style.borderColor = "var(--border)";
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) {
+              currentQuestions = res.data;
+              renderChecklist();
+            }
+          })
+          .catch(err => {
+            // Mock
+            currentQuestions = [
+              { no: 1, pertanyaan: "Apakah manajemen puncak telah membuat Kebijakan tertulis?" },
+              { no: 2, pertanyaan: "Apakah ada kegiatan sosialisasi Kebijakan?" }
+            ];
+            renderChecklist();
+          });
       }
-    }
 
-    function collectFormData() {
-      let data = [];
-      let isValid = true;
-      currentQuestions.forEach((q, index) => {
-        const kesesuaian = document.querySelector(`input[name="kesesuaian_${index}"]:checked`)?.value || '-';
-        const kategori = document.getElementById(`kategori_${index}`).value;
-        const keterangan = document.getElementById(`keterangan_${index}`).value;
-
-        if (kesesuaian === 'Tidak' && keterangan.trim() === '') {
-          isValid = false;
-        }
-
-        // Gabung Keterangan dari kriteria
-        let hasilPengamatan = keterangan ? keterangan : (kesesuaian === 'Ya' ? 'Sesuai' : 'Tidak Sesuai');
-
-        data.push({
-          no: q.no,
-          hasilPengamatan: hasilPengamatan,
-          klausal: '-', // Bisa ditambahkan input klausal nanti
-          kategoriVal: kategori
-        });
-      });
-
-      if (!isValid) {
-        Swal.fire('Gagal', 'Ada Keterangan yang WAJIB diisi karena kesesuaian "Tidak".', 'warning');
-        return null;
-      }
-      return data;
-    }
-
-    // 5. PREVIEW & SIGN & SUBMIT
-    function setupCanvas(id) {
-      const canvas = document.getElementById(id);
-      const ctx = canvas.getContext('2d');
-      let isDrawing = false;
-      let lastPos = null;
-
-      function resize() {
-        const rect = canvas.getBoundingClientRect();
-        if(rect.width === 0) return;
-        const dpr = window.devicePixelRatio || 1;
-        // Simpan gambar jika ada sebelum di-resize agar tidak hilang
-        const dataUrl = canvas.toDataURL();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.strokeStyle = '#000';
-        
-        // Restore
-        const img = new Image();
-        img.onload = () => { ctx.drawImage(img, 0, 0, rect.width, rect.height); }
-        img.src = dataUrl;
-      }
-      
-      // Observer untuk deteksi saat elemen ditampilkan
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            resize();
+      function renderChecklist() {
+        const tbody = document.getElementById('checklistBody');
+        tbody.innerHTML = '';
+        currentQuestions.forEach((q, index) => {
+          const tr = document.createElement('tr');
+          if (q.type == 1 || q.type == 2 || q.type == 3) {
+            tr.style.backgroundColor = '#f1f5f9';
+            tr.style.fontWeight = 'bold';
+            tr.innerHTML = `
+                <td>${q.no}</td>
+                <td colspan="5">${q.pertanyaan}</td>
+            `;
+          } else {
+            tr.innerHTML = `
+                <td>${q.no}</td>
+                <td>${q.pertanyaan}</td>
+                <td style="text-align: center; font-weight: 500;">${q.kriteria || ''}</td>
+                <td>
+                    <div class="radio-group">
+                        <label><input type="radio" name="kesesuaian_${index}" value="Ya" onchange="checkKeterangan(${index})"> Ya</label>
+                        <label><input type="radio" name="kesesuaian_${index}" value="Tidak" onchange="checkKeterangan(${index})"> Tidak</label>
+                    </div>
+                </td>
+                <td>
+                    <select id="kategori_${index}" class="form-group" style="margin:0; padding: 6px;">
+                        <option value="">- Pilih -</option>
+                        <option value="C">C (Conformance)</option>
+                        <option value="Minor">Minor</option>
+                        <option value="Major">Major</option>
+                        <option value="Kritis">Kritis</option>
+                    </select>
+                </td>
+                <td>
+                    <textarea id="keterangan_${index}" class="form-group" style="margin:0; padding:6px; min-height: 40px;" placeholder="Isi jika diperlukan..."></textarea>
+                </td>
+            `;
           }
+          tbody.appendChild(tr);
         });
-      });
-      observer.observe(canvas);
-
-      function getPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return { x: clientX - rect.left, y: clientY - rect.top };
       }
 
-      canvas.onmousedown = canvas.ontouchstart = (e) => {
-        e.preventDefault(); isDrawing = true;
-        const pos = getPos(e);
-        lastPos = pos;
-      };
-      canvas.onmousemove = canvas.ontouchmove = (e) => {
-        e.preventDefault();
-        if (isDrawing && lastPos) {
-          const pos = getPos(e);
-          ctx.beginPath();
-          ctx.moveTo(lastPos.x, lastPos.y);
-          ctx.lineTo(pos.x, pos.y);
-          ctx.stroke();
-          lastPos = pos;
+      function checkKeterangan(index) {
+        const radioVal = document.querySelector(`input[name="kesesuaian_${index}"]:checked`)?.value;
+        const ketEl = document.getElementById(`keterangan_${index}`);
+        if (radioVal === 'Tidak') {
+          ketEl.placeholder = "Wajib diisi (Temuan)!";
+          ketEl.style.borderColor = "var(--accent)";
+        } else {
+          ketEl.placeholder = "Opsional...";
+          ketEl.style.borderColor = "var(--border)";
         }
-      };
-      canvas.onmouseup = canvas.ontouchend = () => { isDrawing = false; lastPos = null; };
-      return canvas;
-    }
-
-    let canvasAuditor, canvasAuditee, canvasRegisterSign;
-
-    // Initialize once
-    document.addEventListener('DOMContentLoaded', () => {
-      canvasAuditor = setupCanvas('canvasAuditor');
-      canvasAuditee = setupCanvas('canvasAuditee');
-      canvasRegisterSign = setupCanvas('canvasRegisterSign');
-    });
-
-    function clearCanvas(id) {
-      const canvas = document.getElementById(id);
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function saveRegisteredSignature() {
-      const canvas = document.getElementById('canvasRegisterSign');
-      const dataUrl = canvas.toDataURL('image/png');
-      const pin = document.getElementById('regPin').value;
-      const pinConfirm = document.getElementById('regPinConfirm').value;
-
-      if (!pin || pin.length !== 6) { Swal.fire('Error', 'PIN harus 6 digit angka!', 'error'); return; }
-      if (pin !== pinConfirm) { Swal.fire('Error', 'Konfirmasi PIN tidak cocok!', 'error'); return; }
-
-      // Basic blank check
-      const blankCanvas = document.createElement('canvas');
-      blankCanvas.width = canvas.width;
-      blankCanvas.height = canvas.height;
-      if (dataUrl === blankCanvas.toDataURL()) {
-        Swal.fire('Peringatan', 'Tanda tangan masih kosong!', 'warning');
-        return;
       }
 
-      Swal.fire({ title: 'Menyimpan TTE...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      function collectFormData() {
+        let data = [];
+        let isValid = true;
+        currentQuestions.forEach((q, index) => {
+          if (q.type == 1 || q.type == 2 || q.type == 3) {
+            data.push({
+              no: q.no,
+              type: q.type,
+              pertanyaan: q.pertanyaan,
+              kriteria: q.kriteria || '',
+              hasilPengamatan: '',
+              kategoriVal: ''
+            });
+            return;
+          }
 
-      fetch(GAS_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'registerSignature', nik: currentUser.nik, signatureData: dataUrl, pin: pin })
-      }).then(r => r.json()).then(res => {
-        if (res.success) {
+          const kesesuaian = document.querySelector(`input[name="kesesuaian_${index}"]:checked`)?.value || '-';
+          const kategori = document.getElementById(`kategori_${index}`).value;
+          const keterangan = document.getElementById(`keterangan_${index}`).value;
+
+          if (kesesuaian === 'Tidak' && keterangan.trim() === '') {
+            isValid = false;
+          }
+
+          // Gabung Keterangan dari kriteria
+          let hasilPengamatan = keterangan ? keterangan : (kesesuaian === 'Ya' ? 'Sesuai' : 'Tidak Sesuai');
+
+          data.push({
+            no: q.no,
+            type: q.type,
+            pertanyaan: q.pertanyaan,
+            kriteria: q.kriteria || '',
+            hasilPengamatan: hasilPengamatan,
+            kategoriVal: kategori
+          });
+        });
+
+        if (!isValid) {
+          Swal.fire('Gagal', 'Ada Keterangan yang WAJIB diisi karena kesesuaian "Tidak".', 'warning');
+          return null;
+        }
+        return data;
+      }
+
+      // 5. PREVIEW & SIGN & SUBMIT
+      function setupCanvas(id) {
+        const canvas = document.getElementById(id);
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let lastPos = null;
+
+        function resize() {
+          const rect = canvas.getBoundingClientRect();
+          if (rect.width === 0) return;
+          const dpr = window.devicePixelRatio || 1;
+          // Simpan gambar jika ada sebelum di-resize agar tidak hilang
+          const dataUrl = canvas.toDataURL();
+          canvas.width = rect.width * dpr;
+          canvas.height = rect.height * dpr;
+          ctx.scale(dpr, dpr);
+          ctx.lineWidth = 3;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.strokeStyle = '#000';
+
+          // Restore
+          const img = new Image();
+          img.onload = () => { ctx.drawImage(img, 0, 0, rect.width, rect.height); }
+          img.src = dataUrl;
+        }
+
+        // Observer untuk deteksi saat elemen ditampilkan
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              resize();
+            }
+          });
+        });
+        observer.observe(canvas);
+
+        function getPos(e) {
+          const rect = canvas.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        canvas.onmousedown = canvas.ontouchstart = (e) => {
+          e.preventDefault(); isDrawing = true;
+          const pos = getPos(e);
+          lastPos = pos;
+        };
+        canvas.onmousemove = canvas.ontouchmove = (e) => {
+          e.preventDefault();
+          if (isDrawing && lastPos) {
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(lastPos.x, lastPos.y);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            lastPos = pos;
+          }
+        };
+        canvas.onmouseup = canvas.ontouchend = () => { isDrawing = false; lastPos = null; };
+        return canvas;
+      }
+
+      let canvasAuditor, canvasAuditee, canvasRegisterSign;
+
+      // Initialize once
+      document.addEventListener('DOMContentLoaded', () => {
+        canvasAuditor = setupCanvas('canvasAuditor');
+        canvasAuditee = setupCanvas('canvasAuditee');
+        canvasRegisterSign = setupCanvas('canvasRegisterSign');
+      });
+
+      function clearCanvas(id) {
+        const canvas = document.getElementById(id);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      function saveRegisteredSignature() {
+        const canvas = document.getElementById('canvasRegisterSign');
+        const dataUrl = canvas.toDataURL('image/png');
+        const pin = document.getElementById('regPin').value;
+        const pinConfirm = document.getElementById('regPinConfirm').value;
+
+        if (!pin || pin.length !== 6) { Swal.fire('Error', 'PIN harus 6 digit angka!', 'error'); return; }
+        if (pin !== pinConfirm) { Swal.fire('Error', 'Konfirmasi PIN tidak cocok!', 'error'); return; }
+
+        // Basic blank check
+        const blankCanvas = document.createElement('canvas');
+        blankCanvas.width = canvas.width;
+        blankCanvas.height = canvas.height;
+        if (dataUrl === blankCanvas.toDataURL()) {
+          Swal.fire('Peringatan', 'Tanda tangan masih kosong!', 'warning');
+          return;
+        }
+
+        Swal.fire({ title: 'Menyimpan TTE...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'registerSignature', nik: currentUser.nik, signatureData: dataUrl, pin: pin })
+        }).then(r => r.json()).then(res => {
+          if (res.success) {
+            localStorage.setItem('signature_' + currentUser.nik, dataUrl);
+            closeModal('modalRegisterSignature');
+            Swal.fire('Berhasil', res.message, 'success');
+          } else {
+            Swal.fire('Gagal', res.message, 'error');
+          }
+        }).catch(e => {
+          Swal.fire('Info', 'Backend belum connect, tersimpan lokal (demo).', 'info');
           localStorage.setItem('signature_' + currentUser.nik, dataUrl);
           closeModal('modalRegisterSignature');
-          Swal.fire('Berhasil', res.message, 'success');
-        } else {
-          Swal.fire('Gagal', res.message, 'error');
-        }
-      }).catch(e => {
-        Swal.fire('Info', 'Backend belum connect, tersimpan lokal (demo).', 'info');
-        localStorage.setItem('signature_' + currentUser.nik, dataUrl);
-        closeModal('modalRegisterSignature');
-      });
-    }
-
-    function toggleAuditorSignMode() {
-      const mode = document.querySelector('input[name="auditorSignMode"]:checked').value;
-      if (mode === 'saved') {
-        document.getElementById('auditorSavedSignWrapper').style.display = 'flex';
-        document.getElementById('auditorNewSignWrapper').style.display = 'none';
-      } else {
-        document.getElementById('auditorSavedSignWrapper').style.display = 'none';
-        document.getElementById('auditorNewSignWrapper').style.display = 'block';
+        });
       }
-    }
 
-    function showPreview() {
-      const cData = collectFormData();
-      if (!cData) return; // Validation failed
+      function toggleAuditorSignMode() {
+        const mode = document.querySelector('input[name="auditorSignMode"]:checked').value;
+        if (mode === 'saved') {
+          document.getElementById('auditorSavedSignWrapper').style.display = 'flex';
+          document.getElementById('auditorNewSignWrapper').style.display = 'none';
+        } else {
+          document.getElementById('auditorSavedSignWrapper').style.display = 'none';
+          document.getElementById('auditorNewSignWrapper').style.display = 'block';
+        }
+      }
 
-      // Set Header Info
-      const cbHtml = `
+      function showPreview() {
+        const cData = collectFormData();
+        if (!cData) return; // Validation failed
+
+        // Set Header Info
+        const cbHtml = `
                 <table style="width:100%; border:none; font-weight:bold; font-size: 14px;">
                     <tr>
                         <td style="border:none; padding:2px;"><div class="check-box">${currentCategory === 'Halal' ? 'V' : '&nbsp;'}</div> Halal</td>
@@ -1163,259 +1307,277 @@
                     </tr>
                 </table>
             `;
-      document.getElementById('previewCheckboxes').innerHTML = cbHtml;
-      document.getElementById('prevDept').innerText = currentDept;
+        document.getElementById('previewCheckboxes').innerHTML = cbHtml;
+        document.getElementById('prevDept').innerText = currentDept;
 
-      // Format Date ID
-      const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-      const d = new Date();
-      document.getElementById('prevDate').innerText = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        // Format Date ID
+        const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const d = new Date();
+        document.getElementById('prevDate').innerText = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 
-      // Table Body
-      const tbody = document.getElementById('previewTableBody');
-      tbody.innerHTML = '';
-      cData.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.style.height = '1px'; // Force minimum height so filler row absorbs the rest
-        tr.innerHTML = `
-                    <td style="text-align:center; font-weight:bold;">${row.no}.</td>
-                    <td>${row.hasilPengamatan}</td>
-                    <td style="text-align:center;">${row.klausal}</td>
-                    <td style="text-align:center;">${row.kategoriVal}</td>
-                `;
-        tbody.appendChild(tr);
-      });
+        // Table Body
+        const tbody = document.getElementById('previewTableBody');
+        tbody.innerHTML = '';
+        cData.forEach(row => {
+          const tr = document.createElement('tr');
+          tr.style.height = '1px'; // Force minimum height so filler row absorbs the rest
+          if (row.type == 1 || row.type == 2 || row.type == 3) {
+            tr.style.backgroundColor = '#f1f5f9';
+            tr.innerHTML = `
+                <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
+                <td colspan="4" style="font-weight:bold; border-bottom: 1px solid black; padding-left: 10px;">${row.pertanyaan || ''}</td>
+            `;
+          } else {
+            tr.innerHTML = `
+                <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
+                <td style="border-bottom: 1px solid black; padding-left: 10px;">${row.pertanyaan || ''}</td>
+                <td style="text-align:center; border-bottom: 1px solid black;">${row.kriteria || ''}</td>
+                <td style="text-align:center; border-bottom: 1px solid black;">${row.hasilPengamatan || ''}</td>
+                <td style="text-align:center; border-bottom: 1px solid black;">${row.kategoriVal || ''}</td>
+            `;
+          }
+          tbody.appendChild(tr);
+        });
 
-      // Filler row untuk mendorong baris data ke atas tapi garis tetap memanjang ke bawah
-      const fillerTr = document.createElement('tr');
-      fillerTr.style.height = '100%'; // Pastikan ini yang memakan seluruh sisa tinggi tabel
-      fillerTr.innerHTML = '<td></td><td></td><td></td><td></td>';
-      tbody.appendChild(fillerTr);
+        // Filler row untuk mendorong baris data ke atas tapi garis tetap memanjang ke bawah
+        const fillerTr = document.createElement('tr');
+        fillerTr.style.height = '100%'; // Pastikan ini yang memakan seluruh sisa tinggi tabel
+        fillerTr.innerHTML = '<td></td><td></td><td></td><td></td><td></td>';
+        tbody.appendChild(fillerTr);
 
-      // Names
-      document.getElementById('prevAuditorName').innerText = currentUser.nama;
-      document.getElementById('prevAuditeeName').innerText = currentAuditee;
+        // Names
+        document.getElementById('prevAuditorName').innerText = currentUser.nama;
+        document.getElementById('prevAuditeeName').innerText = currentAuditee;
 
-      // Clear Signatures for new preview
-      clearCanvas('canvasAuditor');
-      clearCanvas('canvasAuditee');
+        // Clear Signatures for new preview
+        clearCanvas('canvasAuditor');
+        clearCanvas('canvasAuditee');
 
-      // Signature Logic
-      const savedSign = localStorage.getItem('signature_' + currentUser.nik);
-      if (savedSign && savedSign !== 'registered') {
-        document.getElementById('auditorSavedSignImg').src = savedSign;
-        document.querySelector('input[name="auditorSignMode"][value="saved"]').checked = true;
-        document.getElementById('auditorSignControls').style.display = 'flex';
-        toggleAuditorSignMode();
-      } else {
-        document.querySelector('input[name="auditorSignMode"][value="new"]').checked = true;
-        document.getElementById('auditorSignControls').style.display = 'none';
-        toggleAuditorSignMode();
+        // Signature Logic
+        const savedSign = localStorage.getItem('signature_' + currentUser.nik);
+        if (savedSign && savedSign !== 'registered') {
+          document.getElementById('auditorSavedSignImg').src = savedSign;
+          document.querySelector('input[name="auditorSignMode"][value="saved"]').checked = true;
+          document.getElementById('auditorSignControls').style.display = 'flex';
+          toggleAuditorSignMode();
+        } else {
+          document.querySelector('input[name="auditorSignMode"][value="new"]').checked = true;
+          document.getElementById('auditorSignControls').style.display = 'none';
+          toggleAuditorSignMode();
+        }
+
+        showModal('modalPreview');
       }
 
-      showModal('modalPreview');
-    }
+      function saveData(status, verifiedSignature = null) {
+        const cData = collectFormData();
+        if (!cData && status === 'Submitted') return; // Must validate if submitting
 
-    function saveData(status, verifiedSignature = null) {
-      const cData = collectFormData();
-      if (!cData && status === 'Submitted') return; // Must validate if submitting
+        let payloadData = {
+          id: currentEditId,
+          nik: currentUser.nik,
+          ipAddress: userIpAddress,
+          auditorName: currentUser.nama,
+          auditeeName: currentAuditee,
+          kategori: currentCategory,
+          checklistData: cData || []
+        };
 
-      let payloadData = {
-        id: currentEditId,
-        nik: currentUser.nik,
-        ipAddress: userIpAddress,
-        auditorName: currentUser.nama,
-        auditeeName: currentAuditee,
-        kategori: currentCategory,
-        checklistData: cData || []
-      };
+        if (status === 'Submitted') {
+          payloadData.auditorSignature = verifiedSignature;
+          payloadData.auditeeSignature = canvasAuditee.toDataURL(); // TTD Auditee (tanpa PIN krn tamu)
+        }
 
-      if (status === 'Submitted') {
-        payloadData.auditorSignature = verifiedSignature;
-        payloadData.auditeeSignature = canvasAuditee.toDataURL(); // TTD Auditee (tanpa PIN krn tamu)
-      }
+        // Mock saving for UI feedback
+        Swal.fire({
+          title: 'Menyimpan & Memverifikasi...',
+          allowOutsideClick: false,
+          didOpen: () => { Swal.showLoading(); }
+        });
 
-      // Mock saving for UI feedback
-      Swal.fire({
-        title: 'Menyimpan & Memverifikasi...',
-        allowOutsideClick: false,
-        didOpen: () => { Swal.showLoading(); }
-      });
-
-      fetch(GAS_URL, {
-        method: 'POST',
-        body: JSON.stringify({
-          action: status === 'Draft' ? 'saveDraft' : 'submitFinal',
-          formData: payloadData
+        fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: status === 'Draft' ? 'saveDraft' : 'submitFinal',
+            formData: payloadData
+          })
         })
-      })
-        .then(res => res.json())
-        .then(res => {
-          if (res.success) {
-            if (status === 'Submitted') {
-              document.getElementById('prevHash').innerText = res.hash;
-              Swal.fire('Terkonfirmasi (UU ITE)', res.message + '\nHash Integritas:\n' + res.hash, 'success').then(() => {
-                // Jangan tutup preview agar user bisa download PDF nya dulu!
-              });
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) {
+              if (status === 'Submitted') {
+                document.getElementById('prevHash').innerText = res.hash;
+                Swal.fire('Terkonfirmasi (UU ITE)', res.message + '\nHash Integritas:\n' + res.hash, 'success').then(() => {
+                  // Jangan tutup preview agar user bisa download PDF nya dulu!
+                });
+              } else {
+                Swal.fire('Berhasil!', res.message, 'success').then(() => {
+                  changeState('stateList');
+                  loadListData(); // refresh
+                });
+              }
             } else {
-              Swal.fire('Berhasil!', res.message, 'success').then(() => {
-                changeState('stateList');
-                loadListData(); // refresh
-              });
+              Swal.fire('Gagal', res.message, 'error');
             }
+          })
+          .catch(err => {
+            Swal.fire('Berhasil (Demo)', 'Data disimpan secara lokal (Backend belum connect).', 'success').then(() => {
+              if (status === 'Submitted') closeModal('modalPreview');
+              changeState('stateList');
+            });
+          });
+      }
+
+      function submitFinalData() {
+        const mode = document.querySelector('input[name="auditorSignMode"]:checked').value;
+        if (mode === 'new') {
+          Swal.fire('Informasi', 'Sesuai UU ITE, tanda tangan baru harus didaftarkan dan dilindungi PIN. Silakan daftarkan via menu Tanda Tangan terlebih dahulu.', 'info');
+          return;
+        }
+        // Munculkan Modal PIN Otorisasi
+        document.getElementById('inputUserPin').value = '';
+        showModal('modalPIN');
+      }
+
+      function processPinAndSubmit() {
+        const pin = document.getElementById('inputUserPin').value;
+        if (!pin || pin.length !== 6) { Swal.fire('Error', 'PIN harus 6 digit angka!', 'error'); return; }
+
+        const btn = document.getElementById('btnProsesPIN');
+        btn.innerHTML = 'Verifikasi...'; btn.disabled = true;
+
+        fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'verifySignature', nik: currentUser.nik, pin: pin })
+        }).then(r => r.json()).then(res => {
+          if (res.success) {
+            const verifiedSignData = res.signatureData;
+            document.getElementById('auditorSavedSignImg').src = verifiedSignData; // Update UI untuk dicetak PDF
+
+            closeModal('modalPIN');
+            btn.innerHTML = 'Tanda Tangani'; btn.disabled = false;
+
+            // Lanjut submit dgn TTD tersertifikasi
+            saveData('Submitted', verifiedSignData);
+          } else {
+            Swal.fire('Gagal', res.message, 'error');
+            btn.innerHTML = 'Tanda Tangani'; btn.disabled = false;
+          }
+        }).catch(e => {
+          // Fallback Demo
+          const mockSign = canvasAuditor.toDataURL();
+          document.getElementById('auditorSavedSignImg').src = mockSign;
+          closeModal('modalPIN');
+          btn.innerHTML = 'Tanda Tangani'; btn.disabled = false;
+          saveData('Submitted', mockSign);
+        });
+      }
+
+      // CRUD & EXPORT LOGIC
+      function editData(id) {
+        Swal.fire({ title: 'Memuat data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        fetch(GAS_URL, {
+          method: 'POST', body: JSON.stringify({ action: 'getDetail', id: id })
+        }).then(res => res.json()).then(res => {
+          if (res.success) {
+            Swal.close();
+            currentEditId = id;
+            currentAuditee = res.data.auditeeName;
+            currentCategory = res.data.kategori;
+            currentQuestions = res.data.checklistData.map(d => ({ no: d.no, type: d.type, kriteria: d.kriteria, pertanyaan: d.pertanyaan }));
+
+            document.getElementById('formAuditeeLabel').innerText = currentAuditee;
+            document.getElementById('formCategoryTitle').innerText = currentCategory;
+
+            const tbody = document.getElementById('checklistBody');
+            tbody.innerHTML = '';
+            res.data.checklistData.forEach((q, index) => {
+              const tr = document.createElement('tr');
+              if (q.type == 1 || q.type == 2 || q.type == 3) {
+                tr.style.backgroundColor = '#f1f5f9';
+                tr.style.fontWeight = 'bold';
+                tr.innerHTML = `
+                    <td>${q.no}</td>
+                    <td colspan="5">${q.pertanyaan}</td>
+                `;
+              } else {
+                let isYa = q.hasilPengamatan !== 'Tidak Sesuai' && q.hasilPengamatan !== ''; // logic sederhana
+                tr.innerHTML = `
+                    <td>${q.no}</td>
+                    <td>${q.pertanyaan}</td>
+                    <td style="text-align: center; font-weight: 500;">${q.kriteria || ''}</td>
+                    <td>
+                        <div class="radio-group">
+                            <label><input type="radio" name="kesesuaian_${index}" value="Ya" ${isYa ? 'checked' : ''} onchange="checkKeterangan(${index})"> Ya</label>
+                            <label><input type="radio" name="kesesuaian_${index}" value="Tidak" ${!isYa ? 'checked' : ''} onchange="checkKeterangan(${index})"> Tidak</label>
+                        </div>
+                    </td>
+                    <td>
+                        <select id="kategori_${index}" class="form-group" style="margin:0; padding: 6px;">
+                            <option value="C" ${q.kategoriVal === 'C' ? 'selected' : ''}>C</option>
+                            <option value="Minor" ${q.kategoriVal === 'Minor' ? 'selected' : ''}>Minor</option>
+                            <option value="Major" ${q.kategoriVal === 'Major' ? 'selected' : ''}>Major</option>
+                            <option value="Kritis" ${q.kategoriVal === 'Kritis' ? 'selected' : ''}>Kritis</option>
+                        </select>
+                    </td>
+                    <td><textarea id="keterangan_${index}" class="form-group" style="margin:0; padding:6px; min-height: 40px;">${q.hasilPengamatan}</textarea></td>
+                `;
+              }
+              tbody.appendChild(tr);
+            });
+            changeState('stateForm');
           } else {
             Swal.fire('Gagal', res.message, 'error');
           }
-        })
-        .catch(err => {
-          Swal.fire('Berhasil (Demo)', 'Data disimpan secara lokal (Backend belum connect).', 'success').then(() => {
-            if (status === 'Submitted') closeModal('modalPreview');
-            changeState('stateList');
-          });
+        }).catch(err => {
+          Swal.fire('Error', 'Belum tersambung ke backend secara sempurna', 'error');
         });
-    }
-
-    function submitFinalData() {
-      const mode = document.querySelector('input[name="auditorSignMode"]:checked').value;
-      if (mode === 'new') {
-        Swal.fire('Informasi', 'Sesuai UU ITE, tanda tangan baru harus didaftarkan dan dilindungi PIN. Silakan daftarkan via menu Tanda Tangan terlebih dahulu.', 'info');
-        return;
       }
-      // Munculkan Modal PIN Otorisasi
-      document.getElementById('inputUserPin').value = '';
-      showModal('modalPIN');
-    }
 
-    function processPinAndSubmit() {
-      const pin = document.getElementById('inputUserPin').value;
-      if (!pin || pin.length !== 6) { Swal.fire('Error', 'PIN harus 6 digit angka!', 'error'); return; }
+      function signData(id) {
+        editData(id); // Load data first, user can then click Review & Submit
+      }
 
-      const btn = document.getElementById('btnProsesPIN');
-      btn.innerHTML = 'Verifikasi...'; btn.disabled = true;
+      function deleteData(id) {
+        Swal.fire({
+          title: 'Hapus data ini?', text: "Data yang dihapus tidak bisa dikembalikan!", icon: 'warning',
+          showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({ title: 'Menghapus...', didOpen: () => Swal.showLoading() });
+            fetch(GAS_URL, {
+              method: 'POST', body: JSON.stringify({ action: 'deleteData', id: id })
+            }).then(res => res.json()).then(res => {
+              if (res.success) { Swal.fire('Terhapus!', res.message, 'success'); loadListData(); }
+              else { Swal.fire('Gagal', res.message, 'error'); }
+            });
+          }
+        });
+      }
 
-      fetch(GAS_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'verifySignature', nik: currentUser.nik, pin: pin })
-      }).then(r => r.json()).then(res => {
-        if (res.success) {
-          const verifiedSignData = res.signatureData;
-          document.getElementById('auditorSavedSignImg').src = verifiedSignData; // Update UI untuk dicetak PDF
+      function exportListExcel() {
+        if (listData.length === 0) return Swal.fire('Kosong', 'Tidak ada data untuk diexport', 'info');
+        const wsData = listData.map(d => ({
+          ID: d.id, Tanggal: new Date(d.tanggal).toLocaleDateString(), Auditor: d.auditor,
+          Auditee: d.auditee, Kategori: d.kategori, Status: d.status
+        }));
+        const ws = XLSX.utils.json_to_sheet(wsData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Pengamatan");
+        XLSX.writeFile(wb, `Audit_List_${currentCategory}.xlsx`);
+      }
 
-          closeModal('modalPIN');
-          btn.innerHTML = 'Tanda Tangani'; btn.disabled = false;
+      function exportItemPDF(id) {
+        Swal.fire({ title: 'Menyiapkan PDF...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        fetch(GAS_URL, {
+          method: 'POST', body: JSON.stringify({ action: 'getDetail', id: id })
+        }).then(res => res.json()).then(res => {
+          if (res.success) {
+            Swal.close();
+            const d = res.data;
 
-          // Lanjut submit dgn TTD tersertifikasi
-          saveData('Submitted', verifiedSignData);
-        } else {
-          Swal.fire('Gagal', res.message, 'error');
-          btn.innerHTML = 'Tanda Tangani'; btn.disabled = false;
-        }
-      }).catch(e => {
-        // Fallback Demo
-        const mockSign = canvasAuditor.toDataURL();
-        document.getElementById('auditorSavedSignImg').src = mockSign;
-        closeModal('modalPIN');
-        btn.innerHTML = 'Tanda Tangani'; btn.disabled = false;
-        saveData('Submitted', mockSign);
-      });
-    }
-
-    // CRUD & EXPORT LOGIC
-    function editData(id) {
-      Swal.fire({ title: 'Memuat data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-      fetch(GAS_URL, {
-        method: 'POST', body: JSON.stringify({ action: 'getDetail', id: id })
-      }).then(res => res.json()).then(res => {
-        if (res.success) {
-          Swal.close();
-          currentEditId = id;
-          currentAuditee = res.data.auditeeName;
-          currentCategory = res.data.kategori;
-          currentQuestions = res.data.checklistData.map(d => ({ no: d.no, pertanyaan: d.hasilPengamatan })); // Simplified mock mapping
-          // Idealnya getChecklist digunakan lagi, atau data detail di mapping ke UI
-          // Untuk demo, kita reload UI stateForm
-          document.getElementById('formAuditeeLabel').innerText = currentAuditee;
-          document.getElementById('formCategoryTitle').innerText = currentCategory;
-
-          const tbody = document.getElementById('checklistBody');
-          tbody.innerHTML = '';
-          res.data.checklistData.forEach((q, index) => {
-            const tr = document.createElement('tr');
-            let isYa = q.hasilPengamatan !== 'Tidak Sesuai' && q.hasilPengamatan !== ''; // logic sederhana
-            tr.innerHTML = `
-                            <td>${q.no}</td>
-                            <td>Hasil Pengamatan: ${q.hasilPengamatan}</td>
-                            <td>
-                                <div class="radio-group">
-                                    <label><input type="radio" name="kesesuaian_${index}" value="Ya" ${isYa ? 'checked' : ''}> Ya</label>
-                                    <label><input type="radio" name="kesesuaian_${index}" value="Tidak" ${!isYa ? 'checked' : ''}> Tidak</label>
-                                </div>
-                            </td>
-                            <td>
-                                <select id="kategori_${index}" class="form-group" style="margin:0; padding: 6px;">
-                                    <option value="C" ${q.kategoriVal === 'C' ? 'selected' : ''}>C</option>
-                                    <option value="Minor" ${q.kategoriVal === 'Minor' ? 'selected' : ''}>Minor</option>
-                                    <option value="Major" ${q.kategoriVal === 'Major' ? 'selected' : ''}>Major</option>
-                                    <option value="Kritis" ${q.kategoriVal === 'Kritis' ? 'selected' : ''}>Kritis</option>
-                                </select>
-                            </td>
-                            <td><textarea id="keterangan_${index}" class="form-group" style="margin:0; padding:6px; min-height: 40px;">${q.hasilPengamatan}</textarea></td>
-                        `;
-            tbody.appendChild(tr);
-          });
-          changeState('stateForm');
-        } else {
-          Swal.fire('Gagal', res.message, 'error');
-        }
-      }).catch(err => {
-        Swal.fire('Error', 'Belum tersambung ke backend secara sempurna', 'error');
-      });
-    }
-
-    function signData(id) {
-      editData(id); // Load data first, user can then click Review & Submit
-    }
-
-    function deleteData(id) {
-      Swal.fire({
-        title: 'Hapus data ini?', text: "Data yang dihapus tidak bisa dikembalikan!", icon: 'warning',
-        showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({ title: 'Menghapus...', didOpen: () => Swal.showLoading() });
-          fetch(GAS_URL, {
-            method: 'POST', body: JSON.stringify({ action: 'deleteData', id: id })
-          }).then(res => res.json()).then(res => {
-            if (res.success) { Swal.fire('Terhapus!', res.message, 'success'); loadListData(); }
-            else { Swal.fire('Gagal', res.message, 'error'); }
-          });
-        }
-      });
-    }
-
-    function exportListExcel() {
-      if (listData.length === 0) return Swal.fire('Kosong', 'Tidak ada data untuk diexport', 'info');
-      const wsData = listData.map(d => ({
-        ID: d.id, Tanggal: new Date(d.tanggal).toLocaleDateString(), Auditor: d.auditor,
-        Auditee: d.auditee, Kategori: d.kategori, Status: d.status
-      }));
-      const ws = XLSX.utils.json_to_sheet(wsData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Pengamatan");
-      XLSX.writeFile(wb, `Audit_List_${currentCategory}.xlsx`);
-    }
-
-    function exportItemPDF(id) {
-      Swal.fire({ title: 'Menyiapkan PDF...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-      fetch(GAS_URL, {
-        method: 'POST', body: JSON.stringify({ action: 'getDetail', id: id })
-      }).then(res => res.json()).then(res => {
-        if (res.success) {
-          Swal.close();
-          const d = res.data;
-          
-          // Set Header Info
-          const cbHtml = `
+            // Set Header Info
+            const cbHtml = `
                 <table style="width:100%; border:none; font-weight:bold; font-size: 14px;">
                     <tr>
                         <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'Halal' ? 'V' : '&nbsp;'}</div> Halal</td>
@@ -1434,102 +1596,111 @@
                     </tr>
                 </table>
             `;
-          document.getElementById('previewCheckboxes').innerHTML = cbHtml;
-          document.getElementById('prevDept').innerText = "-"; // Departemen tidak tersimpan di DB
-          
-          const dt = new Date(d.tanggal || new Date());
-          const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-          document.getElementById('prevDate').innerText = `${dt.getDate()} ${months[dt.getMonth()]} ${dt.getFullYear()}`;
+            document.getElementById('previewCheckboxes').innerHTML = cbHtml;
+            document.getElementById('prevDept').innerText = "-"; // Departemen tidak tersimpan di DB
 
-          // Table Body
-          const tbody = document.getElementById('previewTableBody');
-          tbody.innerHTML = '';
-          d.checklistData.forEach(row => {
-            const tr = document.createElement('tr');
-            tr.style.height = '1px';
-            tr.innerHTML = `
-                        <td style="text-align:center; font-weight:bold;">${row.no}.</td>
-                        <td>${row.hasilPengamatan}</td>
-                        <td style="text-align:center;">${row.klausal || '-'}</td>
-                        <td style="text-align:center;">${row.kategoriVal || '-'}</td>
-                    `;
-            tbody.appendChild(tr);
-          });
+            const dt = new Date(d.tanggal || new Date());
+            const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            document.getElementById('prevDate').innerText = `${dt.getDate()} ${months[dt.getMonth()]} ${dt.getFullYear()}`;
 
-          const fillerTr = document.createElement('tr');
-          fillerTr.style.height = '100%'; 
-          fillerTr.innerHTML = '<td></td><td></td><td></td><td></td>';
-          tbody.appendChild(fillerTr);
+            // Table Body
+            const tbody = document.getElementById('previewTableBody');
+            tbody.innerHTML = '';
+            d.checklistData.forEach(row => {
+              const tr = document.createElement('tr');
+              tr.style.height = '1px';
+              if (row.type == 1 || row.type == 2 || row.type == 3) {
+                tr.style.backgroundColor = '#f1f5f9';
+                tr.innerHTML = `
+                    <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
+                    <td colspan="4" style="font-weight:bold; border-bottom: 1px solid black; padding-left: 10px;">${row.pertanyaan || ''}</td>
+                `;
+              } else {
+                tr.innerHTML = `
+                    <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
+                    <td style="border-bottom: 1px solid black; padding-left: 10px;">${row.pertanyaan || ''}</td>
+                    <td style="text-align:center; border-bottom: 1px solid black;">${row.kriteria || '-'}</td>
+                    <td style="text-align:center; border-bottom: 1px solid black;">${row.hasilPengamatan || ''}</td>
+                    <td style="text-align:center; border-bottom: 1px solid black;">${row.kategoriVal || '-'}</td>
+                `;
+              }
+              tbody.appendChild(tr);
+            });
 
-          document.getElementById('prevAuditorName').innerText = d.auditorName || currentUser.nama;
-          document.getElementById('prevAuditeeName').innerText = d.auditeeName;
+            const fillerTr = document.createElement('tr');
+            fillerTr.style.height = '100%';
+            fillerTr.innerHTML = '<td></td><td></td><td></td><td></td><td></td>';
+            tbody.appendChild(fillerTr);
 
-          // Set Signatures
-          document.getElementById('auditorSignControls').style.display = 'none';
-          document.getElementById('auditorNewSignWrapper').style.display = 'none';
-          document.getElementById('auditorSavedSignWrapper').style.display = 'flex';
-          
-          if(d.auditorSignature) {
+            document.getElementById('prevAuditorName').innerText = d.auditorName || currentUser.nama;
+            document.getElementById('prevAuditeeName').innerText = d.auditeeName;
+
+            // Set Signatures
+            document.getElementById('auditorSignControls').style.display = 'none';
+            document.getElementById('auditorNewSignWrapper').style.display = 'none';
+            document.getElementById('auditorSavedSignWrapper').style.display = 'flex';
+
+            if (d.auditorSignature) {
               document.getElementById('auditorSavedSignImg').src = d.auditorSignature;
-          } else {
+            } else {
               document.getElementById('auditorSavedSignImg').src = '';
-          }
+            }
 
-          document.getElementById('prevHash').innerText = d.hashIntegritas || "Belum disubmit";
+            document.getElementById('prevHash').innerText = d.hashIntegritas || "Belum disubmit";
 
-          function triggerPrint() {
+            function triggerPrint() {
               const originalTitle = document.title;
               document.title = `Audit_${d.auditeeName}_${d.kategori}`;
               setTimeout(() => {
-                  window.print();
-                  document.title = originalTitle;
+                window.print();
+                document.title = originalTitle;
               }, 300);
-          }
+            }
 
-          // Auditee signature
-          const cAuditee = document.getElementById('canvasAuditee');
-          const ctxA = cAuditee.getContext('2d');
-          ctxA.clearRect(0,0,cAuditee.width, cAuditee.height);
-          if(d.auditeeSignature) {
+            // Auditee signature
+            const cAuditee = document.getElementById('canvasAuditee');
+            const ctxA = cAuditee.getContext('2d');
+            ctxA.clearRect(0, 0, cAuditee.width, cAuditee.height);
+            if (d.auditeeSignature) {
               const img = new Image();
               img.crossOrigin = "Anonymous";
               img.onload = () => {
-                  ctxA.drawImage(img, 0, 0, cAuditee.width, cAuditee.height);
-                  triggerPrint();
+                ctxA.drawImage(img, 0, 0, cAuditee.width, cAuditee.height);
+                triggerPrint();
               };
               img.onerror = () => {
-                  // Fallback jika gagal load gambar dari drive
-                  triggerPrint();
+                // Fallback jika gagal load gambar dari drive
+                triggerPrint();
               };
               img.src = d.auditeeSignature;
-          } else {
+            } else {
               triggerPrint();
+            }
+
+          } else {
+            Swal.fire('Gagal', res.message, 'error');
           }
+        }).catch(err => {
+          Swal.fire('Error', 'Gagal memuat data PDF.', 'error');
+        });
+      }
 
-        } else {
-          Swal.fire('Gagal', res.message, 'error');
-        }
-      }).catch(err => {
-         Swal.fire('Error', 'Gagal memuat data PDF.', 'error');
-      });
-    }
+      function exportPDF() {
+        // Menggunakan fitur print bawaan browser
+        // agar hasil PDF adalah PDF vector (teks bisa diselect dan copy-paste)
+        // bukan PDF raster (gambar)
 
-    function exportPDF() {
-      // Menggunakan fitur print bawaan browser
-      // agar hasil PDF adalah PDF vector (teks bisa diselect dan copy-paste)
-      // bukan PDF raster (gambar)
+        const originalTitle = document.title;
+        // Ubah nama file sementara saat dialog print terbuka
+        document.title = `Audit_${currentAuditee}_${currentCategory}`;
 
-      const originalTitle = document.title;
-      // Ubah nama file sementara saat dialog print terbuka
-      document.title = `Audit_${currentAuditee}_${currentCategory}`;
+        window.print();
 
-      window.print();
+        // Kembalikan nama title web semula
+        document.title = originalTitle;
+      }
 
-      // Kembalikan nama title web semula
-      document.title = originalTitle;
-    }
-
-  </script>
+    </script>
 </body>
 
 </html>
