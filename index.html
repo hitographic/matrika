@@ -1676,6 +1676,7 @@
           document.getElementById('listSignTitle').innerText = 'Tanda Tangan Auditee';
           document.getElementById('listSignAuditorArea').classList.add('hidden');
           document.getElementById('listSignAuditeeArea').classList.remove('hidden');
+          document.getElementById('inputSignAuditeeName').value = '';
           setTimeout(() => clearCanvas('canvasListAuditee'), 100);
         }
         showModal('modalListSign');
