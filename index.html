@@ -1495,6 +1495,9 @@
           if (row.type == 1 || row.type == 2 || row.type == 3) {
             return; // Jangan tampilkan tipe heading di PDF/Preview
           }
+          if (!row.hasilPengamatan || row.hasilPengamatan.trim() === '') {
+            return; // Jangan tampilkan baris yang tidak diisi (kosong)
+          }
           
           tr.innerHTML = `
               <td style="text-align:center; font-weight:bold;">${counterPreview++}</td>
@@ -1788,6 +1791,9 @@
               tr.style.height = '1px';
               if (row.type == 1 || row.type == 2 || row.type == 3) {
                 return; // Jangan tampilkan tipe heading di PDF/Preview
+              }
+              if (!row.hasilPengamatan || row.hasilPengamatan.trim() === '') {
+                return; // Jangan tampilkan baris yang tidak diisi (kosong)
               }
 
               tr.innerHTML = `
