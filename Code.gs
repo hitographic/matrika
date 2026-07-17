@@ -133,7 +133,8 @@ function handleLogin(nik, password) {
     const data = userSheet.getDataRange().getValues();
     for (let i = 1; i < data.length; i++) {
       if (String(data[i][0]).trim() === String(nik).trim() && String(data[i][1]).trim() === String(password).trim()) {
-        return { success: true, nama: String(data[i][2]).trim(), message: "Login Berhasil!" };
+        const role = data[i][3] ? String(data[i][3]).trim() : '';
+        return { success: true, nama: String(data[i][2]).trim(), role: role, message: "Login Berhasil!" };
       }
     }
     return { success: false, message: "NIK atau Password salah!" };

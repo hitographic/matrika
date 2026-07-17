@@ -594,7 +594,7 @@
           <h2 style="display: inline-block; margin-left: 15px;" id="listTitle">Data Pengamatan</h2>
         </div>
         <div>
-          <button class="btn btn-outline" style="margin-right: 10px;" onclick="exportListExcel()"><i
+          <button id="btnExportExcelList" class="btn btn-outline" style="display: none; margin-right: 10px;" onclick="exportListExcel()"><i
               class="fa-solid fa-file-excel" style="color:green"></i> Export Excel</button>
           <button class="btn btn-primary" onclick="showNewDataModal()"><i class="fa-solid fa-plus"></i> Tambah
             Data</button>
@@ -982,9 +982,16 @@
           .then(res => res.json())
           .then(res => {
             if (res.success) {
-              currentUser = { nik, nama: res.nama };
+              currentUser = { nik, nama: res.nama, role: res.role };
               sessionStorage.setItem('matrika_user', JSON.stringify(currentUser));
               document.getElementById('navAuditorName').innerText = res.nama;
+              
+              if (currentUser.role && currentUser.role.toLowerCase() === 'admin') {
+                document.getElementById('btnExportExcelList').style.display = 'inline-flex';
+              } else {
+                document.getElementById('btnExportExcelList').style.display = 'none';
+              }
+
               changeState('stateMenu');
               if (!localStorage.getItem('signature_' + currentUser.nik)) showModal('modalRegisterSignature');
             } else {
@@ -1396,6 +1403,9 @@
         if (savedUser) {
            currentUser = JSON.parse(savedUser);
            document.getElementById('navAuditorName').innerText = currentUser.nama;
+           if (currentUser.role && currentUser.role.toLowerCase() === 'admin') {
+             document.getElementById('btnExportExcelList').style.display = 'inline-flex';
+           }
         }
         loadSessionState();
         handleRoute();
