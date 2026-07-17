@@ -464,6 +464,13 @@
         padding: 0;
         min-height: 260mm;
         box-sizing: border-box;
+        transform: scale(0.92);
+        transform-origin: top left;
+      }
+      
+      #previewArea td, #previewArea th {
+        padding: 4px !important;
+        font-size: 11px;
       }
 
       .btn,
@@ -1167,7 +1174,14 @@
           }
 
           // Gabung Keterangan dari kriteria
-          let hasilPengamatan = keterangan ? keterangan : (kesesuaian === 'Ya' ? q.pertanyaan : 'Tidak Sesuai');
+          let hasilPengamatan = '';
+          if (keterangan) {
+            hasilPengamatan = keterangan;
+          } else if (kesesuaian === 'Ya') {
+            hasilPengamatan = q.pertanyaan;
+          } else if (kesesuaian === 'Tidak') {
+            hasilPengamatan = 'Tidak Sesuai';
+          }
 
           data.push({
             no: q.no,
@@ -1407,6 +1421,7 @@
           auditorName: currentUser.nama,
           auditeeName: currentAuditee,
           kategori: currentCategory,
+          departemen: currentDept,
           checklistData: cData || []
         };
 
@@ -1625,7 +1640,7 @@
                 </table>
             `;
             document.getElementById('previewCheckboxes').innerHTML = cbHtml;
-            document.getElementById('prevDept').innerText = "-"; // Departemen tidak tersimpan di DB
+            document.getElementById('prevDept').innerText = d.departemen || "-";
 
             const dt = new Date(d.tanggal || new Date());
             const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];

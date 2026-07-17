@@ -247,7 +247,8 @@ function handleSaveData(formData, status) {
       status,
       urlAuditor,
       urlAuditee,
-      hashIntegritas
+      hashIntegritas,
+      formData.departemen || '-'
     ];
 
     if (isUpdate && rowIndex > -1) {
@@ -320,7 +321,8 @@ function handleGetDetail(id) {
             status: data[i][6],
             auditorSignature: data[i][7],
             auditeeSignature: data[i][8],
-            hashIntegritas: data[i][9]
+            hashIntegritas: data[i][9],
+            departemen: data[i][10] || '-'
           }
         };
       }
