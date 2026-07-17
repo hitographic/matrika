@@ -896,6 +896,32 @@
       let listData = []; // Cache list pengamatan
       let currentEditId = null; // Menyimpan ID saat sedang edit/update
 
+      function saveSessionState() {
+        sessionStorage.setItem('matrika_state', JSON.stringify({
+           currentCategory, currentAuditee, currentDept, currentEditId, currentQuestions
+        }));
+      }
+
+      function loadSessionState() {
+        const savedState = sessionStorage.getItem('matrika_state');
+        if (savedState) {
+           const s = JSON.parse(savedState);
+           currentCategory = s.currentCategory || '';
+           currentAuditee = s.currentAuditee || '';
+           currentDept = s.currentDept || '';
+           currentEditId = s.currentEditId || null;
+           currentQuestions = s.currentQuestions || [];
+           
+           if(currentCategory) {
+               document.getElementById('listTitle').innerText = `Data Pengamatan - ${currentCategory}`;
+               document.getElementById('formCategoryTitle').innerText = currentCategory;
+           }
+           if(currentAuditee) {
+               document.getElementById('formAuditeeLabel').innerText = currentAuditee;
+           }
+        }
+      }
+
       // ROUTING & UI MANAGEMENT
       function changeState(stateId, updateHash = true) {
         ['stateLogin', 'stateMenu', 'stateList', 'stateForm'].forEach(id => {
@@ -991,6 +1017,7 @@
 
       function logout() {
         sessionStorage.removeItem('matrika_user');
+        sessionStorage.removeItem('matrika_state');
         currentUser = { nik: '', nama: '' };
         document.getElementById('loginForm').reset();
         window.location.hash = '#login';
@@ -1000,6 +1027,7 @@
       // 2. MENU LOGIC
       function openCategory(kategori) {
         currentCategory = kategori;
+        saveSessionState();
         document.getElementById('listTitle').innerText = `Data Pengamatan - ${kategori}`;
         changeState('stateList');
         loadListData();
@@ -1104,6 +1132,7 @@
 
         currentAuditee = auditee;
         currentDept = dept;
+        saveSessionState();
         document.getElementById('formAuditeeLabel').innerText = auditee;
         document.getElementById('formCategoryTitle').innerText = currentCategory;
 
@@ -1124,6 +1153,7 @@
           .then(res => {
             if (res.success) {
               currentQuestions = res.data;
+              saveSessionState();
               renderChecklist();
             }
           })
@@ -1364,6 +1394,7 @@
            currentUser = JSON.parse(savedUser);
            document.getElementById('navAuditorName').innerText = currentUser.nama;
         }
+        loadSessionState();
         handleRoute();
       });
 
@@ -1620,7 +1651,9 @@
             currentEditId = id;
             currentAuditee = res.data.auditeeName;
             currentCategory = res.data.kategori;
+            currentDept = res.data.departemen;
             currentQuestions = res.data.checklistData.map(d => ({ no: d.no, type: d.type, kriteria: d.kriteria, pertanyaan: d.pertanyaan }));
+            saveSessionState();
 
             document.getElementById('formAuditeeLabel').innerText = currentAuditee;
             document.getElementById('formCategoryTitle').innerText = currentCategory;
