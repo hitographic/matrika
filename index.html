@@ -1290,7 +1290,7 @@
           const kategori = document.getElementById(`kategori_${index}`).value;
           const keterangan = document.getElementById(`keterangan_${index}`).value;
 
-          if (kesesuaian === 'Tidak' && keterangan.trim() === '') {
+          if (kesesuaian === 'Tidak' && (keterangan.trim() === '' || kategori === '')) {
             isValid = false;
           }
 
@@ -1315,7 +1315,7 @@
         });
 
         if (!isValid) {
-          Swal.fire('Gagal', 'Ada Keterangan yang WAJIB diisi karena kesesuaian "Tidak".', 'warning');
+          Swal.fire('Gagal', 'Pilihan "Tidak" mewajibkan Anda untuk memilih Kategori (Minor/Major/Kritis) dan mengisi Keterangan.', 'warning');
           return null;
         }
         return data;
