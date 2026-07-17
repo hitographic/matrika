@@ -1897,19 +1897,7 @@
             document.getElementById('prevAuditorName').innerText = d.auditorName || currentUser.nama;
             document.getElementById('prevAuditeeName').innerText = d.auditeeName;
 
-            // Set Signatures
-            if (d.auditorSignature) {
-              document.getElementById('auditorSavedSignImg').src = d.auditorSignature;
-            } else {
-              document.getElementById('auditorSavedSignImg').src = '';
-            }
-
-            if (d.auditeeSignature) {
-              document.getElementById('auditeeSavedSignImg').src = d.auditeeSignature;
-            } else {
-              document.getElementById('auditeeSavedSignImg').src = '';
-            }
-
+            // Set Signatures & Wait for Load
             document.getElementById('prevHash').innerText = d.hashIntegritas || "Belum disubmit";
 
             function triggerPrint() {
@@ -1921,23 +1909,34 @@
               }, 300);
             }
 
-            // Auditee signature
-            const cAuditee = document.getElementById('canvasAuditee');
-            const ctxA = cAuditee.getContext('2d');
-            ctxA.clearRect(0, 0, cAuditee.width, cAuditee.height);
-            if (d.auditeeSignature) {
-              const img = new Image();
-              img.crossOrigin = "Anonymous";
-              img.onload = () => {
-                ctxA.drawImage(img, 0, 0, cAuditee.width, cAuditee.height);
-                triggerPrint();
-              };
-              img.onerror = () => {
-                // Fallback jika gagal load gambar dari drive
-                triggerPrint();
-              };
-              img.src = d.auditeeSignature;
+            let imagesToLoad = 0;
+            const auditorImg = document.getElementById('auditorSavedSignImg');
+            const auditeeImg = document.getElementById('auditeeSavedSignImg');
+
+            function imgLoaded() {
+              imagesToLoad--;
+              if (imagesToLoad <= 0) triggerPrint();
+            }
+
+            if (d.auditorSignature) {
+              imagesToLoad++;
+              auditorImg.onload = imgLoaded;
+              auditorImg.onerror = imgLoaded;
+              auditorImg.src = d.auditorSignature;
             } else {
+              auditorImg.src = '';
+            }
+
+            if (d.auditeeSignature) {
+              imagesToLoad++;
+              auditeeImg.onload = imgLoaded;
+              auditeeImg.onerror = imgLoaded;
+              auditeeImg.src = d.auditeeSignature;
+            } else {
+              auditeeImg.src = '';
+            }
+
+            if (imagesToLoad === 0) {
               triggerPrint();
             }
 
