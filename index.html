@@ -1115,8 +1115,8 @@
                 <td style="text-align: center; font-weight: 500;">${q.kriteria || ''}</td>
                 <td>
                     <div class="radio-group">
-                        <label><input type="radio" name="kesesuaian_${index}" value="Ya" onchange="checkKeterangan(${index})"> Ya</label>
-                        <label><input type="radio" name="kesesuaian_${index}" value="Tidak" onchange="checkKeterangan(${index})"> Tidak</label>
+                        <label><input type="radio" name="kesesuaian_${index}" value="Ya" data-waschecked="false" onclick="toggleRadio(this, ${index})"> Ya</label>
+                        <label><input type="radio" name="kesesuaian_${index}" value="Tidak" data-waschecked="false" onclick="toggleRadio(this, ${index})"> Tidak</label>
                     </div>
                 </td>
                 <td>
@@ -1137,15 +1137,61 @@
         });
       }
 
+      function toggleRadio(radio, index) {
+        if (radio.getAttribute('data-waschecked') === 'true') {
+          radio.checked = false;
+          radio.setAttribute('data-waschecked', 'false');
+        } else {
+          const group = document.getElementsByName(radio.name);
+          group.forEach(r => r.setAttribute('data-waschecked', 'false'));
+          radio.setAttribute('data-waschecked', 'true');
+        }
+        checkKeterangan(index);
+      }
+
       function checkKeterangan(index) {
         const radioVal = document.querySelector(`input[name="kesesuaian_${index}"]:checked`)?.value;
         const ketEl = document.getElementById(`keterangan_${index}`);
+        const selectEl = document.getElementById(`kategori_${index}`);
+        
         if (radioVal === 'Tidak') {
           ketEl.placeholder = "Wajib diisi (Temuan)!";
           ketEl.style.borderColor = "var(--accent)";
+          
+          Array.from(selectEl.options).forEach(opt => {
+            if (opt.value === 'C') {
+              opt.disabled = true;
+              opt.style.display = 'none';
+            } else {
+              opt.disabled = false;
+              opt.style.display = '';
+            }
+          });
+          if (selectEl.value === 'C') selectEl.value = '';
+          
+        } else if (radioVal === 'Ya') {
+          ketEl.placeholder = "Opsional...";
+          ketEl.style.borderColor = "var(--border)";
+          
+          Array.from(selectEl.options).forEach(opt => {
+            if (opt.value === 'Minor' || opt.value === 'Major' || opt.value === 'Kritis') {
+              opt.disabled = true;
+              opt.style.display = 'none';
+            } else {
+              opt.disabled = false;
+              opt.style.display = '';
+            }
+          });
+          if (selectEl.value !== '' && selectEl.value !== 'C') selectEl.value = 'C';
+          
         } else {
           ketEl.placeholder = "Opsional...";
           ketEl.style.borderColor = "var(--border)";
+          
+          Array.from(selectEl.options).forEach(opt => {
+            opt.disabled = false;
+            opt.style.display = '';
+          });
         }
       }
 
@@ -1543,7 +1589,9 @@
                     <td colspan="5">${q.pertanyaan}</td>
                 `;
               } else {
-                let isYa = q.hasilPengamatan !== 'Tidak Sesuai' && q.hasilPengamatan !== ''; // logic sederhana
+                let isUnchecked = q.hasilPengamatan === '';
+                let isYa = !isUnchecked && q.hasilPengamatan !== 'Tidak Sesuai' && (q.kategoriVal === 'C' || q.kategoriVal === '');
+                let isTidak = !isUnchecked && !isYa;
                 let displayKeterangan = (q.hasilPengamatan === q.pertanyaan || q.hasilPengamatan === 'Sesuai') ? '' : q.hasilPengamatan;
                 tr.innerHTML = `
                     <td>${q.no}</td>
@@ -1551,13 +1599,14 @@
                     <td style="text-align: center; font-weight: 500;">${q.kriteria || ''}</td>
                     <td>
                         <div class="radio-group">
-                            <label><input type="radio" name="kesesuaian_${index}" value="Ya" ${isYa ? 'checked' : ''} onchange="checkKeterangan(${index})"> Ya</label>
-                            <label><input type="radio" name="kesesuaian_${index}" value="Tidak" ${!isYa ? 'checked' : ''} onchange="checkKeterangan(${index})"> Tidak</label>
+                            <label><input type="radio" name="kesesuaian_${index}" value="Ya" data-waschecked="${isYa}" ${isYa ? 'checked' : ''} onclick="toggleRadio(this, ${index})"> Ya</label>
+                            <label><input type="radio" name="kesesuaian_${index}" value="Tidak" data-waschecked="${isTidak}" ${isTidak ? 'checked' : ''} onclick="toggleRadio(this, ${index})"> Tidak</label>
                         </div>
                     </td>
                     <td>
                         <select id="kategori_${index}" class="form-group" style="margin:0; padding: 6px;">
-                            <option value="C" ${q.kategoriVal === 'C' ? 'selected' : ''}>C</option>
+                            <option value="">- Pilih -</option>
+                            <option value="C" ${q.kategoriVal === 'C' ? 'selected' : ''}>C (Conformance)</option>
                             <option value="Minor" ${q.kategoriVal === 'Minor' ? 'selected' : ''}>Minor</option>
                             <option value="Major" ${q.kategoriVal === 'Major' ? 'selected' : ''}>Major</option>
                             <option value="Kritis" ${q.kategoriVal === 'Kritis' ? 'selected' : ''}>Kritis</option>
@@ -1567,6 +1616,9 @@
                 `;
               }
               tbody.appendChild(tr);
+              if (q.type != 1 && q.type != 2 && q.type != 3) {
+                checkKeterangan(index);
+              }
             });
             changeState('stateForm');
           } else {
