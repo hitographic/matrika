@@ -820,7 +820,7 @@
                     Ulangi TTD</div>
                 </div>
 
-                <div style="border-bottom: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold;"><span
+                <div style="border-top: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold; padding-top: 5px;"><span
                     id="prevAuditorName"></span></div>
               </div>
               <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center;">
@@ -829,7 +829,7 @@
                 <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditee')">
                   Ulangi
                   TTD</div>
-                <div style="border-bottom: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold;"><span
+                <div style="border-top: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold; padding-top: 5px;"><span
                     id="prevAuditeeName"></span></div>
               </div>
               <div style="flex: 1; font-size: 12px; font-weight: bold; padding-left: 20px;">
@@ -1349,6 +1349,7 @@
         // Table Body
         const tbody = document.getElementById('previewTableBody');
         tbody.innerHTML = '';
+        let counterPreview = 1;
         cData.forEach(row => {
           const tr = document.createElement('tr');
           tr.style.height = '1px'; // Force minimum height so filler row absorbs the rest
@@ -1357,10 +1358,10 @@
           }
           
           tr.innerHTML = `
-              <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
-              <td style="border-bottom: 1px solid black; padding-left: 10px;">${row.hasilPengamatan || ''}</td>
-              <td style="text-align:center; border-bottom: 1px solid black;">${row.kriteria || ''}</td>
-              <td style="text-align:center; border-bottom: 1px solid black;">${row.kategoriVal || ''}</td>
+              <td style="text-align:center; font-weight:bold;">${counterPreview++}</td>
+              <td style="padding-left: 10px;">${row.hasilPengamatan || ''}</td>
+              <td style="text-align:center;">${row.kriteria || ''}</td>
+              <td style="text-align:center;">${row.kategoriVal || ''}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -1633,6 +1634,7 @@
             // Table Body
             const tbody = document.getElementById('previewTableBody');
             tbody.innerHTML = '';
+            let counterExport = 1;
             d.checklistData.forEach(row => {
               const tr = document.createElement('tr');
               tr.style.height = '1px';
@@ -1641,10 +1643,10 @@
               }
 
               tr.innerHTML = `
-                  <td style="text-align:center; font-weight:bold; border-bottom: 1px solid black;">${row.no || ''}</td>
-                  <td style="border-bottom: 1px solid black; padding-left: 10px;">${row.hasilPengamatan || ''}</td>
-                  <td style="text-align:center; border-bottom: 1px solid black;">${row.kriteria || '-'}</td>
-                  <td style="text-align:center; border-bottom: 1px solid black;">${row.kategoriVal || '-'}</td>
+                  <td style="text-align:center; font-weight:bold;">${counterExport++}</td>
+                  <td style="padding-left: 10px;">${row.hasilPengamatan || ''}</td>
+                  <td style="text-align:center;">${row.kriteria || '-'}</td>
+                  <td style="text-align:center;">${row.kategoriVal || '-'}</td>
               `;
               tbody.appendChild(tr);
             });
