@@ -277,7 +277,9 @@ function handleGetList(auditorName) {
         auditee: data[i][3],
         kategori: data[i][4],
         checklistData: data[i][5], // Kirim string JSON agar bisa diproses Export di client
-        status: data[i][6]
+        status: data[i][6],
+        hasAuditorSign: !!data[i][7],
+        hasAuditeeSign: !!data[i][8]
       });
     }
     list.reverse();
@@ -298,6 +300,62 @@ function handleDeleteData(id) {
       }
     }
     return { success: false, message: "Data tidak ditemukan." };
+  } catch(e) {
+    return { success: false, message: e.message };
+  }
+}
+
+function handleUpdateSignature(id, role, signatureData, nik, ipAddress) {
+  try {
+    const sheet = getSheet("data_pengamatan");
+    const data = sheet.getDataRange().getValues();
+    let rowIndex = -1;
+    let rowData = null;
+    
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === id) {
+        rowIndex = i + 1;
+        rowData = data[i];
+        break;
+      }
+    }
+    
+    if (rowIndex === -1) return { success: false, message: "Data tidak ditemukan." };
+    
+    let url = signatureData;
+    if (url.startsWith('data:image')) {
+      url = saveImageToDrive(url, id + "_" + role + ".png");
+    }
+    
+    if (role === 'auditor') {
+      sheet.getRange(rowIndex, 8).setValue(url);
+      rowData[7] = url;
+    } else if (role === 'auditee') {
+      sheet.getRange(rowIndex, 9).setValue(url);
+      rowData[8] = url;
+    }
+    
+    let status = rowData[6];
+    let hashIntegritas = rowData[9];
+    
+    if (rowData[7] && rowData[8]) {
+      status = 'Submitted';
+      sheet.getRange(rowIndex, 7).setValue(status);
+      
+      const documentDataString = JSON.stringify({
+        id: id,
+        auditor: rowData[2],
+        auditee: rowData[3],
+        kategori: rowData[4],
+        checklist: JSON.parse(rowData[5])
+      });
+      hashIntegritas = hashSHA256(documentDataString);
+      sheet.getRange(rowIndex, 10).setValue(hashIntegritas);
+      
+      logAuditTrail("SUBMIT_REPORT_SIGNED", nik || "Unknown", ipAddress, id, hashIntegritas);
+    }
+    
+    return { success: true, status: status, hash: hashIntegritas, message: "Tanda tangan berhasil disimpan!" };
   } catch(e) {
     return { success: false, message: e.message };
   }
@@ -369,6 +427,9 @@ function doPost(e) {
         break;
       case "deleteData":
         result = handleDeleteData(postData.id);
+        break;
+      case "updateSignature":
+        result = handleUpdateSignature(postData.id, postData.role, postData.signatureData, postData.nik, postData.ipAddress);
         break;
       default:
         result = { success: false, message: "Action tidak dikenal." };

@@ -664,7 +664,34 @@
     </div>
   </div>
 
-  <!-- MODAL: REGISTER SIGNATURE -->
+    <!-- MODAL PIN LIST SIGN -->
+    <div id="modalListSign" class="modal-overlay hidden">
+      <div class="glass-card modal-content" style="max-width: 400px; text-align: center;">
+        <h3 id="listSignTitle">Tanda Tangan</h3>
+        <input type="hidden" id="listSignId">
+        <input type="hidden" id="listSignRole">
+        
+        <div id="listSignAuditorArea" class="hidden">
+          <p>Silakan masukkan PIN Anda untuk menandatangani dokumen ini.</p>
+          <input type="password" id="listSignPin" class="form-group" placeholder="6 Digit PIN" maxlength="6"
+            style="text-align: center; font-size: 1.5rem; letter-spacing: 5px;">
+        </div>
+        
+        <div id="listSignAuditeeArea" class="hidden">
+          <p>Silakan tanda tangan di bawah ini:</p>
+          <canvas id="canvasListAuditee" width="300" height="150"
+            style="border:1px solid var(--border); border-radius: 8px; background: white; touch-action: none; display:block; margin: 0 auto;"></canvas>
+          <div style="font-size: 10px; cursor: pointer; color: blue; margin-top:5px;" onclick="clearCanvas('canvasListAuditee')">Ulangi TTD</div>
+        </div>
+
+        <div class="action-group" style="margin-top: 20px; justify-content: center;">
+          <button class="btn btn-outline" onclick="closeModal('modalListSign')">Batal</button>
+          <button class="btn btn-primary" id="btnListSignProses" onclick="processListSign()">Simpan TTD</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL REGISTER SIGNATURE -->
   <div id="modalRegisterSignature" class="modal-overlay hidden">
     <div class="modal-content">
       <h3>Daftarkan Tanda Tangan Anda</h3>
@@ -689,26 +716,6 @@
       <div style="display: flex; justify-content: flex-end; gap: 10px;">
         <button class="btn btn-outline" onclick="closeModal('modalRegisterSignature')">Batal</button>
         <button class="btn btn-primary" onclick="saveRegisteredSignature()">Simpan & Buat PIN</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: VERIFY PIN (OTORISASI TTE) -->
-  <div id="modalPIN" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width: 400px; text-align: center;">
-      <h3 style="margin-bottom: 10px;">Otorisasi Tanda Tangan</h3>
-      <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Masukkan 6 digit PIN rahasia Anda untuk menyetujui
-        dan menandatangani dokumen ini secara elektronik.</p>
-      <input type="hidden" id="pinActionType" value="verifyAndSubmit">
-
-      <div class="form-group" style="display: flex; justify-content: center; margin-bottom: 20px;">
-        <input type="password" id="inputUserPin" placeholder="******" maxlength="6"
-          style="text-align:center; font-size: 24px; letter-spacing: 10px; width: 200px; border: 2px solid #ccc; border-radius: 8px; padding: 10px;">
-      </div>
-
-      <div style="display: flex; justify-content: center; gap: 10px;">
-        <button class="btn btn-outline" onclick="closeModal('modalPIN')">Batal</button>
-        <button class="btn btn-primary" id="btnProsesPIN" onclick="processPinAndSubmit()">Tanda Tangani</button>
       </div>
     </div>
   </div>
@@ -808,23 +815,9 @@
               <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center;">
                 <div style="font-weight: bold; margin-bottom: 10px;">Auditor</div>
 
-                <div id="auditorSignControls"
-                  style="display: flex; gap: 10px; margin-bottom: 5px; font-size: 10px; justify-content: center;">
-                  <label><input type="radio" name="auditorSignMode" value="saved" onchange="toggleAuditorSignMode()">
-                    Pakai yg sudah ada</label>
-                  <label><input type="radio" name="auditorSignMode" value="new" onchange="toggleAuditorSignMode()"> TTD
-                    Ulang</label>
-                </div>
-
                 <div id="auditorSavedSignWrapper"
-                  style="width: 150px; height: 80px; margin: 10px 0; display: none; align-items:center; justify-content:center;">
+                  style="width: 150px; height: 80px; margin: 10px 0; display: flex; align-items:center; justify-content:center;">
                   <img id="auditorSavedSignImg" style="max-height: 100%; max-width: 100%;" src="">
-                </div>
-
-                <div id="auditorNewSignWrapper" style="display: block; width: 150px;">
-                  <canvas id="canvasAuditor" class="sign-canvas" width="150" height="80"></canvas>
-                  <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditor')">
-                    Ulangi TTD</div>
                 </div>
 
                 <div style="border-top: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold; padding-top: 5px;"><span
@@ -832,10 +825,10 @@
               </div>
               <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center;">
                 <div style="font-weight: bold; margin-bottom: 10px;">Auditee</div>
-                <canvas id="canvasAuditee" class="sign-canvas" width="150" height="80"></canvas>
-                <div style="font-size: 10px; cursor: pointer; color: blue;" onclick="clearCanvas('canvasAuditee')">
-                  Ulangi
-                  TTD</div>
+                <div id="auditeeSavedSignWrapper"
+                  style="width: 150px; height: 80px; margin: 10px 0; display: flex; align-items:center; justify-content:center;">
+                  <img id="auditeeSavedSignImg" style="max-height: 100%; max-width: 100%;" src="">
+                </div>
                 <div style="border-top: 1px solid black; margin-top: 5px; width: 150px; font-weight: bold; padding-top: 5px;"><span
                     id="prevAuditeeName"></span></div>
               </div>
@@ -873,8 +866,7 @@
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
           <button class="btn btn-outline" onclick="closeModal('modalPreview')">Kembali Edit</button>
-          <button class="btn btn-primary" onclick="submitFinalData()"><i class="fa-solid fa-check-double"></i> Simpan
-            Semua</button>
+          <button class="btn btn-primary" onclick="saveData('Draft')"><i class="fa-solid fa-save"></i> Simpan Data</button>
         </div>
       </div>
     </div>
@@ -1070,6 +1062,14 @@
           const badgeClass = item.status === 'Draft' ? 'badge draft' : 'badge submitted';
           const card = document.createElement('div');
           card.className = 'glass-card data-card';
+          let signButtons = '';
+          if (item.status === 'Draft') {
+             signButtons = `
+               <button class="btn btn-outline" style="color:${item.hasAuditorSign ? 'green' : 'orange'}; padding: 5px 10px;" onclick="${item.hasAuditorSign ? '' : `openListSign('${item.id}', 'auditor')`}"><i class="fa-solid fa-user-check"></i> ${item.hasAuditorSign ? 'Auditor ✓' : 'TTD Auditor'}</button>
+               <button class="btn btn-outline" style="color:${item.hasAuditeeSign ? 'green' : 'orange'}; padding: 5px 10px;" onclick="${item.hasAuditeeSign ? '' : `openListSign('${item.id}', 'auditee')`}"><i class="fa-solid fa-pen-nib"></i> ${item.hasAuditeeSign ? 'Auditee ✓' : 'TTD Auditee'}</button>
+             `;
+          }
+
           card.innerHTML = `
                     <div class="data-info">
                         <h4>Auditee: ${item.auditee}</h4>
@@ -1077,7 +1077,7 @@
                     </div>
                     <div class="action-group">
                         <button class="btn btn-outline" onclick="editData('${item.id}')"><i class="fa-solid fa-pen-to-square"></i> Lihat/Edit</button>
-                        ${item.status === 'Draft' ? `<button class="btn btn-primary" onclick="signData('${item.id}')"><i class="fa-solid fa-signature"></i> Sign</button>` : ''}
+                        ${signButtons}
                         <button class="btn btn-outline" onclick="exportItemPDF('${item.id}')"><i class="fa-solid fa-file-pdf" style="color:red;"></i> PDF</button>
                         <button class="btn btn-danger" onclick="deleteData('${item.id}')"><i class="fa-solid fa-trash"></i></button>
                     </div>
@@ -1381,13 +1381,12 @@
         return canvas;
       }
 
-      let canvasAuditor, canvasAuditee, canvasRegisterSign;
+      let canvasListAuditee, canvasRegisterSign;
 
       // Initialize once
       document.addEventListener('DOMContentLoaded', () => {
-        canvasAuditor = setupCanvas('canvasAuditor');
-        canvasAuditee = setupCanvas('canvasAuditee');
         canvasRegisterSign = setupCanvas('canvasRegisterSign');
+        canvasListAuditee = setupCanvas('canvasListAuditee');
         
         const savedUser = sessionStorage.getItem('matrika_user');
         if (savedUser) {
@@ -1440,17 +1439,6 @@
           localStorage.setItem('signature_' + currentUser.nik, dataUrl);
           closeModal('modalRegisterSignature');
         });
-      }
-
-      function toggleAuditorSignMode() {
-        const mode = document.querySelector('input[name="auditorSignMode"]:checked').value;
-        if (mode === 'saved') {
-          document.getElementById('auditorSavedSignWrapper').style.display = 'flex';
-          document.getElementById('auditorNewSignWrapper').style.display = 'none';
-        } else {
-          document.getElementById('auditorSavedSignWrapper').style.display = 'none';
-          document.getElementById('auditorNewSignWrapper').style.display = 'block';
-        }
       }
 
       function showPreview() {
@@ -1518,29 +1506,12 @@
         document.getElementById('prevAuditorName').innerText = currentUser.nama;
         document.getElementById('prevAuditeeName').innerText = currentAuditee;
 
-        // Clear Signatures for new preview
-        clearCanvas('canvasAuditor');
-        clearCanvas('canvasAuditee');
-
-        // Signature Logic
-        const savedSign = localStorage.getItem('signature_' + currentUser.nik);
-        if (savedSign && savedSign !== 'registered') {
-          document.getElementById('auditorSavedSignImg').src = savedSign;
-          document.querySelector('input[name="auditorSignMode"][value="saved"]').checked = true;
-          document.getElementById('auditorSignControls').style.display = 'flex';
-          toggleAuditorSignMode();
-        } else {
-          document.querySelector('input[name="auditorSignMode"][value="new"]').checked = true;
-          document.getElementById('auditorSignControls').style.display = 'none';
-          toggleAuditorSignMode();
-        }
-
         showModal('modalPreview');
       }
 
-      function saveData(status, verifiedSignature = null) {
+      function saveData(status) {
         const cData = collectFormData();
-        if (!cData && status === 'Submitted') return; // Must validate if submitting
+        if (!cData) return; // Validation failed
 
         let payloadData = {
           id: currentEditId,
@@ -1553,14 +1524,9 @@
           checklistData: cData || []
         };
 
-        if (status === 'Submitted') {
-          payloadData.auditorSignature = verifiedSignature;
-          payloadData.auditeeSignature = canvasAuditee.toDataURL(); // TTD Auditee (tanpa PIN krn tamu)
-        }
-
         // Mock saving for UI feedback
         Swal.fire({
-          title: 'Menyimpan & Memverifikasi...',
+          title: 'Menyimpan...',
           allowOutsideClick: false,
           didOpen: () => { Swal.showLoading(); }
         });
@@ -1568,78 +1534,111 @@
         fetch(GAS_URL, {
           method: 'POST',
           body: JSON.stringify({
-            action: status === 'Draft' ? 'saveDraft' : 'submitFinal',
+            action: 'saveDraft',
             formData: payloadData
           })
         })
           .then(res => res.json())
           .then(res => {
             if (res.success) {
-              if (status === 'Submitted') {
-                document.getElementById('prevHash').innerText = res.hash;
-                Swal.fire('Terkonfirmasi (UU ITE)', res.message + '\nHash Integritas:\n' + res.hash, 'success').then(() => {
-                  // Jangan tutup preview agar user bisa download PDF nya dulu!
-                });
-              } else {
-                Swal.fire('Berhasil!', res.message, 'success').then(() => {
-                  changeState('stateList');
-                  loadListData(); // refresh
-                });
-              }
+              Swal.fire('Berhasil!', res.message, 'success').then(() => {
+                closeModal('modalPreview');
+                changeState('stateList');
+                loadListData(); // refresh
+              });
             } else {
               Swal.fire('Gagal', res.message, 'error');
             }
           })
           .catch(err => {
             Swal.fire('Berhasil (Demo)', 'Data disimpan secara lokal (Backend belum connect).', 'success').then(() => {
-              if (status === 'Submitted') closeModal('modalPreview');
+              closeModal('modalPreview');
               changeState('stateList');
+              loadListData();
             });
           });
       }
 
-      function submitFinalData() {
-        const mode = document.querySelector('input[name="auditorSignMode"]:checked').value;
-        if (mode === 'new') {
-          Swal.fire('Informasi', 'Sesuai UU ITE, tanda tangan baru harus didaftarkan dan dilindungi PIN. Silakan daftarkan via menu Tanda Tangan terlebih dahulu.', 'info');
-          return;
+      function openListSign(id, role) {
+        document.getElementById('listSignId').value = id;
+        document.getElementById('listSignRole').value = role;
+        document.getElementById('listSignPin').value = '';
+        
+        if (role === 'auditor') {
+          if (currentUser.nik === 'guest') {
+             Swal.fire('Info', 'Sebagai Guest, TTD Auditor akan diisi dummy.', 'info');
+             submitListSign(id, 'auditor', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
+             return;
+          }
+          document.getElementById('listSignTitle').innerText = 'Tanda Tangan Auditor';
+          document.getElementById('listSignAuditorArea').classList.remove('hidden');
+          document.getElementById('listSignAuditeeArea').classList.add('hidden');
+        } else {
+          document.getElementById('listSignTitle').innerText = 'Tanda Tangan Auditee';
+          document.getElementById('listSignAuditorArea').classList.add('hidden');
+          document.getElementById('listSignAuditeeArea').classList.remove('hidden');
+          setTimeout(() => clearCanvas('canvasListAuditee'), 100);
         }
-        // Munculkan Modal PIN Otorisasi
-        document.getElementById('inputUserPin').value = '';
-        showModal('modalPIN');
+        showModal('modalListSign');
       }
 
-      function processPinAndSubmit() {
-        const pin = document.getElementById('inputUserPin').value;
-        if (!pin || pin.length !== 6) { Swal.fire('Error', 'PIN harus 6 digit angka!', 'error'); return; }
+      function processListSign() {
+        const id = document.getElementById('listSignId').value;
+        const role = document.getElementById('listSignRole').value;
+        const btn = document.getElementById('btnListSignProses');
+        
+        if (role === 'auditor') {
+          const pin = document.getElementById('listSignPin').value;
+          if (!pin || pin.length !== 6) { Swal.fire('Error', 'PIN harus 6 digit angka!', 'error'); return; }
+          
+          btn.innerHTML = 'Verifikasi...'; btn.disabled = true;
+          fetch(GAS_URL, {
+            method: 'POST', body: JSON.stringify({ action: 'verifySignature', nik: currentUser.nik, pin: pin })
+          }).then(r => r.json()).then(res => {
+            if (res.success) {
+               submitListSign(id, role, res.signatureData);
+            } else {
+               Swal.fire('Gagal', res.message, 'error');
+               btn.innerHTML = 'Simpan TTD'; btn.disabled = false;
+            }
+          }).catch(e => {
+            Swal.fire('Error', e.message, 'error');
+            btn.innerHTML = 'Simpan TTD'; btn.disabled = false;
+          });
+        } else {
+          const canvas = document.getElementById('canvasListAuditee');
+          const dataUrl = canvas.toDataURL('image/png');
+          btn.innerHTML = 'Menyimpan...'; btn.disabled = true;
+          submitListSign(id, role, dataUrl);
+        }
+      }
 
-        const btn = document.getElementById('btnProsesPIN');
-        btn.innerHTML = 'Verifikasi...'; btn.disabled = true;
-
+      function submitListSign(id, role, signatureData) {
         fetch(GAS_URL, {
           method: 'POST',
-          body: JSON.stringify({ action: 'verifySignature', nik: currentUser.nik, pin: pin })
+          body: JSON.stringify({ action: 'updateSignature', id, role, signatureData, nik: currentUser.nik, ipAddress: userIpAddress })
         }).then(r => r.json()).then(res => {
-          if (res.success) {
-            const verifiedSignData = res.signatureData;
-            document.getElementById('auditorSavedSignImg').src = verifiedSignData; // Update UI untuk dicetak PDF
-
-            closeModal('modalPIN');
-            btn.innerHTML = 'Tanda Tangani'; btn.disabled = false;
-
-            // Lanjut submit dgn TTD tersertifikasi
-            saveData('Submitted', verifiedSignData);
-          } else {
-            Swal.fire('Gagal', res.message, 'error');
-            btn.innerHTML = 'Tanda Tangani'; btn.disabled = false;
-          }
-        }).catch(e => {
-          // Fallback Demo
-          const mockSign = canvasAuditor.toDataURL();
-          document.getElementById('auditorSavedSignImg').src = mockSign;
-          closeModal('modalPIN');
-          btn.innerHTML = 'Tanda Tangani'; btn.disabled = false;
-          saveData('Submitted', mockSign);
+           if (res.success) {
+              Swal.fire('Berhasil', res.message, 'success');
+              closeModal('modalListSign');
+              loadListData();
+           } else {
+              Swal.fire('Gagal', res.message, 'error');
+           }
+        }).catch(err => {
+           Swal.fire('Demo', 'Backend belum connect sepenuhnya. TTD disimpan secara lokal.', 'success');
+           closeModal('modalListSign');
+           
+           const item = listData.find(d => d.id === id);
+           if (item) {
+              if (role === 'auditor') item.hasAuditorSign = true;
+              else item.hasAuditeeSign = true;
+              if (item.hasAuditorSign && item.hasAuditeeSign) item.status = 'Submitted';
+           }
+           renderList();
+        }).finally(() => {
+           const btn = document.getElementById('btnListSignProses');
+           if(btn) { btn.innerHTML = 'Simpan TTD'; btn.disabled = false; }
         });
       }
 
@@ -1711,10 +1710,6 @@
         }).catch(err => {
           Swal.fire('Error', 'Belum tersambung ke backend secara sempurna', 'error');
         });
-      }
-
-      function signData(id) {
-        editData(id); // Load data first, user can then click Review & Submit
       }
 
       function deleteData(id) {
@@ -1814,14 +1809,16 @@
             document.getElementById('prevAuditeeName').innerText = d.auditeeName;
 
             // Set Signatures
-            document.getElementById('auditorSignControls').style.display = 'none';
-            document.getElementById('auditorNewSignWrapper').style.display = 'none';
-            document.getElementById('auditorSavedSignWrapper').style.display = 'flex';
-
             if (d.auditorSignature) {
               document.getElementById('auditorSavedSignImg').src = d.auditorSignature;
             } else {
               document.getElementById('auditorSavedSignImg').src = '';
+            }
+
+            if (d.auditeeSignature) {
+              document.getElementById('auditeeSavedSignImg').src = d.auditeeSignature;
+            } else {
+              document.getElementById('auditeeSavedSignImg').src = '';
             }
 
             document.getElementById('prevHash').innerText = d.hashIntegritas || "Belum disubmit";
