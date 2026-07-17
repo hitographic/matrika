@@ -1167,7 +1167,7 @@
           }
 
           // Gabung Keterangan dari kriteria
-          let hasilPengamatan = keterangan ? keterangan : (kesesuaian === 'Ya' ? 'Sesuai' : 'Tidak Sesuai');
+          let hasilPengamatan = keterangan ? keterangan : (kesesuaian === 'Ya' ? q.pertanyaan : 'Tidak Sesuai');
 
           data.push({
             no: q.no,
@@ -1528,6 +1528,7 @@
                 `;
               } else {
                 let isYa = q.hasilPengamatan !== 'Tidak Sesuai' && q.hasilPengamatan !== ''; // logic sederhana
+                let displayKeterangan = (q.hasilPengamatan === q.pertanyaan || q.hasilPengamatan === 'Sesuai') ? '' : q.hasilPengamatan;
                 tr.innerHTML = `
                     <td>${q.no}</td>
                     <td>${q.pertanyaan}</td>
@@ -1546,7 +1547,7 @@
                             <option value="Kritis" ${q.kategoriVal === 'Kritis' ? 'selected' : ''}>Kritis</option>
                         </select>
                     </td>
-                    <td><textarea id="keterangan_${index}" class="form-group" style="margin:0; padding:6px; min-height: 40px;">${q.hasilPengamatan}</textarea></td>
+                    <td><textarea id="keterangan_${index}" class="form-group" style="margin:0; padding:6px; min-height: 40px;">${displayKeterangan}</textarea></td>
                 `;
               }
               tbody.appendChild(tr);
