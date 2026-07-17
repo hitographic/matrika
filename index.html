@@ -1076,7 +1076,8 @@
                <button class="btn btn-outline" style="color:${item.hasAuditorSign ? 'green' : 'orange'}; padding: 5px 10px;" onclick="${item.hasAuditorSign ? '' : `openListSign('${item.id}', 'auditor')`}"><i class="fa-solid fa-user-check"></i> ${item.hasAuditorSign ? 'Auditor ✓' : 'TTD Auditor'}</button>
                <button class="btn btn-outline" style="color:${item.hasAuditeeSign ? 'green' : (item.hasAuditorSign ? 'orange' : 'gray')}; padding: 5px 10px;" onclick="${(item.hasAuditorSign && !item.hasAuditeeSign) ? `openListSign('${item.id}', 'auditee')` : (item.hasAuditeeSign ? '' : `warnAuditeeSign()`)}"><i class="fa-solid fa-pen-nib"></i> ${item.hasAuditeeSign ? 'Auditee ✓' : 'TTD Auditee'}</button>
              `;
-             primaryButton = `<button class="btn btn-outline" onclick="editData('${item.id}')"><i class="fa-solid fa-pen-to-square"></i> Lihat/Edit</button>`;
+             let previewDraftBtn = item.hasAuditorSign ? `<button class="btn btn-outline" onclick="previewData('${item.id}')"><i class="fa-solid fa-eye"></i> Preview</button>` : '';
+             primaryButton = `<button class="btn btn-outline" onclick="editData('${item.id}')"><i class="fa-solid fa-pen-to-square"></i> Lihat/Edit</button> ${previewDraftBtn}`;
           } else {
              primaryButton = `<button class="btn btn-outline" onclick="previewData('${item.id}')"><i class="fa-solid fa-eye"></i> Lihat (preview)</button>`;
           }
