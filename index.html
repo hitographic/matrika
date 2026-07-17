@@ -1588,6 +1588,11 @@
         document.getElementById('prevAuditorName').innerText = currentUser.nama;
         document.getElementById('prevAuditeeName').innerText = currentAuditee;
         
+        // Clear previous signatures & hash (if any)
+        document.getElementById('auditorSavedSignImg').src = '';
+        document.getElementById('auditeeSavedSignImg').src = '';
+        document.getElementById('prevHash').innerText = 'Menunggu Submit...';
+        
         document.getElementById('btnSimpanPreview').style.display = 'inline-flex';
 
         showModal('modalPreview');
