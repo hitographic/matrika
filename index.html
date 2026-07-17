@@ -647,9 +647,9 @@
   <div id="modalNewData" class="modal-overlay hidden">
     <div class="modal-content">
       <h3>Mulai Audit Baru</h3>
-      <div class="form-group" style="margin-top: 15px;">
-        <label>Nama Auditee</label>
-        <input type="text" id="inputAuditeeName" placeholder="Masukkan nama auditee">
+      <div class="form-group" id="inputAuditeeNameGroup" style="display: none;">
+        <!-- Element hide for backward compatibility if any -->
+        <input type="text" id="inputAuditeeName" value="(Menunggu TTD)">
       </div>
       <div class="form-group">
         <label>Departemen</label>
@@ -678,6 +678,7 @@
         </div>
         
         <div id="listSignAuditeeArea" class="hidden">
+          <input type="text" id="inputSignAuditeeName" class="form-group" placeholder="Nama Auditee..." style="width:100%; margin-bottom:10px; text-align:center;">
           <p>Silakan tanda tangan di bawah ini:</p>
           <canvas id="canvasListAuditee" class="sign-canvas" width="300" height="150"
             style="display:block; margin: 0 auto; height: 150px; max-width: 100%;"></canvas>
@@ -1101,7 +1102,6 @@
       // 4. FORM & CRUD LOGIC
       function showNewDataModal() {
         currentEditId = null;
-        document.getElementById('inputAuditeeName').value = '';
         
         const deptSelect = document.getElementById('inputDepartemen');
         deptSelect.innerHTML = '<option value="">- Memuat... -</option>';
@@ -1137,9 +1137,8 @@
       }
 
       function startNewAudit() {
-        const auditee = document.getElementById('inputAuditeeName').value;
+        const auditee = "(Menunggu TTD)";
         const dept = document.getElementById('inputDepartemen').value;
-        if (!auditee) { Swal.fire('Peringatan', 'Nama Auditee wajib diisi!', 'warning'); return; }
         if (!dept) { Swal.fire('Peringatan', 'Departemen wajib dipilih!', 'warning'); return; }
 
         currentAuditee = auditee;
@@ -1706,17 +1705,20 @@
             btn.innerHTML = 'Simpan TTD'; btn.disabled = false;
           });
         } else {
+          const auditeeName = document.getElementById('inputSignAuditeeName').value;
+          if (!auditeeName) { Swal.fire('Error', 'Nama Auditee wajib diisi!', 'error'); return; }
+
           const canvas = document.getElementById('canvasListAuditee');
           const dataUrl = canvas.toDataURL('image/png');
           btn.innerHTML = 'Menyimpan...'; btn.disabled = true;
-          submitListSign(id, role, dataUrl);
+          submitListSign(id, role, dataUrl, auditeeName);
         }
       }
 
-      function submitListSign(id, role, signatureData) {
+      function submitListSign(id, role, signatureData, auditeeName = null) {
         fetch(GAS_URL, {
           method: 'POST',
-          body: JSON.stringify({ action: 'updateSignature', id, role, signatureData, nik: currentUser.nik, ipAddress: userIpAddress })
+          body: JSON.stringify({ action: 'updateSignature', id, role, signatureData, nik: currentUser.nik, ipAddress: userIpAddress, auditeeName })
         }).then(r => r.json()).then(res => {
            if (res.success) {
               Swal.fire('Berhasil', res.message, 'success');
@@ -1732,7 +1734,10 @@
            const item = listData.find(d => d.id === id);
            if (item) {
               if (role === 'auditor') item.hasAuditorSign = true;
-              else item.hasAuditeeSign = true;
+              else {
+                 item.hasAuditeeSign = true;
+                 if (auditeeName) item.auditee = auditeeName;
+              }
               if (item.hasAuditorSign && item.hasAuditeeSign) item.status = 'Submitted';
            }
            renderList();

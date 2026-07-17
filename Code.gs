@@ -306,7 +306,7 @@ function handleDeleteData(id) {
   }
 }
 
-function handleUpdateSignature(id, role, signatureData, nik, ipAddress) {
+function handleUpdateSignature(id, role, signatureData, nik, ipAddress, auditeeName = null) {
   try {
     const sheet = getSheet("data_pengamatan");
     const data = sheet.getDataRange().getValues();
@@ -334,6 +334,10 @@ function handleUpdateSignature(id, role, signatureData, nik, ipAddress) {
     } else if (role === 'auditee') {
       sheet.getRange(rowIndex, 9).setValue(url);
       rowData[8] = url;
+      if (auditeeName) {
+         sheet.getRange(rowIndex, 4).setValue(auditeeName);
+         rowData[3] = auditeeName;
+      }
     }
     
     let status = rowData[6];
@@ -430,7 +434,7 @@ function doPost(e) {
         result = handleDeleteData(postData.id);
         break;
       case "updateSignature":
-        result = handleUpdateSignature(postData.id, postData.role, postData.signatureData, postData.nik, postData.ipAddress);
+        result = handleUpdateSignature(postData.id, postData.role, postData.signatureData, postData.nik, postData.ipAddress, postData.auditeeName);
         break;
       default:
         result = { success: false, message: "Action tidak dikenal." };
