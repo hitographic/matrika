@@ -161,16 +161,6 @@ function handleGetChecklist(kategori, departemen) {
         });
       }
     }
-    
-    // Fallback Mock Data jika sheet kosong (untuk demo)
-    if (questions.length === 0) {
-      questions = [
-        { no: "1.", type: 1, kriteria: "", pertanyaan: "KOMITMEN DAN TANGGUNG JAWAB" },
-        { no: "1.1.", type: 2, kriteria: "", pertanyaan: "KEBIJAKAN HALAL" },
-        { no: "1.1.c", type: 4, kriteria: "1", pertanyaan: "Ada kegiatan sosialisasi Kebijakan Halal; sebutkan bentuk sosialisasinya" }
-      ];
-    }
-    
     return { success: true, data: questions };
   } catch(e) {
     return { success: false, message: e.message };
@@ -386,35 +376,4 @@ function doPost(e) {
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ success: false, message: error.message })).setMimeType(ContentService.MimeType.JSON);
   }
-}
-
-// --- FUNGSI IMPORT DATA (JALANKAN SEKALI DARI EDITOR) ---
-// Pilih fungsi importWarehouseData di dropdown (atas) lalu klik "Run" / "Jalankan"
-function importWarehouseData() {
-  const sheet = getSheet("checklist_template");
-  
-  const questions = [
-    { no: "1.1.c", pertanyaan: "Ada kegiatan sosialisasi Kebijakan Halal; sebutkan bentuk sosialisasinya" },
-    { no: "2.f", pertanyaan: "Semua bahan baku (ingredient) memiliki kode label yang sesuai standard. Lakukan telusur kesesuaian secara fisik yang meliputi: nama supplier, principle, asal negara principle, COA" },
-    { no: "3.3.G.a", pertanyaan: "Penyimpanan di gudang dilakukan sesuai prosedur kehalalan dan terhindar dari kontaminasi bahan najis/haram:\n- Bahan baku, bahan tambahan, bahan kemasan dan pelengkap\n* Bahan baku pembuat kemasan dan pelengkap\n* Produk jadi kemasan dan pelengkap\n- Bahan penolong\n- Bahan pelumas, bahan pencucian" },
-    { no: "3.3.G.b", pertanyaan: "Semua bahan dan produk yang disimpan di gudang sudah jelas status kehalalannya" },
-    { no: "3.3.G.c", pertanyaan: "Gudang hanya digunakan untuk penyimpanan bahan dan produk yang tidak terkontaminasi bahan najis/haram" },
-    { no: "3.3.G.d", pertanyaan: "Dokumentasi penerimaan, penyimpanan dan pengeluaran bahan dan produk di gudang dilakukan dengan baik" },
-    { no: "3.3.G.e", pertanyaan: "Tangki-tangki penyimpanan (minyak goreng, air) dalam kondisi tertutup dan dapat mencegah masuknya bahan najis/haram atau benda asing" },
-    { no: "3.3.G.f", pertanyaan: "Alat untuk menangani atau memindahkan bahan dan produk (forklift, lori, reach truck, dll) dalam kondisi bersih dan tidak terkontaminasi bahan najis/haram" },
-    { no: "3.3.G.h", pertanyaan: "Bahan dan produk di gudang yang diketahui tidak memenuhi persyaratan kehalalan telah dipisahkan dan ditindaklanjuti sesuai prosedur" },
-    { no: "3.3.H.a", pertanyaan: "Dilakukan pemeriksaan kehalalan fisik alat transportasi pada saat dilakukan pembongkaran/unloading bahan atau produk" },
-    { no: "3.3.H.b", pertanyaan: "Dilakukan pemeriksaan kehalalan fisik alat transportasi pada saat dilakukan pemuatan/loading bahan atau produk" },
-    { no: "3.3.H.d", pertanyaan: "Alat transportasi yang diketahui tidak memenuhi persyaratan kehalalan telah dipisahkan dan ditindaklanjuti sesuai prosedur" },
-    { no: "4.2.b", pertanyaan: "Dapat dilakukan penelusuran produk dengan baik terhadap bahan yang digunakan dan proses yang dilakukan untuk produk tersebut" }
-  ];
-  
-  // Menggunakan kategori 'Halal' agar sinkron dengan tombol di aplikasi
-  const kategori = "Halal"; 
-
-  questions.forEach((q) => {
-    sheet.appendRow([kategori, q.no, q.pertanyaan]);
-  });
-  
-  Logger.log("Data dari Excel berhasil diimport ke sheet 'checklist_template'!");
 }
