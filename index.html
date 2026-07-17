@@ -1249,7 +1249,7 @@
           ketEl.style.borderColor = "var(--border)";
           
           Array.from(selectEl.options).forEach(opt => {
-            if (opt.value === 'Minor' || opt.value === 'Major' || opt.value === 'Kritis') {
+            if (opt.value !== 'C') {
               opt.disabled = true;
               opt.style.display = 'none';
             } else {
@@ -1257,7 +1257,7 @@
               opt.style.display = '';
             }
           });
-          if (selectEl.value !== '' && selectEl.value !== 'C') selectEl.value = 'C';
+          selectEl.value = 'C';
           
         } else {
           ketEl.placeholder = "Opsional...";
