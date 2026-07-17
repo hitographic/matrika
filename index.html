@@ -896,8 +896,8 @@
       let listData = []; // Cache list pengamatan
       let currentEditId = null; // Menyimpan ID saat sedang edit/update
 
-      // UI MANAGEMENT
-      function changeState(stateId) {
+      // ROUTING & UI MANAGEMENT
+      function changeState(stateId, updateHash = true) {
         ['stateLogin', 'stateMenu', 'stateList', 'stateForm'].forEach(id => {
           document.getElementById(id).classList.add('hidden');
         });
@@ -905,7 +905,44 @@
 
         if (stateId === 'stateLogin') document.getElementById('navbar').classList.add('hidden');
         else document.getElementById('navbar').classList.remove('hidden');
+        
+        if (updateHash) {
+          const stateMap = { 'stateLogin': 'login', 'stateMenu': 'kategori', 'stateList': 'list', 'stateForm': 'form' };
+          const targetHash = stateMap[stateId] || 'login';
+          if (window.location.hash !== '#' + targetHash) {
+            history.pushState(null, null, '#' + targetHash);
+          }
+        }
       }
+
+      function handleRoute() {
+        const hash = window.location.hash.replace('#', '');
+        const savedUser = sessionStorage.getItem('matrika_user');
+        
+        if (!savedUser && hash !== 'login') {
+          changeState('stateLogin', false);
+          history.replaceState(null, null, '#login');
+          return;
+        }
+        
+        if (hash === 'login') {
+          if (savedUser) { changeState('stateMenu', false); history.replaceState(null, null, '#kategori'); }
+          else changeState('stateLogin', false);
+        } else if (hash === 'kategori') {
+          changeState('stateMenu', false);
+        } else if (hash === 'list') {
+          if (currentCategory) changeState('stateList', false);
+          else { changeState('stateMenu', false); history.replaceState(null, null, '#kategori'); }
+        } else if (hash === 'form') {
+          if (currentCategory && currentAuditee) changeState('stateForm', false);
+          else { changeState('stateMenu', false); history.replaceState(null, null, '#kategori'); }
+        } else {
+          if (savedUser) { changeState('stateMenu', false); history.replaceState(null, null, '#kategori'); }
+          else changeState('stateLogin', false);
+        }
+      }
+      
+      window.addEventListener('hashchange', handleRoute);
 
       function showModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
       function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
@@ -928,6 +965,7 @@
           .then(res => {
             if (res.success) {
               currentUser = { nik, nama: res.nama };
+              sessionStorage.setItem('matrika_user', JSON.stringify(currentUser));
               document.getElementById('navAuditorName').innerText = res.nama;
               changeState('stateMenu');
               if (!localStorage.getItem('signature_' + currentUser.nik)) showModal('modalRegisterSignature');
@@ -940,6 +978,7 @@
             // Fallback Mock Login for testing frontend without backend update
             Swal.fire('Info', 'Mode Demo (Backend belum diperbarui). Login sebagai Guest.', 'info');
             currentUser = { nik: 'guest', nama: 'Auditor Demo' };
+            sessionStorage.setItem('matrika_user', JSON.stringify(currentUser));
             document.getElementById('navAuditorName').innerText = currentUser.nama;
             changeState('stateMenu');
             if (!localStorage.getItem('signature_' + currentUser.nik)) showModal('modalRegisterSignature');
@@ -951,9 +990,11 @@
       }
 
       function logout() {
+        sessionStorage.removeItem('matrika_user');
         currentUser = { nik: '', nama: '' };
         document.getElementById('loginForm').reset();
-        changeState('stateLogin');
+        window.location.hash = '#login';
+        changeState('stateLogin', false);
       }
 
       // 2. MENU LOGIC
@@ -1317,6 +1358,13 @@
         canvasAuditor = setupCanvas('canvasAuditor');
         canvasAuditee = setupCanvas('canvasAuditee');
         canvasRegisterSign = setupCanvas('canvasRegisterSign');
+        
+        const savedUser = sessionStorage.getItem('matrika_user');
+        if (savedUser) {
+           currentUser = JSON.parse(savedUser);
+           document.getElementById('navAuditorName').innerText = currentUser.nama;
+        }
+        handleRoute();
       });
 
       function clearCanvas(id) {
