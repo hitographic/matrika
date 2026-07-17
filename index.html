@@ -646,7 +646,9 @@
       </div>
       <div class="form-group">
         <label>Departemen</label>
-        <input type="text" id="inputDepartemen" placeholder="Contoh: Produksi 3 (Kriuk & Kremes)">
+        <select id="inputDepartemen">
+          <option value="">- Pilih Departemen -</option>
+        </select>
       </div>
       <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
         <button class="btn btn-outline" onclick="closeModal('modalNewData')">Batal</button>
@@ -1012,14 +1014,45 @@
       function showNewDataModal() {
         currentEditId = null;
         document.getElementById('inputAuditeeName').value = '';
-        document.getElementById('inputDepartemen').value = '';
+        
+        const deptSelect = document.getElementById('inputDepartemen');
+        deptSelect.innerHTML = '<option value="">- Memuat... -</option>';
+        
         showModal('modalNewData');
+        
+        // Fetch departemen list for current category
+        fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'getDepartemen', kategori: currentCategory })
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            deptSelect.innerHTML = '<option value="">- Pilih Departemen -</option>';
+            res.data.forEach(d => {
+              const opt = document.createElement('option');
+              opt.value = d.nama; // Saving department name
+              opt.textContent = d.nama;
+              deptSelect.appendChild(opt);
+            });
+            if (res.data.length === 0) {
+               deptSelect.innerHTML = '<option value="">- Belum ada departemen untuk kategori ini -</option>';
+            }
+          } else {
+             deptSelect.innerHTML = '<option value="">- Gagal memuat -</option>';
+          }
+        })
+        .catch(err => {
+            deptSelect.innerHTML = '<option value="">- Gagal memuat -</option>';
+            deptSelect.innerHTML += '<option value="Produksi (Demo)">Produksi (Demo)</option>';
+        });
       }
 
       function startNewAudit() {
         const auditee = document.getElementById('inputAuditeeName').value;
         const dept = document.getElementById('inputDepartemen').value;
         if (!auditee) { Swal.fire('Peringatan', 'Nama Auditee wajib diisi!', 'warning'); return; }
+        if (!dept) { Swal.fire('Peringatan', 'Departemen wajib dipilih!', 'warning'); return; }
 
         currentAuditee = auditee;
         currentDept = dept;

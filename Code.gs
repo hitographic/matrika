@@ -29,6 +29,9 @@ function getSheet(sheetName) {
     } else if (sheetName === 'audit_trail') {
        sheet = ss.insertSheet(sheetName);
        sheet.appendRow(['Timestamp', 'Action', 'NIK', 'IP_Address', 'Target_ID', 'Data_Hash']);
+    } else if (sheetName === 'list_departemen') {
+       sheet = ss.insertSheet(sheetName);
+       sheet.appendRow(['ID', 'Kategori', 'Departemen']);
     }
   }
   return sheet;
@@ -170,6 +173,28 @@ function handleGetChecklist(kategori) {
     return { success: false, message: e.message };
   }
 }
+
+function handleGetDepartemen(kategori) {
+  try {
+    const sheet = getSheet("list_departemen");
+    const data = sheet.getDataRange().getValues();
+    let depts = [];
+    
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][1]).trim().toUpperCase() === kategori.toUpperCase()) {
+        depts.push({
+          id: data[i][0],
+          nama: data[i][2]
+        });
+      }
+    }
+    
+    return { success: true, data: depts };
+  } catch(e) {
+    return { success: false, message: e.message };
+  }
+}
+
 
 function handleSaveData(formData, status) {
   try {
@@ -331,6 +356,9 @@ function doPost(e) {
         break;
       case "getChecklist":
         result = handleGetChecklist(postData.kategori);
+        break;
+      case "getDepartemen":
+        result = handleGetDepartemen(postData.kategori);
         break;
       case "saveDraft":
         result = handleSaveData(postData.formData, "Draft");
