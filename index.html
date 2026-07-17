@@ -865,8 +865,8 @@
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-          <button class="btn btn-outline" onclick="closeModal('modalPreview')">Kembali Edit</button>
-          <button class="btn btn-primary" onclick="saveData('Draft')"><i class="fa-solid fa-save"></i> Simpan Data</button>
+          <button class="btn btn-outline" onclick="closeModal('modalPreview')">Tutup</button>
+          <button class="btn btn-primary" id="btnSimpanPreview" onclick="saveData('Draft')"><i class="fa-solid fa-save"></i> Simpan Data</button>
         </div>
       </div>
     </div>
@@ -1063,11 +1063,15 @@
           const card = document.createElement('div');
           card.className = 'glass-card data-card';
           let signButtons = '';
+          let primaryButton = '';
           if (item.status === 'Draft') {
              signButtons = `
                <button class="btn btn-outline" style="color:${item.hasAuditorSign ? 'green' : 'orange'}; padding: 5px 10px;" onclick="${item.hasAuditorSign ? '' : `openListSign('${item.id}', 'auditor')`}"><i class="fa-solid fa-user-check"></i> ${item.hasAuditorSign ? 'Auditor ✓' : 'TTD Auditor'}</button>
-               <button class="btn btn-outline" style="color:${item.hasAuditeeSign ? 'green' : 'orange'}; padding: 5px 10px;" onclick="${item.hasAuditeeSign ? '' : `openListSign('${item.id}', 'auditee')`}"><i class="fa-solid fa-pen-nib"></i> ${item.hasAuditeeSign ? 'Auditee ✓' : 'TTD Auditee'}</button>
+               <button class="btn btn-outline" style="color:${item.hasAuditeeSign ? 'green' : (item.hasAuditorSign ? 'orange' : 'gray')}; padding: 5px 10px;" onclick="${(item.hasAuditorSign && !item.hasAuditeeSign) ? `openListSign('${item.id}', 'auditee')` : (item.hasAuditeeSign ? '' : `warnAuditeeSign()`)}"><i class="fa-solid fa-pen-nib"></i> ${item.hasAuditeeSign ? 'Auditee ✓' : 'TTD Auditee'}</button>
              `;
+             primaryButton = `<button class="btn btn-outline" onclick="editData('${item.id}')"><i class="fa-solid fa-pen-to-square"></i> Lihat/Edit</button>`;
+          } else {
+             primaryButton = `<button class="btn btn-outline" onclick="previewData('${item.id}')"><i class="fa-solid fa-eye"></i> Lihat (preview)</button>`;
           }
 
           card.innerHTML = `
@@ -1076,7 +1080,7 @@
                         <p><i class="fa-regular fa-calendar"></i> ${dateStr} &nbsp; <span class="${badgeClass}">${item.status}</span></p>
                     </div>
                     <div class="action-group">
-                        <button class="btn btn-outline" onclick="editData('${item.id}')"><i class="fa-solid fa-pen-to-square"></i> Lihat/Edit</button>
+                        ${primaryButton}
                         ${signButtons}
                         <button class="btn btn-outline" onclick="exportItemPDF('${item.id}')"><i class="fa-solid fa-file-pdf" style="color:red;"></i> PDF</button>
                         <button class="btn btn-danger" onclick="deleteData('${item.id}')"><i class="fa-solid fa-trash"></i></button>
@@ -1441,6 +1445,84 @@
         });
       }
 
+      function warnAuditeeSign() {
+        Swal.fire('Peringatan', 'Auditor harus menandatangani laporan terlebih dahulu sebelum Auditee dapat tanda tangan.', 'warning');
+      }
+
+      function previewData(id) {
+        Swal.fire({ title: 'Memuat Preview...', didOpen: () => Swal.showLoading() });
+        fetch(GAS_URL, {
+          method: 'POST', body: JSON.stringify({ action: 'getDetail', id: id })
+        }).then(res => res.json()).then(res => {
+          if (res.success) {
+            Swal.close();
+            const d = res.data;
+            
+            // Set Header Info
+            const cbHtml = `
+                <table style="width:100%; border:none; font-weight:bold; font-size: 14px;">
+                    <tr>
+                        <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'Halal' ? 'V' : '&nbsp;'}</div> Halal</td>
+                        <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'SMK3' ? 'V' : '&nbsp;'}</div> SMK3</td>
+                        <td style="border:none; padding:2px;"><div class="check-box" style="width:40px;">&nbsp;</div> .........</td>
+                    </tr>
+                    <tr>
+                        <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'ISO' ? 'V' : '&nbsp;'}</div> ISO</td>
+                        <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'SML' ? 'V' : '&nbsp;'}</div> SML</td>
+                        <td style="border:none; padding:2px;"></td>
+                    </tr>
+                    <tr>
+                        <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'FSSC' ? 'V' : '&nbsp;'}</div> FSSC</td>
+                        <td style="border:none; padding:2px;"><div class="check-box">${d.kategori === 'SME' ? 'V' : '&nbsp;'}</div> SME</td>
+                        <td style="border:none; padding:2px;"></td>
+                    </tr>
+                </table>
+            `;
+            document.getElementById('previewCheckboxes').innerHTML = cbHtml;
+            document.getElementById('prevDept').innerText = d.departemen;
+            document.getElementById('prevDate').innerText = new Date(d.tanggal).toLocaleDateString('id-ID');
+
+            const tbody = document.getElementById('previewTableBody');
+            tbody.innerHTML = '';
+            let counterPreview = 1;
+            
+            d.checklistData.forEach(row => {
+              const tr = document.createElement('tr');
+              tr.style.height = '1px';
+              if (row.type == 1 || row.type == 2 || row.type == 3) return;
+              if (!row.hasilPengamatan || row.hasilPengamatan.trim() === '') return;
+              
+              tr.innerHTML = `
+                  <td style="text-align:center; font-weight:bold;">${counterPreview++}</td>
+                  <td style="padding-left: 10px;">${row.hasilPengamatan || ''}</td>
+                  <td style="text-align:center;">${row.kriteria || '-'}</td>
+                  <td style="text-align:center;">${row.kategoriVal || '-'}</td>
+              `;
+              tbody.appendChild(tr);
+            });
+            const fillerTr = document.createElement('tr');
+            fillerTr.style.height = '100%';
+            fillerTr.innerHTML = '<td></td><td></td><td></td><td></td>';
+            tbody.appendChild(fillerTr);
+
+            document.getElementById('prevAuditorName').innerText = d.auditorName;
+            document.getElementById('prevAuditeeName').innerText = d.auditeeName;
+
+            document.getElementById('auditorSavedSignImg').src = d.auditorSignature || '';
+            document.getElementById('auditeeSavedSignImg').src = d.auditeeSignature || '';
+            document.getElementById('prevHash').innerText = d.hashIntegritas || "Belum disubmit";
+
+            document.getElementById('btnSimpanPreview').style.display = 'none';
+
+            showModal('modalPreview');
+          } else {
+            Swal.fire('Gagal', res.message, 'error');
+          }
+        }).catch(err => {
+            Swal.fire('Error', 'Belum tersambung ke backend.', 'error');
+        });
+      }
+
       function showPreview() {
         const cData = collectFormData();
         if (!cData) return; // Validation failed
@@ -1505,6 +1587,8 @@
         // Names
         document.getElementById('prevAuditorName').innerText = currentUser.nama;
         document.getElementById('prevAuditeeName').innerText = currentAuditee;
+        
+        document.getElementById('btnSimpanPreview').style.display = 'inline-flex';
 
         showModal('modalPreview');
       }
