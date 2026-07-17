@@ -142,7 +142,7 @@ function handleLogin(nik, password) {
   }
 }
 
-function handleGetChecklist(kategori) {
+function handleGetChecklist(kategori, departemen) {
   try {
     const sheet = getSheet("checklist_template");
     const data = sheet.getDataRange().getValues();
@@ -150,11 +150,14 @@ function handleGetChecklist(kategori) {
     
     for (let i = 1; i < data.length; i++) {
       if (String(data[i][0]).trim().toUpperCase() === kategori.toUpperCase()) {
+        if (departemen && String(data[i][1]).trim().toUpperCase() !== departemen.toUpperCase()) {
+            continue;
+        }
         questions.push({
-          no: data[i][1],
-          type: data[i][2],
-          kriteria: data[i][3],
-          pertanyaan: data[i][4]
+          no: data[i][2],
+          type: data[i][3],
+          kriteria: data[i][4],
+          pertanyaan: data[i][5]
         });
       }
     }
@@ -355,7 +358,7 @@ function doPost(e) {
         result = handleVerifySignature(postData.nik, postData.pin);
         break;
       case "getChecklist":
-        result = handleGetChecklist(postData.kategori);
+        result = handleGetChecklist(postData.kategori, postData.departemen);
         break;
       case "getDepartemen":
         result = handleGetDepartemen(postData.kategori);

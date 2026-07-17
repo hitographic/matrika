@@ -1070,7 +1070,7 @@
 
         fetch(GAS_URL, {
           method: 'POST',
-          body: JSON.stringify({ action: 'getChecklist', kategori: currentCategory })
+          body: JSON.stringify({ action: 'getChecklist', kategori: currentCategory, departemen: currentDept })
         })
           .then(res => res.json())
           .then(res => {
