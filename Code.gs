@@ -280,7 +280,8 @@ function handleGetList(auditorName) {
         checklistData: data[i][5], // Kirim string JSON agar bisa diproses Export di client
         status: data[i][6],
         hasAuditorSign: !!data[i][7],
-        hasAuditeeSign: !!data[i][8]
+        hasAuditeeSign: !!data[i][8],
+        departemen: data[i][10] || '-'
       });
     }
     list.reverse();

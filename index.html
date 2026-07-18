@@ -606,6 +606,18 @@
         </div>
       </div>
 
+      <div id="advancedSearch" class="glass-card" style="padding: 15px; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <input type="text" id="searchAuditee" placeholder="Cari Auditee..." class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0; padding: 10px;">
+        <input type="text" id="searchAuditor" placeholder="Cari Auditor..." class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0; padding: 10px;">
+        <input type="text" id="searchDept" placeholder="Cari Departemen..." class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0; padding: 10px;">
+        <select id="searchStatus" class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0; padding: 10px;">
+          <option value="">Semua Status</option>
+          <option value="Draft">Draft</option>
+          <option value="Submitted">Submitted</option>
+        </select>
+        <button class="btn btn-primary" onclick="renderList()"><i class="fa-solid fa-search"></i> Cari</button>
+      </div>
+
       <div id="listContainer">
         <!-- Card Data akan dirender di sini via JS -->
       </div>
@@ -1064,13 +1076,26 @@
 
       function renderList() {
         const container = document.getElementById('listContainer');
-        if (listData.length === 0) {
-          container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-light);">Belum ada data pengamatan.</div>';
+        const auditeeQ = (document.getElementById('searchAuditee') ? document.getElementById('searchAuditee').value.toLowerCase() : '');
+        const auditorQ = (document.getElementById('searchAuditor') ? document.getElementById('searchAuditor').value.toLowerCase() : '');
+        const deptQ = (document.getElementById('searchDept') ? document.getElementById('searchDept').value.toLowerCase() : '');
+        const statusQ = (document.getElementById('searchStatus') ? document.getElementById('searchStatus').value : '');
+
+        let filteredData = listData.filter(item => {
+           if (auditeeQ && !String(item.auditee).toLowerCase().includes(auditeeQ)) return false;
+           if (auditorQ && !String(item.auditor).toLowerCase().includes(auditorQ)) return false;
+           if (deptQ && !String(item.departemen || '').toLowerCase().includes(deptQ)) return false;
+           if (statusQ && item.status !== statusQ) return false;
+           return true;
+        });
+
+        if (filteredData.length === 0) {
+          container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-light);">Data tidak ditemukan.</div>';
           return;
         }
 
         container.innerHTML = '';
-        listData.forEach(item => {
+        filteredData.forEach(item => {
           const dateStr = new Date(item.tanggal).toLocaleDateString('id-ID');
           const badgeClass = item.status === 'Draft' ? 'badge draft' : 'badge submitted';
           const card = document.createElement('div');
@@ -1107,6 +1132,10 @@
                     <div class="data-info">
                         <h4>Auditee: ${item.auditee}</h4>
                         <p><i class="fa-regular fa-calendar"></i> ${dateStr} &nbsp; <span class="${badgeClass}">${item.status}</span></p>
+                        <p style="margin-top: 5px; font-size: 13px;">
+                            <i class="fa-solid fa-user-tie"></i> Auditor: ${item.auditor} &nbsp;|&nbsp; 
+                            <i class="fa-solid fa-building"></i> Dept: ${item.departemen || '-'}
+                        </p>
                     </div>
                     <div class="action-group">
                         ${actionHtml}
