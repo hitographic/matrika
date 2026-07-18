@@ -535,6 +535,7 @@
     <div style="font-weight: bold; font-size: 1.2rem;"><i class="fa-solid fa-clipboard-check"></i> Matrika Audit</div>
     <div style="display: flex; gap: 15px; align-items: center;">
       <span id="navAuditorName">Auditor</span>
+      <button class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.3);" onclick="showModal('modalRegisterSignature')"><i class="fa-solid fa-signature"></i> Ganti TTD</button>
       <button class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.3);" onclick="logout()"><i
           class="fa-solid fa-right-from-bracket"></i> Keluar</button>
     </div>
@@ -1076,15 +1077,30 @@
           card.className = 'glass-card data-card';
           let signButtons = '';
           let primaryButton = '';
-          if (item.status === 'Draft') {
-             signButtons = `
-               <button class="btn btn-outline" style="color:${item.hasAuditorSign ? 'green' : 'orange'}; padding: 5px 10px;" onclick="${item.hasAuditorSign ? '' : `openListSign('${item.id}', 'auditor')`}"><i class="fa-solid fa-user-check"></i> ${item.hasAuditorSign ? 'Auditor ✓' : 'TTD Auditor'}</button>
-               <button class="btn btn-outline" style="color:${item.hasAuditeeSign ? 'green' : (item.hasAuditorSign ? 'orange' : 'gray')}; padding: 5px 10px;" onclick="${(item.hasAuditorSign && !item.hasAuditeeSign) ? `openListSign('${item.id}', 'auditee')` : (item.hasAuditeeSign ? '' : `warnAuditeeSign()`)}"><i class="fa-solid fa-pen-nib"></i> ${item.hasAuditeeSign ? 'Auditee ✓' : 'TTD Auditee'}</button>
-             `;
-             let previewDraftBtn = item.hasAuditorSign ? `<button class="btn btn-outline" onclick="previewData('${item.id}')"><i class="fa-solid fa-eye"></i> Preview</button>` : '';
-             primaryButton = `<button class="btn btn-outline" onclick="editData('${item.id}')"><i class="fa-solid fa-pen-to-square"></i> Lihat/Edit</button> ${previewDraftBtn}`;
+          const isOwnerOrAdmin = (item.auditor === currentUser.nama) || (currentUser.role && currentUser.role.toLowerCase() === 'admin');
+          let actionHtml = '';
+
+          if (isOwnerOrAdmin) {
+              if (item.status === 'Draft') {
+                 signButtons = `
+                   <button class="btn btn-outline" style="color:${item.hasAuditorSign ? 'green' : 'orange'}; padding: 5px 10px;" onclick="${item.hasAuditorSign ? '' : `openListSign('${item.id}', 'auditor')`}"><i class="fa-solid fa-user-check"></i> ${item.hasAuditorSign ? 'Auditor ✓' : 'TTD Auditor'}</button>
+                   <button class="btn btn-outline" style="color:${item.hasAuditeeSign ? 'green' : (item.hasAuditorSign ? 'orange' : 'gray')}; padding: 5px 10px;" onclick="${(item.hasAuditorSign && !item.hasAuditeeSign) ? `openListSign('${item.id}', 'auditee')` : (item.hasAuditeeSign ? '' : `warnAuditeeSign()`)}"><i class="fa-solid fa-pen-nib"></i> ${item.hasAuditeeSign ? 'Auditee ✓' : 'TTD Auditee'}</button>
+                 `;
+                 let previewDraftBtn = item.hasAuditorSign ? `<button class="btn btn-outline" onclick="previewData('${item.id}')"><i class="fa-solid fa-eye"></i> Preview</button>` : '';
+                 primaryButton = `<button class="btn btn-outline" onclick="editData('${item.id}')"><i class="fa-solid fa-pen-to-square"></i> Lihat/Edit</button> ${previewDraftBtn}`;
+              } else {
+                 primaryButton = `<button class="btn btn-outline" onclick="previewData('${item.id}')"><i class="fa-solid fa-eye"></i> Lihat (preview)</button>`;
+              }
+
+              actionHtml = `
+                  ${primaryButton}
+                  ${signButtons}
+                  <button class="btn btn-outline" onclick="exportItemPDF('${item.id}')"><i class="fa-solid fa-file-pdf" style="color:red;"></i> PDF</button>
+                  <button class="btn btn-outline" onclick="exportItemExcel('${item.id}')"><i class="fa-solid fa-file-excel" style="color:green;"></i> Excel</button>
+                  <button class="btn btn-danger" onclick="deleteData('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+              `;
           } else {
-             primaryButton = `<button class="btn btn-outline" onclick="previewData('${item.id}')"><i class="fa-solid fa-eye"></i> Lihat (preview)</button>`;
+              actionHtml = `<span style="color: var(--text-light); font-size: 14px; font-style: italic;">Akses hanya untuk pembuat laporan atau Admin</span>`;
           }
 
           card.innerHTML = `
@@ -1093,10 +1109,7 @@
                         <p><i class="fa-regular fa-calendar"></i> ${dateStr} &nbsp; <span class="${badgeClass}">${item.status}</span></p>
                     </div>
                     <div class="action-group">
-                        ${primaryButton}
-                        ${signButtons}
-                        <button class="btn btn-outline" onclick="exportItemPDF('${item.id}')"><i class="fa-solid fa-file-pdf" style="color:red;"></i> PDF</button>
-                        <button class="btn btn-danger" onclick="deleteData('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                        ${actionHtml}
                     </div>
                 `;
           container.appendChild(card);
@@ -1672,6 +1685,10 @@
              Swal.fire('Info', 'Sebagai Guest, TTD Auditor akan diisi dummy.', 'info');
              submitListSign(id, 'auditor', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
              return;
+          } else if (!localStorage.getItem('signature_' + currentUser.nik)) {
+             Swal.fire('Info', 'Anda belum mendaftarkan tanda tangan. Silakan buat terlebih dahulu.', 'info');
+             showModal('modalRegisterSignature');
+             return;
           }
           document.getElementById('listSignTitle').innerText = 'Tanda Tangan Auditor';
           document.getElementById('listSignAuditorArea').classList.remove('hidden');
@@ -1881,6 +1898,79 @@
           a.click();
           document.body.removeChild(a);
           window.URL.revokeObjectURL(url);
+        });
+      }
+
+      function exportItemExcel(id) {
+        Swal.fire({ title: 'Menyiapkan Excel...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        fetch(GAS_URL, {
+          method: 'POST', body: JSON.stringify({ action: 'getDetail', id: id })
+        }).then(res => res.json()).then(res => {
+          if (res.success) {
+            Swal.close();
+            const d = res.data;
+            const dt = new Date(d.tanggal || new Date());
+            const dateStr = dt.toLocaleDateString('id-ID');
+            
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Laporan Audit");
+            
+            worksheet.columns = [
+              { header: 'NO.', key: 'no', width: 5 },
+              { header: 'HASIL PENGAMATAN', key: 'hasil', width: 60 },
+              { header: 'ELEMEN / KLAUSUL', key: 'kriteria', width: 20 },
+              { header: 'KATEGORI', key: 'kategori', width: 15 }
+            ];
+            
+            let counterExport = 1;
+            d.checklistData.forEach(row => {
+              if (row.type == 1 || row.type == 2 || row.type == 3) return;
+              if (!row.hasilPengamatan || row.hasilPengamatan.trim() === '') return;
+              
+              worksheet.addRow({
+                no: counterExport++,
+                hasil: row.hasilPengamatan || '',
+                kriteria: row.kriteria || '-',
+                kategori: row.kategoriVal || '-'
+              });
+            });
+            
+            // Insert Headers above data
+            worksheet.spliceRows(1, 0, 
+               ['PT INDOFOOD CBP SUKSES MAKMUR Tbk'],
+               ['DIVISI NOODLE - PABRIK CIBITUNG'],
+               [],
+               ['PENGAMATAN INTERNAL AUDIT', '', 'Kategori: ' + d.kategori],
+               ['Departemen:', d.departemen || "-"],
+               ['Tanggal:', dateStr],
+               ['Auditor:', d.auditorName],
+               ['Auditee:', d.auditeeName],
+               []
+            );
+            
+            worksheet.eachRow((row) => {
+              row.eachCell((cell) => {
+                cell.font = { name: 'Times New Roman', size: 11 };
+              });
+            });
+            
+            workbook.xlsx.writeBuffer().then((buffer) => {
+              const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `Audit_${d.auditeeName}_${d.kategori}.xlsx`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              window.URL.revokeObjectURL(url);
+            });
+            
+          } else {
+             Swal.fire('Gagal', res.message, 'error');
+          }
+        }).catch(err => {
+             Swal.fire('Error', 'Gagal menyiapkan Excel.', 'error');
         });
       }
 
