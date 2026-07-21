@@ -992,6 +992,27 @@
       
       window.addEventListener('hashchange', handleRoute);
 
+      window.addEventListener('beforeunload', function (e) {
+        if (window.location.hash === '#form') {
+          e.preventDefault();
+          e.returnValue = ''; // Memicu konfirmasi browser bawaan
+        }
+      });
+      
+      function autoSaveDraft() {
+        if (window.location.hash !== '#form') return;
+        const inputs = {};
+        currentQuestions.forEach((q, index) => {
+          if (q.type == 1 || q.type == 2 || q.type == 3) return;
+          inputs[index] = {
+            kesesuaian: document.querySelector(`input[name="kesesuaian_${index}"]:checked`)?.value || '',
+            kategori: document.getElementById(`kategori_${index}`)?.value || '',
+            keterangan: document.getElementById(`keterangan_${index}`)?.value || ''
+          };
+        });
+        sessionStorage.setItem('matrika_autosave', JSON.stringify(inputs));
+      }
+
       function showModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
       function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
 
@@ -1159,6 +1180,7 @@
 
       // 4. FORM & CRUD LOGIC
       function showNewDataModal() {
+        sessionStorage.removeItem('matrika_autosave');
         currentEditId = null;
         
         const deptSelect = document.getElementById('inputDepartemen');
@@ -1239,6 +1261,12 @@
       function renderChecklist() {
         const tbody = document.getElementById('checklistBody');
         tbody.innerHTML = '';
+        
+        let savedDraft = {};
+        try {
+           savedDraft = JSON.parse(sessionStorage.getItem('matrika_autosave') || '{}');
+        } catch(e) {}
+
         currentQuestions.forEach((q, index) => {
           const tr = document.createElement('tr');
           if (q.type == 1 || q.type == 2 || q.type == 3) {
@@ -1249,27 +1277,33 @@
                 <td colspan="5">${q.pertanyaan}</td>
             `;
           } else {
+            let saved = savedDraft[index] || {};
+            let isYa = saved.kesesuaian === 'Ya';
+            let isTidak = saved.kesesuaian === 'Tidak';
+            let kategori = saved.kategori || '';
+            let keterangan = saved.keterangan || '';
+
             tr.innerHTML = `
                 <td>${q.no}</td>
                 <td>${q.pertanyaan}</td>
                 <td style="text-align: center; font-weight: 500;">${q.kriteria || ''}</td>
                 <td>
                     <div class="radio-group">
-                        <label><input type="radio" name="kesesuaian_${index}" value="Ya" data-waschecked="false" onclick="toggleRadio(this, ${index})"> Ya</label>
-                        <label><input type="radio" name="kesesuaian_${index}" value="Tidak" data-waschecked="false" onclick="toggleRadio(this, ${index})"> Tidak</label>
+                        <label><input type="radio" name="kesesuaian_${index}" value="Ya" data-waschecked="${isYa}" ${isYa ? 'checked' : ''} onclick="toggleRadio(this, ${index})"> Ya</label>
+                        <label><input type="radio" name="kesesuaian_${index}" value="Tidak" data-waschecked="${isTidak}" ${isTidak ? 'checked' : ''} onclick="toggleRadio(this, ${index})"> Tidak</label>
                     </div>
                 </td>
                 <td>
                     <select id="kategori_${index}" class="form-group" style="margin:0; padding: 6px;">
                         <option value="">- Pilih -</option>
-                        <option value="C">C (Conformance)</option>
-                        <option value="Minor">Minor</option>
-                        <option value="Major">Major</option>
-                        <option value="Kritis">Kritis</option>
+                        <option value="C" ${kategori === 'C' ? 'selected' : ''}>C (Conformance)</option>
+                        <option value="Minor" ${kategori === 'Minor' ? 'selected' : ''}>Minor</option>
+                        <option value="Major" ${kategori === 'Major' ? 'selected' : ''}>Major</option>
+                        <option value="Kritis" ${kategori === 'Kritis' ? 'selected' : ''}>Kritis</option>
                     </select>
                 </td>
                 <td>
-                    <textarea id="keterangan_${index}" class="form-group" style="margin:0; padding:6px; min-height: 40px;" placeholder="Isi jika diperlukan..."></textarea>
+                    <textarea id="keterangan_${index}" class="form-group" style="margin:0; padding:6px; min-height: 40px;" placeholder="Isi jika diperlukan...">${keterangan}</textarea>
                 </td>
             `;
           }
@@ -1465,6 +1499,10 @@
              document.getElementById('btnExportExcelList').style.display = 'inline-flex';
            }
         }
+        
+        document.getElementById('checklistBody').addEventListener('input', autoSaveDraft);
+        document.getElementById('checklistBody').addEventListener('change', autoSaveDraft);
+        
         loadSessionState();
         handleRoute();
       });
@@ -1811,7 +1849,8 @@
       }
 
       // CRUD & EXPORT LOGIC
-      function editData(id) {
+      function editData(id, isUserClick = true) {
+        if (isUserClick) sessionStorage.removeItem('matrika_autosave');
         Swal.fire({ title: 'Memuat data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
         fetch(GAS_URL, {
           method: 'POST', body: JSON.stringify({ action: 'getDetail', id: id })
@@ -1840,10 +1879,25 @@
                     <td colspan="5">${q.pertanyaan}</td>
                 `;
               } else {
-                let isUnchecked = q.hasilPengamatan === '';
-                let isYa = !isUnchecked && q.hasilPengamatan !== 'Tidak Sesuai' && (q.kategoriVal === 'C' || q.kategoriVal === '');
-                let isTidak = !isUnchecked && !isYa;
-                let displayKeterangan = (q.hasilPengamatan === q.pertanyaan || q.hasilPengamatan === 'Sesuai') ? '' : q.hasilPengamatan;
+                let savedDraft = {};
+                try { savedDraft = JSON.parse(sessionStorage.getItem('matrika_autosave') || '{}'); } catch(e) {}
+                let saved = savedDraft[index];
+                
+                let isYa, isTidak, displayKeterangan, kategoriVal;
+                
+                if (saved) {
+                   isYa = saved.kesesuaian === 'Ya';
+                   isTidak = saved.kesesuaian === 'Tidak';
+                   kategoriVal = saved.kategori || '';
+                   displayKeterangan = saved.keterangan || '';
+                } else {
+                   let isUnchecked = q.hasilPengamatan === '';
+                   isYa = !isUnchecked && q.hasilPengamatan !== 'Tidak Sesuai' && (q.kategoriVal === 'C' || q.kategoriVal === '');
+                   isTidak = !isUnchecked && !isYa;
+                   displayKeterangan = (q.hasilPengamatan === q.pertanyaan || q.hasilPengamatan === 'Sesuai') ? '' : q.hasilPengamatan;
+                   kategoriVal = q.kategoriVal;
+                }
+
                 tr.innerHTML = `
                     <td>${q.no}</td>
                     <td>${q.pertanyaan}</td>
@@ -1857,15 +1911,16 @@
                     <td>
                         <select id="kategori_${index}" class="form-group" style="margin:0; padding: 6px;">
                             <option value="">- Pilih -</option>
-                            <option value="C" ${q.kategoriVal === 'C' ? 'selected' : ''}>C (Conformance)</option>
-                            <option value="Minor" ${q.kategoriVal === 'Minor' ? 'selected' : ''}>Minor</option>
-                            <option value="Major" ${q.kategoriVal === 'Major' ? 'selected' : ''}>Major</option>
-                            <option value="Kritis" ${q.kategoriVal === 'Kritis' ? 'selected' : ''}>Kritis</option>
+                            <option value="C" ${kategoriVal === 'C' ? 'selected' : ''}>C (Conformance)</option>
+                            <option value="Minor" ${kategoriVal === 'Minor' ? 'selected' : ''}>Minor</option>
+                            <option value="Major" ${kategoriVal === 'Major' ? 'selected' : ''}>Major</option>
+                            <option value="Kritis" ${kategoriVal === 'Kritis' ? 'selected' : ''}>Kritis</option>
                         </select>
                     </td>
                     <td><textarea id="keterangan_${index}" class="form-group" style="margin:0; padding:6px; min-height: 40px;">${displayKeterangan}</textarea></td>
                 `;
               }
+
               tbody.appendChild(tr);
               if (q.type != 1 && q.type != 2 && q.type != 3) {
                 checkKeterangan(index);
