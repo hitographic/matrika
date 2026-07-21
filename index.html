@@ -697,9 +697,27 @@
         <div id="listSignAuditeeArea" class="hidden">
           <input type="text" id="inputSignAuditeeName" class="form-group" placeholder="Nama Auditee..." style="width:100%; margin-bottom:10px; text-align:center;">
           <p>Silakan tanda tangan di bawah ini:</p>
-          <canvas id="canvasListAuditee" class="sign-canvas" width="300" height="150"
-            style="display:block; margin: 0 auto; height: 150px; max-width: 100%;"></canvas>
-          <div style="font-size: 10px; cursor: pointer; color: blue; margin-top:5px;" onclick="clearCanvas('canvasListAuditee')">Ulangi TTD</div>
+          <div class="sign-toolbar" style="display: flex; gap: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 8px 8px 0 0; border: 1px solid var(--border); border-bottom: none;">
+            <div style="display: flex; gap: 6px;">
+              <div class="color-btn active" style="width: 22px; height: 22px; border-radius: 50%; background: #000000; cursor: pointer; border: 2px solid white; box-shadow: 0 0 0 1px #000;" onclick="setSignColor(this, '#000000')"></div>
+              <div class="color-btn" style="width: 22px; height: 22px; border-radius: 50%; background: #333333; cursor: pointer; border: 2px solid transparent;" onclick="setSignColor(this, '#333333')"></div>
+              <div class="color-btn" style="width: 22px; height: 22px; border-radius: 50%; background: #00008B; cursor: pointer; border: 2px solid transparent;" onclick="setSignColor(this, '#00008B')"></div>
+              <div class="color-btn" style="width: 22px; height: 22px; border-radius: 50%; background: #1E90FF; cursor: pointer; border: 2px solid transparent;" onclick="setSignColor(this, '#1E90FF')"></div>
+            </div>
+            <div style="width: 1px; height: 20px; background: #cbd5e1; margin: 0 5px;"></div>
+            <input type="range" min="1" max="6" value="3" style="width: 70px; cursor: pointer;" oninput="setSignThickness(this.value)">
+            <div style="flex-grow: 1;"></div>
+            <label style="cursor: pointer; color: var(--secondary); margin: 0; font-size: 16px;" title="Upload Gambar TTD">
+              <i class="fa-solid fa-image"></i>
+              <input type="file" accept="image/*" style="display:none;" onchange="handleSignUpload(event, 'canvasListAuditee')">
+            </label>
+            <div style="cursor: pointer; color: #ef4444; margin-left: 12px; font-size: 16px;" title="Hapus Canvas" onclick="clearCanvas('canvasListAuditee')">
+              <i class="fa-solid fa-trash-can"></i>
+            </div>
+          </div>
+          <div style="background: #fff; border: 1px solid var(--border); border-radius: 0 0 8px 8px; overflow: hidden;">
+            <canvas id="canvasListAuditee" class="sign-canvas" width="300" height="150" style="display:block; margin: 0 auto; width: 100%; height: 150px; border:none;"></canvas>
+          </div>
         </div>
 
         <div class="action-group" style="margin-top: 20px; justify-content: center;">
@@ -715,14 +733,29 @@
       <h3>Daftarkan Tanda Tangan Anda</h3>
       <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Syarat sah TTE (UU ITE): Buat tanda tangan digital
         Anda dan lindungi dengan <b>6 digit PIN</b>.</p>
-      <div
-        style="background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 15px; overflow: hidden; position: relative;">
+        
+      <div class="sign-toolbar" style="display: flex; gap: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 8px 8px 0 0; border: 1px solid var(--border); border-bottom: none;">
+        <div style="display: flex; gap: 6px;">
+          <div class="color-btn active" style="width: 22px; height: 22px; border-radius: 50%; background: #000000; cursor: pointer; border: 2px solid white; box-shadow: 0 0 0 1px #000;" onclick="setSignColor(this, '#000000')"></div>
+          <div class="color-btn" style="width: 22px; height: 22px; border-radius: 50%; background: #333333; cursor: pointer; border: 2px solid transparent;" onclick="setSignColor(this, '#333333')"></div>
+          <div class="color-btn" style="width: 22px; height: 22px; border-radius: 50%; background: #00008B; cursor: pointer; border: 2px solid transparent;" onclick="setSignColor(this, '#00008B')"></div>
+          <div class="color-btn" style="width: 22px; height: 22px; border-radius: 50%; background: #1E90FF; cursor: pointer; border: 2px solid transparent;" onclick="setSignColor(this, '#1E90FF')"></div>
+        </div>
+        <div style="width: 1px; height: 20px; background: #cbd5e1; margin: 0 5px;"></div>
+        <input type="range" min="1" max="6" value="3" style="width: 70px; cursor: pointer;" oninput="setSignThickness(this.value)">
+        <div style="flex-grow: 1;"></div>
+        <label style="cursor: pointer; color: var(--secondary); margin: 0; font-size: 16px;" title="Upload Gambar TTD">
+          <i class="fa-solid fa-image"></i>
+          <input type="file" accept="image/*" style="display:none;" onchange="handleSignUpload(event, 'canvasRegisterSign')">
+        </label>
+        <div style="cursor: pointer; color: #ef4444; margin-left: 12px; font-size: 16px;" title="Hapus Canvas" onclick="clearCanvas('canvasRegisterSign')">
+          <i class="fa-solid fa-trash-can"></i>
+        </div>
+      </div>
+      <div style="background: #fff; border: 1px solid var(--border); border-radius: 0 0 8px 8px; margin-bottom: 25px; overflow: hidden; position: relative;">
         <canvas id="canvasRegisterSign" class="sign-canvas" width="400" height="150"
           style="width:100%; height: 150px; border:none; margin:0; display: block;"></canvas>
       </div>
-      <div
-        style="font-size: 13px; cursor: pointer; color: var(--secondary); font-weight: 500; margin-bottom: 25px; text-align: center;"
-        onclick="clearCanvas('canvasRegisterSign')"><i class="fa-solid fa-eraser"></i> Hapus / Ulangi Goresan</div>
 
       <div style="display: flex; gap: 15px; margin-bottom: 25px; justify-content: center;">
         <input type="password" id="regPin" placeholder="PIN" maxlength="6" class="form-group"
@@ -1436,10 +1469,10 @@
           canvas.width = rect.width * dpr;
           canvas.height = rect.height * dpr;
           ctx.scale(dpr, dpr);
-          ctx.lineWidth = 3;
+          ctx.lineWidth = currentSignThickness;
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
-          ctx.strokeStyle = '#000';
+          ctx.strokeStyle = currentSignColor;
 
           // Restore
           const img = new Image();
@@ -1481,7 +1514,138 @@
           }
         };
         canvas.onmouseup = canvas.ontouchend = () => { isDrawing = false; lastPos = null; };
+        canvas.onmouseleave = () => { isDrawing = false; lastPos = null; };
         return canvas;
+      }
+
+      function clearCanvas(id) {
+        const canvas = document.getElementById(id);
+        const ctx = canvas.getContext('2d');
+        const logicalWidth = canvas.width / (window.devicePixelRatio || 1);
+        const logicalHeight = canvas.height / (window.devicePixelRatio || 1);
+        ctx.clearRect(0, 0, logicalWidth, logicalHeight);
+      }
+
+      let currentSignColor = '#000000';
+      let currentSignThickness = 3;
+
+      function setSignColor(btn, color) {
+        const parent = btn.closest('.sign-toolbar');
+        parent.querySelectorAll('.color-btn').forEach(el => {
+          el.classList.remove('active');
+          el.style.border = '2px solid transparent';
+          el.style.boxShadow = 'none';
+        });
+        btn.classList.add('active');
+        btn.style.border = '2px solid white';
+        btn.style.boxShadow = '0 0 0 1px ' + color;
+
+        currentSignColor = color;
+        updateAllCanvasContexts();
+      }
+
+      function setSignThickness(val) {
+        currentSignThickness = parseInt(val);
+        updateAllCanvasContexts();
+      }
+
+      function updateAllCanvasContexts() {
+        ['canvasListAuditee', 'canvasRegisterSign'].forEach(id => {
+          const c = document.getElementById(id);
+          if(c) {
+            const ctx = c.getContext('2d');
+            ctx.strokeStyle = currentSignColor;
+            ctx.lineWidth = currentSignThickness;
+          }
+        });
+      }
+
+      function handleSignUpload(event, canvasId) {
+        const file = event.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            processUploadedSignature(img, canvasId);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        event.target.value = '';
+      }
+
+      function processUploadedSignature(img, canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if(!canvas) return;
+        const ctx = canvas.getContext('2d');
+        
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = img.width;
+        tempCanvas.height = img.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(img, 0, 0);
+        
+        const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        const data = imgData.data;
+        
+        let targetR = 0, targetG = 0, targetB = 0;
+        if(currentSignColor === '#000000') { targetR=0; targetG=0; targetB=0; }
+        else if(currentSignColor === '#333333') { targetR=51; targetG=51; targetB=51; }
+        else if(currentSignColor === '#00008B') { targetR=0; targetG=0; targetB=139; }
+        else if(currentSignColor === '#1E90FF') { targetR=30; targetG=144; targetB=255; }
+        
+        let minX = tempCanvas.width, minY = tempCanvas.height, maxX = 0, maxY = 0;
+        
+        for(let i = 0; i < data.length; i += 4) {
+          let r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+          let brightness = (r + g + b) / 3;
+          if(brightness > 200 || a < 50) {
+             data[i+3] = 0;
+          } else {
+             data[i] = targetR;
+             data[i+1] = targetG;
+             data[i+2] = targetB;
+             data[i+3] = 255;
+             
+             let x = (i / 4) % tempCanvas.width;
+             let y = Math.floor((i / 4) / tempCanvas.width);
+             if(x < minX) minX = x;
+             if(x > maxX) maxX = x;
+             if(y < minY) minY = y;
+             if(y > maxY) maxY = y;
+          }
+        }
+        
+        if (minX > maxX || minY > maxY) {
+           Swal.fire('Gagal', 'Tanda tangan tidak terdeteksi pada gambar.', 'error');
+           return;
+        }
+        
+        tempCtx.putImageData(imgData, 0, 0);
+        let cropWidth = maxX - minX;
+        let cropHeight = maxY - minY;
+        
+        const croppedCanvas = document.createElement('canvas');
+        croppedCanvas.width = cropWidth;
+        croppedCanvas.height = cropHeight;
+        const croppedCtx = croppedCanvas.getContext('2d');
+        croppedCtx.drawImage(tempCanvas, minX, minY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+        
+        const dpr = window.devicePixelRatio || 1;
+        const logicalWidth = canvas.width / dpr;
+        const logicalHeight = canvas.height / dpr;
+        
+        ctx.clearRect(0, 0, logicalWidth, logicalHeight);
+        
+        const padding = 20;
+        const scale = Math.min((logicalWidth - padding) / cropWidth, (logicalHeight - padding) / cropHeight);
+        const drawWidth = cropWidth * scale;
+        const drawHeight = cropHeight * scale;
+        const dx = (logicalWidth - drawWidth) / 2;
+        const dy = (logicalHeight - drawHeight) / 2;
+        
+        ctx.drawImage(croppedCanvas, 0, 0, cropWidth, cropHeight, dx, dy, drawWidth, drawHeight);
       }
 
       let canvasListAuditee, canvasRegisterSign;
