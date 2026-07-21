@@ -1057,7 +1057,7 @@
 
         fetch(GAS_URL, {
           method: 'POST',
-          body: JSON.stringify({ action: 'getList', auditorName: currentUser.nama })
+          body: JSON.stringify({ action: 'getList', auditorName: currentUser.nama, kategori: currentCategory })
         })
           .then(res => res.json())
           .then(res => {

@@ -266,20 +266,21 @@ function handleSaveData(formData, status) {
   }
 }
 
-function handleGetList(auditorName) {
+function handleGetList(auditorName, kategori) {
   try {
     const sheet = getSheet("data_pengamatan");
     const data = sheet.getDataRange().getValues();
     let list = [];
     
     for (let i = 1; i < data.length; i++) {
+      if (kategori && data[i][4] !== kategori) continue;
+      
       list.push({
         id: data[i][0],
         tanggal: data[i][1],
         auditor: data[i][2],
         auditee: data[i][3],
         kategori: data[i][4],
-        checklistData: data[i][5], // Kirim string JSON agar bisa diproses Export di client
         status: data[i][6],
         hasAuditorSign: !!data[i][7],
         hasAuditeeSign: !!data[i][8],
@@ -428,7 +429,7 @@ function doPost(e) {
         result = handleSaveData(postData.formData, "Submitted");
         break;
       case "getList":
-        result = handleGetList(postData.auditorName);
+        result = handleGetList(postData.auditorName, postData.kategori);
         break;
       case "getDetail":
         result = handleGetDetail(postData.id);
