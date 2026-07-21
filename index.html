@@ -1597,23 +1597,44 @@
         
         let minX = tempCanvas.width, minY = tempCanvas.height, maxX = 0, maxY = 0;
         
+        let minB = 255;
+        let totalB = 0;
+        let brightnesses = new Uint8Array(data.length / 4);
+        
         for(let i = 0; i < data.length; i += 4) {
-          let r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
-          let brightness = (r + g + b) / 3;
-          if(brightness > 200 || a < 50) {
+          let b = Math.round((data[i] + data[i+1] + data[i+2]) / 3);
+          brightnesses[i/4] = b;
+          if (b < minB) minB = b;
+          totalB += b;
+        }
+        
+        let avgB = totalB / (data.length / 4);
+        let threshold = minB + (avgB - minB) * 0.6; 
+        
+        for(let i = 0; i < data.length; i += 4) {
+          let b = brightnesses[i/4];
+          let a = data[i+3];
+          
+          if(b >= threshold || a < 50) {
              data[i+3] = 0;
           } else {
+             let alpha = Math.round(((threshold - b) / (threshold - minB)) * 255);
+             if (alpha > 255) alpha = 255;
+             if (alpha < 0) alpha = 0;
+             
              data[i] = targetR;
              data[i+1] = targetG;
              data[i+2] = targetB;
-             data[i+3] = 255;
+             data[i+3] = alpha;
              
-             let x = (i / 4) % tempCanvas.width;
-             let y = Math.floor((i / 4) / tempCanvas.width);
-             if(x < minX) minX = x;
-             if(x > maxX) maxX = x;
-             if(y < minY) minY = y;
-             if(y > maxY) maxY = y;
+             if (alpha > 20) {
+                 let x = (i / 4) % tempCanvas.width;
+                 let y = Math.floor((i / 4) / tempCanvas.width);
+                 if(x < minX) minX = x;
+                 if(x > maxX) maxX = x;
+                 if(y < minY) minY = y;
+                 if(y > maxY) maxY = y;
+             }
           }
         }
         
