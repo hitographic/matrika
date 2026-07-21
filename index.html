@@ -924,7 +924,7 @@
            
            if(currentCategory) {
                document.getElementById('listTitle').innerText = `Data Pengamatan - ${currentCategory}`;
-               document.getElementById('formCategoryTitle').innerText = currentCategory;
+               document.getElementById('formCategoryTitle').innerText = currentCategory + (currentDept ? ' - ' + currentDept : '');
            }
            if(currentAuditee) {
                document.getElementById('formAuditeeLabel').innerText = currentAuditee;
@@ -1191,7 +1191,7 @@
         currentDept = dept;
         saveSessionState();
         document.getElementById('formAuditeeLabel').innerText = auditee;
-        document.getElementById('formCategoryTitle').innerText = currentCategory;
+        document.getElementById('formCategoryTitle').innerText = currentCategory + (currentDept ? ' - ' + currentDept : '');
 
         closeModal('modalNewData');
         changeState('stateForm');
@@ -1814,7 +1814,7 @@
             saveSessionState();
 
             document.getElementById('formAuditeeLabel').innerText = currentAuditee;
-            document.getElementById('formCategoryTitle').innerText = currentCategory;
+            document.getElementById('formCategoryTitle').innerText = currentCategory + (currentDept ? ' - ' + currentDept : '');
 
             const tbody = document.getElementById('checklistBody');
             tbody.innerHTML = '';
