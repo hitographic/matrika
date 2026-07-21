@@ -967,10 +967,22 @@
         } else if (hash === 'kategori') {
           changeState('stateMenu', false);
         } else if (hash === 'list') {
-          if (currentCategory) changeState('stateList', false);
+          if (currentCategory) {
+            changeState('stateList', false);
+            loadListData();
+          }
           else { changeState('stateMenu', false); history.replaceState(null, null, '#kategori'); }
         } else if (hash === 'form') {
-          if (currentCategory && currentAuditee) changeState('stateForm', false);
+          if (currentCategory && currentAuditee) {
+            changeState('stateForm', false);
+            if (currentEditId) {
+                editData(currentEditId);
+            } else if (currentQuestions && currentQuestions.length > 0) {
+                renderChecklist();
+            } else {
+                loadChecklistQuestions();
+            }
+          }
           else { changeState('stateMenu', false); history.replaceState(null, null, '#kategori'); }
         } else {
           if (savedUser) { changeState('stateMenu', false); history.replaceState(null, null, '#kategori'); }
