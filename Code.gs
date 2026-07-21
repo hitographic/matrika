@@ -196,13 +196,14 @@ function handleSaveData(formData, status) {
     let id = formData.id;
     let isUpdate = false;
     let rowIndex = -1;
-    
+    let existingData = [];
     if (id) {
       isUpdate = true;
       const data = sheet.getDataRange().getValues();
       for (let i = 1; i < data.length; i++) {
         if (data[i][0] === id) {
           rowIndex = i + 1;
+          existingData = data[i];
           break;
         }
       }
@@ -210,9 +211,10 @@ function handleSaveData(formData, status) {
       id = Utilities.getUuid();
     }
     
-    let urlAuditor = formData.auditorSignature || "";
-    let urlAuditee = formData.auditeeSignature || "";
-    let hashIntegritas = "";
+    let urlAuditor = formData.auditorSignature || (existingData[7] || "");
+    let urlAuditee = formData.auditeeSignature || (existingData[8] || "");
+    let hashIntegritas = existingData[9] || "";
+    let savedDepartemen = formData.departemen || (existingData[10] || "-");
 
     if (status === 'Submitted') {
        if (urlAuditor.startsWith('data:image')) {
@@ -249,7 +251,7 @@ function handleSaveData(formData, status) {
       urlAuditor,
       urlAuditee,
       hashIntegritas,
-      formData.departemen || '-'
+      savedDepartemen
     ];
 
     if (isUpdate && rowIndex > -1) {
