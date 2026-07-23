@@ -2218,6 +2218,13 @@
         
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Pengamatan");
+
+        const thinBorder = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
         
         worksheet.columns = [
           { header: 'ID', key: 'id', width: 20 },
@@ -2239,10 +2246,20 @@
           });
         });
         
-        worksheet.eachRow((row) => {
-          row.eachCell((cell) => {
-            cell.font = { name: 'Times New Roman', size: 11 };
-          });
+        worksheet.getRow(1).eachCell((cell) => {
+          cell.font = { name: 'Times New Roman', size: 11, bold: true };
+          cell.alignment = { vertical: 'middle', horizontal: 'center' };
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F2F2F2' } };
+          cell.border = thinBorder;
+        });
+
+        worksheet.eachRow((row, rowNumber) => {
+          if (rowNumber > 1) {
+            row.eachCell((cell) => {
+              cell.font = { name: 'Times New Roman', size: 11 };
+              cell.border = thinBorder;
+            });
+          }
         });
         
         workbook.xlsx.writeBuffer().then((buffer) => {
@@ -2267,49 +2284,206 @@
             Swal.close();
             const d = res.data;
             const dt = new Date(d.tanggal || new Date());
-            const dateStr = dt.toLocaleDateString('id-ID');
+            const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            const dateStr = `${dt.getDate()} ${months[dt.getMonth()]} ${dt.getFullYear()}`;
             
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet("Laporan Audit");
+
+            worksheet.pageSetup = { paperSize: 9, orientation: 'portrait', fitToWidth: 1, fitToHeight: 1 };
             
             worksheet.columns = [
-              { header: 'NO.', key: 'no', width: 5 },
-              { header: 'HASIL PENGAMATAN', key: 'hasil', width: 60 },
-              { header: 'ELEMEN / KLAUSUL', key: 'kriteria', width: 20 },
-              { header: 'KATEGORI', key: 'kategori', width: 15 }
+              { key: 'colA', width: 8 },
+              { key: 'colB', width: 65 },
+              { key: 'colC', width: 22 },
+              { key: 'colD', width: 18 }
             ];
-            
+
+            const thinBorder = {
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' }
+            };
+
+            // 1. Header Rows (Company & Document info)
+            worksheet.mergeCells('A1:B2');
+            const cellA1 = worksheet.getCell('A1');
+            cellA1.value = "PT INDOFOOD CBP SUKSES MAKMUR Tbk\nDIVISI NOODLE - PABRIK CIBITUNG";
+            cellA1.font = { name: 'Times New Roman', size: 12, bold: true };
+            cellA1.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+
+            worksheet.getCell('C1').value = "Kode Form";
+            worksheet.getCell('D1').value = ": MGT - 003";
+            worksheet.getCell('C2').value = "No. Terbitan";
+            worksheet.getCell('D2').value = ": 2.0";
+            worksheet.getCell('C3').value = "Tgl. Efektif";
+            worksheet.getCell('D3').value = ": 02 Oktober 2023";
+            worksheet.getCell('C4').value = "Halaman";
+            worksheet.getCell('D4').value = ": 1 / 1";
+
+            for(let r = 1; r <= 4; r++) {
+              worksheet.getCell(`C${r}`).font = { name: 'Times New Roman', size: 10, bold: true };
+              worksheet.getCell(`D${r}`).font = { name: 'Times New Roman', size: 10, bold: true };
+            }
+
+            for(let r = 1; r <= 4; r++) {
+              for(let c = 1; c <= 4; c++) {
+                worksheet.getRow(r).getCell(c).border = thinBorder;
+              }
+            }
+
+            // Row 5: Title & Scope/Category
+            worksheet.mergeCells('A5:B5');
+            const cellA5 = worksheet.getCell('A5');
+            cellA5.value = "PENGAMATAN INTERNAL AUDIT";
+            cellA5.font = { name: 'Times New Roman', size: 12, bold: true };
+            cellA5.alignment = { vertical: 'middle', horizontal: 'left' };
+
+            worksheet.mergeCells('C5:D5');
+            const cellC5 = worksheet.getCell('C5');
+            const cat = d.kategori || '';
+            cellC5.value = `[${cat === 'Halal' ? 'V' : ' '}] Halal  [${cat === 'SMK3' ? 'V' : ' '}] SMK3  [${cat === 'ISO' ? 'V' : ' '}] ISO\n[${cat === 'SML' ? 'V' : ' '}] SML   [${cat === 'FSSC' ? 'V' : ' '}] FSSC  [${cat === 'SME' ? 'V' : ' '}] SME`;
+            cellC5.font = { name: 'Times New Roman', size: 9, bold: true };
+            cellC5.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+
+            for(let c = 1; c <= 4; c++) {
+              worksheet.getRow(5).getCell(c).border = thinBorder;
+            }
+
+            // Row 6 & 7: Departemen & Tanggal
+            worksheet.mergeCells('A6:D6');
+            worksheet.getCell('A6').value = `Departemen : ${d.departemen || '-'}`;
+            worksheet.getCell('A6').font = { name: 'Times New Roman', size: 11, bold: true };
+            worksheet.getCell('A6').alignment = { vertical: 'middle', horizontal: 'left' };
+
+            worksheet.mergeCells('A7:D7');
+            worksheet.getCell('A7').value = `Tanggal       : ${dateStr}`;
+            worksheet.getCell('A7').font = { name: 'Times New Roman', size: 11, bold: true };
+            worksheet.getCell('A7').alignment = { vertical: 'middle', horizontal: 'left' };
+
+            for(let r = 6; r <= 7; r++) {
+              for(let c = 1; c <= 4; c++) {
+                worksheet.getRow(r).getCell(c).border = thinBorder;
+              }
+            }
+
+            // Row 8: Table Header
+            const headerRow = worksheet.getRow(8);
+            headerRow.getCell(1).value = "NO.";
+            headerRow.getCell(2).value = "HASIL PENGAMATAN";
+            headerRow.getCell(3).value = "ELEMEN / KLAUSUL";
+            headerRow.getCell(4).value = "KATEGORI";
+
+            headerRow.eachCell(cell => {
+              cell.font = { name: 'Times New Roman', size: 11, bold: true };
+              cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F2F2F2' } };
+              cell.border = thinBorder;
+            });
+
+            // Table Data Rows starting at Row 9
+            let currentRow = 9;
             let counterExport = 1;
-            d.checklistData.forEach(row => {
+            (d.checklistData || []).forEach(row => {
               if (row.type == 1 || row.type == 2 || row.type == 3) return;
               if (!row.hasilPengamatan || row.hasilPengamatan.trim() === '') return;
-              
-              worksheet.addRow({
-                no: counterExport++,
-                hasil: row.hasilPengamatan || '',
-                kriteria: row.kriteria || '-',
-                kategori: row.kategoriVal || '-'
-              });
+
+              const r = worksheet.getRow(currentRow);
+              r.getCell(1).value = counterExport++;
+              r.getCell(2).value = row.hasilPengamatan || '';
+              r.getCell(3).value = row.kriteria || '-';
+              r.getCell(4).value = row.kategoriVal || '-';
+
+              r.getCell(1).alignment = { vertical: 'top', horizontal: 'center' };
+              r.getCell(2).alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
+              r.getCell(3).alignment = { vertical: 'top', horizontal: 'center', wrapText: true };
+              r.getCell(4).alignment = { vertical: 'top', horizontal: 'center' };
+
+              for(let c = 1; c <= 4; c++) {
+                const cell = r.getCell(c);
+                cell.font = { name: 'Times New Roman', size: 10 };
+                cell.border = thinBorder;
+              }
+              currentRow++;
             });
-            
-            // Insert Headers above data
-            worksheet.spliceRows(1, 0, 
-               ['PT INDOFOOD CBP SUKSES MAKMUR Tbk'],
-               ['DIVISI NOODLE - PABRIK CIBITUNG'],
-               [],
-               ['PENGAMATAN INTERNAL AUDIT', '', 'Kategori: ' + d.kategori],
-               ['Departemen:', d.departemen || "-"],
-               ['Tanggal:', dateStr],
-               ['Auditor:', d.auditorName],
-               ['Auditee:', d.auditeeName],
-               []
-            );
-            
-            worksheet.eachRow((row) => {
-              row.eachCell((cell) => {
-                cell.font = { name: 'Times New Roman', size: 11 };
-              });
-            });
+
+            while (currentRow < 15) {
+              const r = worksheet.getRow(currentRow);
+              for(let c = 1; c <= 4; c++) {
+                const cell = r.getCell(c);
+                cell.border = thinBorder;
+              }
+              currentRow++;
+            }
+
+            // Footer / Signatures Section
+            const sigHeadRow = currentRow;
+            worksheet.mergeCells(`A${sigHeadRow}:B${sigHeadRow}`);
+            worksheet.getCell(`A${sigHeadRow}`).value = "Auditor";
+            worksheet.getCell(`A${sigHeadRow}`).font = { name: 'Times New Roman', size: 11, bold: true };
+            worksheet.getCell(`A${sigHeadRow}`).alignment = { horizontal: 'center' };
+
+            worksheet.getCell(`C${sigHeadRow}`).value = "Auditee";
+            worksheet.getCell(`C${sigHeadRow}`).font = { name: 'Times New Roman', size: 11, bold: true };
+            worksheet.getCell(`C${sigHeadRow}`).alignment = { horizontal: 'center' };
+
+            worksheet.getCell(`D${sigHeadRow}`).value = "Kategori :";
+            worksheet.getCell(`D${sigHeadRow}`).font = { name: 'Times New Roman', size: 10, bold: true };
+
+            const sigSpaceStart = sigHeadRow + 1;
+            const sigSpaceEnd = sigHeadRow + 4;
+
+            worksheet.getCell(`D${sigSpaceStart}`).value = "C = Conformance";
+            worksheet.getCell(`D${sigSpaceStart + 1}`).value = "Minor = Temuan Minor";
+            worksheet.getCell(`D${sigSpaceStart + 2}`).value = "Major = Temuan Major";
+            worksheet.getCell(`D${sigSpaceStart + 3}`).value = "Kritis = Temuan Kritis";
+
+            for(let r = sigSpaceStart; r <= sigSpaceEnd; r++) {
+              worksheet.getCell(`D${r}`).font = { name: 'Times New Roman', size: 9, italic: true };
+            }
+
+            try {
+              if (d.auditorSignature && d.auditorSignature.startsWith('data:image')) {
+                const auditorImgId = workbook.addImage({
+                  base64: d.auditorSignature,
+                  extension: 'png',
+                });
+                worksheet.addImage(auditorImgId, {
+                  tl: { col: 0.5, row: sigSpaceStart - 1 },
+                  ext: { width: 120, height: 60 }
+                });
+              }
+              if (d.auditeeSignature && d.auditeeSignature.startsWith('data:image')) {
+                const auditeeImgId = workbook.addImage({
+                  base64: d.auditeeSignature,
+                  extension: 'png',
+                });
+                worksheet.addImage(auditeeImgId, {
+                  tl: { col: 2.2, row: sigSpaceStart - 1 },
+                  ext: { width: 120, height: 60 }
+                });
+              }
+            } catch(e) {
+              console.log("Signature image embed skip:", e);
+            }
+
+            const sigNameRow = sigSpaceEnd + 1;
+            worksheet.mergeCells(`A${sigNameRow}:B${sigNameRow}`);
+            worksheet.getCell(`A${sigNameRow}`).value = d.auditorName || currentUser.nama;
+            worksheet.getCell(`A${sigNameRow}`).font = { name: 'Times New Roman', size: 11, bold: true, underline: true };
+            worksheet.getCell(`A${sigNameRow}`).alignment = { horizontal: 'center' };
+
+            worksheet.mergeCells(`C${sigNameRow}:D${sigNameRow}`);
+            worksheet.getCell(`C${sigNameRow}`).value = d.auditeeName || '-';
+            worksheet.getCell(`C${sigNameRow}`).font = { name: 'Times New Roman', size: 11, bold: true, underline: true };
+            worksheet.getCell(`C${sigNameRow}`).alignment = { horizontal: 'center' };
+
+            for(let r = sigHeadRow; r <= sigNameRow; r++) {
+              for(let c = 1; c <= 4; c++) {
+                worksheet.getRow(r).getCell(c).border = thinBorder;
+              }
+            }
             
             workbook.xlsx.writeBuffer().then((buffer) => {
               const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
