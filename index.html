@@ -2447,11 +2447,12 @@
             for(let r = 7; r <= 13; r++) {
               for(let c = 2; c <= 17; c++) {
                 const cell = worksheet.getRow(r).getCell(c);
+                const existing = cell.border || {};
                 cell.border = {
-                  top: r === 7 ? { style: 'thin' } : cell.border?.top,
-                  bottom: r === 13 ? { style: 'thin' } : cell.border?.bottom,
-                  left: c === 2 ? { style: 'thin' } : cell.border?.left,
-                  right: c === 17 ? { style: 'thin' } : cell.border?.right
+                  top: r === 7 ? { style: 'thin' } : (existing.top || undefined),
+                  bottom: r === 13 ? { style: 'thin' } : (existing.bottom || undefined),
+                  left: c === 2 ? { style: 'thin' } : (existing.left || undefined),
+                  right: c === 17 ? { style: 'thin' } : (existing.right || undefined)
                 };
               }
             }
@@ -2608,15 +2609,24 @@
               console.log("Signature image embed skip:", e);
             }
 
-            // Borders for footer section (B53:Q60)
-            for(let r = 53; r <= 60; r++) {
+            // Borders for footer section (B53:Q58)
+            for(let r = 53; r <= 58; r++) {
               for(let c = 2; c <= 17; c++) {
                 const cell = worksheet.getRow(r).getCell(c);
+                const existing = cell.border || {};
+                const isTop = (r === 53);
+                const isBottom = (r === 58);
+                const isLeft = (c === 2);
+                const isRight = (c === 17);
+                const isAuditorRight = (c === 9);
+                const isAuditeeLeft = (c === 10);
+                const isAuditeeRight = (c === 14);
+                const isKategoriLeft = (c === 15);
                 cell.border = {
-                  top: r === 53 ? { style: 'thin' } : cell.border?.top,
-                  bottom: r === 60 ? { style: 'thin' } : cell.border?.bottom,
-                  left: c === 2 ? { style: 'thin' } : (c === 10 || c === 15 ? { style: 'thin' } : cell.border?.left),
-                  right: c === 17 ? { style: 'thin' } : (c === 9 || c === 14 ? { style: 'thin' } : cell.border?.right)
+                  top: isTop ? { style: 'thin' } : (existing.top || undefined),
+                  bottom: isBottom ? { style: 'thin' } : (existing.bottom || undefined),
+                  left: (isLeft || isAuditeeLeft || isKategoriLeft) ? { style: 'thin' } : (existing.left || undefined),
+                  right: (isRight || isAuditorRight || isAuditeeRight) ? { style: 'thin' } : (existing.right || undefined)
                 };
               }
             }
