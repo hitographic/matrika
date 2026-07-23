@@ -2298,7 +2298,7 @@
             // Set column widths matching template columns A to Q
             worksheet.columns = [
               { key: 'A', width: 3 },
-              { key: 'B', width: 5 },
+              { key: 'B', width: 6 },
               { key: 'C', width: 5 },
               { key: 'D', width: 5 },
               { key: 'E', width: 5 },
@@ -2307,7 +2307,7 @@
               { key: 'H', width: 5 },
               { key: 'I', width: 5 },
               { key: 'J', width: 5 },
-              { key: 'K', width: 11 },
+              { key: 'K', width: 12 },
               { key: 'L', width: 4 },
               { key: 'M', width: 3 },
               { key: 'N', width: 8 },
@@ -2316,12 +2316,31 @@
               { key: 'Q', width: 12 }
             ];
 
-            const thinBorder = {
-              top: { style: 'thin' },
-              left: { style: 'thin' },
-              bottom: { style: 'thin' },
-              right: { style: 'thin' }
-            };
+            const bDouble = { style: 'double' };
+            const bThin = { style: 'thin' };
+            const bMedium = { style: 'medium' };
+
+            // Helper to set borders on cell or range
+            function setBoxBorders(startRow, endRow, startCol, endCol, outerStyle = 'double', innerVerticals = []) {
+              for (let r = startRow; r <= endRow; r++) {
+                for (let c = startCol; c <= endCol; c++) {
+                  const cell = worksheet.getRow(r).getCell(c);
+                  const b = cell.border || {};
+                  
+                  if (r === startRow) b.top = { style: outerStyle };
+                  if (r === endRow) b.bottom = { style: outerStyle };
+                  if (c === startCol) b.left = { style: outerStyle };
+                  if (c === endCol) b.right = { style: outerStyle };
+                  
+                  innerVerticals.forEach(vCol => {
+                    if (c === vCol) b.right = { style: 'thin' };
+                    if (c === vCol + 1) b.left = { style: 'thin' };
+                  });
+
+                  cell.border = b;
+                }
+              }
+            }
 
             // 1. TOP HEADER BOX (B2:Q5)
             worksheet.mergeCells('B2:J5');
@@ -2356,17 +2375,23 @@
               worksheet.getCell(`N${r}`).font = { name: 'Times New Roman', size: 10, bold: true };
             }
 
-            for(let r = 2; r <= 5; r++) {
-              for(let c = 2; c <= 17; c++) {
-                worksheet.getRow(r).getCell(c).border = thinBorder;
+            // Inner horizontal thin borders for K2:Q5
+            for(let r = 2; r <= 4; r++) {
+              for(let c = 11; c <= 17; c++) {
+                const cell = worksheet.getRow(r).getCell(c);
+                cell.border = { ...(cell.border || {}), bottom: { style: 'thin' } };
               }
             }
 
-            // 2. SECTION 2: AUDIT INFO & CHECKBOXES (B7:Q13)
+            // Apply double outer border to Header Box B2:Q5 and divider between J and K
+            setBoxBorders(2, 5, 2, 17, 'double', [10]);
+
+
+            // 2. SECTION 2: AUDIT INFO & CHECKBOXES (B7:Q14)
             worksheet.mergeCells('B8:I9');
             const titleCell = worksheet.getCell('B8');
             titleCell.value = "PENGAMATAN INTERNAL AUDIT";
-            titleCell.font = { name: 'Times New Roman', size: 12, bold: true };
+            titleCell.font = { name: 'Times New Roman', size: 13, bold: true };
             titleCell.alignment = { vertical: 'middle', horizontal: 'left' };
 
             const cat = d.kategori || '';
@@ -2375,7 +2400,7 @@
             worksheet.getCell('J8').value = cat === 'Halal' ? 'V' : '';
             worksheet.getCell('J8').alignment = { horizontal: 'center', vertical: 'middle' };
             worksheet.getCell('J8').font = { name: 'Times New Roman', size: 10, bold: true };
-            worksheet.getCell('J8').border = thinBorder;
+            worksheet.getCell('J8').border = { top: bThin, bottom: bThin, left: bThin, right: bThin };
             worksheet.mergeCells('K8:L8');
             worksheet.getCell('K8').value = "Halal";
             worksheet.getCell('K8').font = { name: 'Times New Roman', size: 10 };
@@ -2384,7 +2409,7 @@
             worksheet.getCell('M8').value = cat === 'SMK3' ? 'V' : '';
             worksheet.getCell('M8').alignment = { horizontal: 'center', vertical: 'middle' };
             worksheet.getCell('M8').font = { name: 'Times New Roman', size: 10, bold: true };
-            worksheet.getCell('M8').border = thinBorder;
+            worksheet.getCell('M8').border = { top: bThin, bottom: bThin, left: bThin, right: bThin };
             worksheet.mergeCells('N8:O8');
             worksheet.getCell('N8').value = "SMK3";
             worksheet.getCell('N8').font = { name: 'Times New Roman', size: 10 };
@@ -2394,13 +2419,13 @@
             worksheet.getCell('P8').value = ".........";
             worksheet.getCell('P8').alignment = { horizontal: 'center', vertical: 'middle' };
             worksheet.getCell('P8').font = { name: 'Times New Roman', size: 9 };
-            worksheet.getCell('P8').border = thinBorder;
+            worksheet.getCell('P8').border = { top: bThin, bottom: bThin, left: bThin, right: bThin };
 
             // Row 10: ISO & SML
             worksheet.getCell('J10').value = cat === 'ISO' ? 'V' : '';
             worksheet.getCell('J10').alignment = { horizontal: 'center', vertical: 'middle' };
             worksheet.getCell('J10').font = { name: 'Times New Roman', size: 10, bold: true };
-            worksheet.getCell('J10').border = thinBorder;
+            worksheet.getCell('J10').border = { top: bThin, bottom: bThin, left: bThin, right: bThin };
             worksheet.mergeCells('K10:L10');
             worksheet.getCell('K10').value = "ISO";
             worksheet.getCell('K10').font = { name: 'Times New Roman', size: 10 };
@@ -2408,7 +2433,7 @@
             worksheet.getCell('M10').value = cat === 'SML' ? 'V' : '';
             worksheet.getCell('M10').alignment = { horizontal: 'center', vertical: 'middle' };
             worksheet.getCell('M10').font = { name: 'Times New Roman', size: 10, bold: true };
-            worksheet.getCell('M10').border = thinBorder;
+            worksheet.getCell('M10').border = { top: bThin, bottom: bThin, left: bThin, right: bThin };
             worksheet.mergeCells('N10:O10');
             worksheet.getCell('N10').value = "SML";
             worksheet.getCell('N10').font = { name: 'Times New Roman', size: 10 };
@@ -2417,7 +2442,7 @@
             worksheet.getCell('J12').value = cat === 'FSSC' ? 'V' : '';
             worksheet.getCell('J12').alignment = { horizontal: 'center', vertical: 'middle' };
             worksheet.getCell('J12').font = { name: 'Times New Roman', size: 10, bold: true };
-            worksheet.getCell('J12').border = thinBorder;
+            worksheet.getCell('J12').border = { top: bThin, bottom: bThin, left: bThin, right: bThin };
             worksheet.mergeCells('K12:L12');
             worksheet.getCell('K12').value = "FSSC";
             worksheet.getCell('K12').font = { name: 'Times New Roman', size: 10 };
@@ -2425,78 +2450,64 @@
             worksheet.getCell('M12').value = cat === 'SME' ? 'V' : '';
             worksheet.getCell('M12').alignment = { horizontal: 'center', vertical: 'middle' };
             worksheet.getCell('M12').font = { name: 'Times New Roman', size: 10, bold: true };
-            worksheet.getCell('M12').border = thinBorder;
+            worksheet.getCell('M12').border = { top: bThin, bottom: bThin, left: bThin, right: bThin };
             worksheet.mergeCells('N12:O12');
             worksheet.getCell('N12').value = "SME";
             worksheet.getCell('N12').font = { name: 'Times New Roman', size: 10 };
 
-            // Departemen & Tanggal (B12 & B13)
+            // Departemen & Tanggal (B12 & B14)
             worksheet.getCell('B12').value = "Departemen :";
             worksheet.getCell('B12').font = { name: 'Times New Roman', size: 10, bold: true };
             worksheet.mergeCells('D12:G12');
             worksheet.getCell('D12').value = d.departemen || '-';
             worksheet.getCell('D12').font = { name: 'Times New Roman', size: 10 };
 
-            worksheet.getCell('B13').value = "Tanggal       :";
-            worksheet.getCell('B13').font = { name: 'Times New Roman', size: 10, bold: true };
-            worksheet.mergeCells('D13:G13');
-            worksheet.getCell('D13').value = dateStr;
-            worksheet.getCell('D13').font = { name: 'Times New Roman', size: 10 };
+            worksheet.getCell('B14').value = "Tanggal       :";
+            worksheet.getCell('B14').font = { name: 'Times New Roman', size: 10, bold: true };
+            worksheet.mergeCells('D14:G14');
+            worksheet.getCell('D14').value = dateStr;
+            worksheet.getCell('D14').font = { name: 'Times New Roman', size: 10 };
 
-            // Outer border for B7:Q13
-            for(let r = 7; r <= 13; r++) {
-              for(let c = 2; c <= 17; c++) {
-                const cell = worksheet.getRow(r).getCell(c);
-                const existing = cell.border || {};
-                cell.border = {
-                  top: r === 7 ? { style: 'thin' } : (existing.top || undefined),
-                  bottom: r === 13 ? { style: 'thin' } : (existing.bottom || undefined),
-                  left: c === 2 ? { style: 'thin' } : (existing.left || undefined),
-                  right: c === 17 ? { style: 'thin' } : (existing.right || undefined)
-                };
-              }
+            // Double border for Section 2 (B7:Q14)
+            setBoxBorders(7, 14, 2, 17, 'double');
+
+
+            // 3. TABLE SECTION (B15:Q53)
+            // Table Header Row 15
+            worksheet.getRow(15).height = 25;
+            
+            worksheet.getCell('B15').value = "NO.";
+            worksheet.getCell('B15').font = { name: 'Times New Roman', size: 10, bold: true };
+            worksheet.getCell('B15').alignment = { vertical: 'middle', horizontal: 'center' };
+
+            worksheet.mergeCells('C15:M15');
+            worksheet.getCell('C15').value = "HASIL PENGAMATAN";
+            worksheet.getCell('C15').font = { name: 'Times New Roman', size: 10, bold: true };
+            worksheet.getCell('C15').alignment = { vertical: 'middle', horizontal: 'center' };
+
+            worksheet.mergeCells('N15:O15');
+            worksheet.getCell('N15').value = "ELEMEN /\nKLAUSUL";
+            worksheet.getCell('N15').font = { name: 'Times New Roman', size: 10, bold: true };
+            worksheet.getCell('N15').alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+
+            worksheet.mergeCells('P15:Q15');
+            worksheet.getCell('P15').value = "KATEGORI";
+            worksheet.getCell('P15').font = { name: 'Times New Roman', size: 10, bold: true };
+            worksheet.getCell('P15').alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // Double border under Table Header (Row 15 bottom)
+            for(let c = 2; c <= 17; c++) {
+              const cell = worksheet.getRow(15).getCell(c);
+              cell.border = { ...(cell.border || {}), top: bDouble, bottom: bDouble };
             }
 
-            // 3. TABLE HEADERS (Row 14 & 15)
-            worksheet.mergeCells('B14:B15');
-            const h1 = worksheet.getCell('B14');
-            h1.value = "NO.";
-            h1.font = { name: 'Times New Roman', size: 10, bold: true };
-            h1.alignment = { vertical: 'middle', horizontal: 'center' };
-
-            worksheet.mergeCells('C14:M15');
-            const h2 = worksheet.getCell('C14');
-            h2.value = "HASIL PENGAMATAN";
-            h2.font = { name: 'Times New Roman', size: 10, bold: true };
-            h2.alignment = { vertical: 'middle', horizontal: 'center' };
-
-            worksheet.mergeCells('N14:O15');
-            const h3 = worksheet.getCell('N14');
-            h3.value = "ELEMEN /\nKLAUSUL";
-            h3.font = { name: 'Times New Roman', size: 10, bold: true };
-            h3.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-
-            worksheet.mergeCells('P14:Q15');
-            const h4 = worksheet.getCell('P14');
-            h4.value = "KATEGORI";
-            h4.font = { name: 'Times New Roman', size: 10, bold: true };
-            h4.alignment = { vertical: 'middle', horizontal: 'center' };
-
-            // Apply borders to Table Headers B14:Q15
-            for(let r = 14; r <= 15; r++) {
-              for(let c = 2; c <= 17; c++) {
-                worksheet.getRow(r).getCell(c).border = thinBorder;
-              }
-            }
-
-            // 4. TABLE DATA ROWS (Row 16 to Row 52)
+            // Table Data Rows starting at Row 16 to 53
             let currentRow = 16;
             let counterExport = 1;
             (d.checklistData || []).forEach(row => {
               if (row.type == 1 || row.type == 2 || row.type == 3) return;
               if (!row.hasilPengamatan || row.hasilPengamatan.trim() === '') return;
 
-              // Data Row
               worksheet.getCell(`B${currentRow}`).value = counterExport++;
               worksheet.getCell(`B${currentRow}`).alignment = { vertical: 'top', horizontal: 'center' };
               worksheet.getCell(`B${currentRow}`).font = { name: 'Times New Roman', size: 10 };
@@ -2516,72 +2527,82 @@
               worksheet.getCell(`P${currentRow}`).alignment = { vertical: 'top', horizontal: 'center' };
               worksheet.getCell(`P${currentRow}`).font = { name: 'Times New Roman', size: 10 };
 
-              for(let c = 2; c <= 17; c++) {
-                worksheet.getRow(currentRow).getCell(c).border = thinBorder;
-              }
-
               currentRow++;
             });
 
-            // Fill empty rows until Row 52 so table height matches template
-            while (currentRow <= 52) {
+            // Merge empty rows up to row 53
+            while (currentRow <= 53) {
               worksheet.mergeCells(`C${currentRow}:M${currentRow}`);
               worksheet.mergeCells(`N${currentRow}:O${currentRow}`);
               worksheet.mergeCells(`P${currentRow}:Q${currentRow}`);
-
-              for(let c = 2; c <= 17; c++) {
-                worksheet.getRow(currentRow).getCell(c).border = thinBorder;
-              }
               currentRow++;
             }
 
-            // 5. FOOTER / SIGNATURES (Row 53 to Row 60)
-            const sigHeadRow = 54;
-            worksheet.mergeCells(`B${sigHeadRow}:I${sigHeadRow}`);
-            worksheet.getCell(`B${sigHeadRow}`).value = "Auditor";
-            worksheet.getCell(`B${sigHeadRow}`).font = { name: 'Times New Roman', size: 10, bold: true };
-            worksheet.getCell(`B${sigHeadRow}`).alignment = { horizontal: 'center' };
+            // Set double outer border and vertical column dividers for Table Box (B15:Q53)
+            setBoxBorders(15, 53, 2, 17, 'double', [2, 13, 15]);
 
-            worksheet.mergeCells(`J${sigHeadRow}:N${sigHeadRow}`);
-            worksheet.getCell(`J${sigHeadRow}`).value = "Auditee";
-            worksheet.getCell(`J${sigHeadRow}`).font = { name: 'Times New Roman', size: 10, bold: true };
-            worksheet.getCell(`J${sigHeadRow}`).alignment = { horizontal: 'center' };
 
-            worksheet.getCell(`O${sigHeadRow}`).value = "Kategori :";
-            worksheet.getCell(`O${sigHeadRow}`).font = { name: 'Times New Roman', size: 9, bold: true, italic: true };
+            // 4. FOOTER / SIGNATURES SECTION (B54:Q61)
+            worksheet.mergeCells('B55:I55');
+            worksheet.getCell('B55').value = "Auditor";
+            worksheet.getCell('B55').font = { name: 'Times New Roman', size: 10, bold: true };
+            worksheet.getCell('B55').alignment = { horizontal: 'center' };
+
+            worksheet.mergeCells('J55:N55');
+            worksheet.getCell('J55').value = "Auditee";
+            worksheet.getCell('J55').font = { name: 'Times New Roman', size: 10, bold: true };
+            worksheet.getCell('J55').alignment = { horizontal: 'center' };
+
+            worksheet.getCell('O55').value = "Kategori :";
+            worksheet.getCell('O55').font = { name: 'Times New Roman', size: 9, bold: true, italic: true };
 
             // Legend
-            worksheet.getCell('O55').value = "C";
-            worksheet.mergeCells('P55:Q55');
-            worksheet.getCell('P55').value = "= Conformance";
-
-            worksheet.getCell('O56').value = "Minor";
+            worksheet.getCell('O56').value = "C";
             worksheet.mergeCells('P56:Q56');
-            worksheet.getCell('P56').value = "= Temuan Minor";
+            worksheet.getCell('P56').value = "= Conformance";
 
-            worksheet.getCell('O57').value = "Major";
+            worksheet.getCell('O57').value = "Minor";
             worksheet.mergeCells('P57:Q57');
-            worksheet.getCell('P57').value = "= Temuan Major";
+            worksheet.getCell('P57').value = "= Temuan Minor";
 
-            worksheet.getCell('O58').value = "Kritis";
+            worksheet.getCell('O58').value = "Major";
             worksheet.mergeCells('P58:Q58');
-            worksheet.getCell('P58').value = "= Temuan Kritis";
+            worksheet.getCell('P58').value = "= Temuan Major";
 
-            for(let r = 55; r <= 58; r++) {
+            worksheet.getCell('O59').value = "Kritis";
+            worksheet.mergeCells('P59:Q59');
+            worksheet.getCell('P59').value = "= Temuan Kritis";
+
+            for(let r = 56; r <= 59; r++) {
               worksheet.getCell(`O${r}`).font = { name: 'Times New Roman', size: 9, italic: true };
               worksheet.getCell(`P${r}`).font = { name: 'Times New Roman', size: 9, italic: true };
             }
 
-            // Names row (Row 57)
-            worksheet.mergeCells('B57:I57');
-            worksheet.getCell('B57').value = d.auditorName || currentUser.nama;
-            worksheet.getCell('B57').font = { name: 'Times New Roman', size: 10, bold: true, underline: true };
-            worksheet.getCell('B57').alignment = { horizontal: 'center' };
+            // Names & Underline (Row 58)
+            worksheet.mergeCells('B58:I58');
+            worksheet.getCell('B58').value = d.auditorName || currentUser.nama;
+            worksheet.getCell('B58').font = { name: 'Times New Roman', size: 10, bold: true };
+            worksheet.getCell('B58').alignment = { horizontal: 'center' };
 
-            worksheet.mergeCells('J57:N57');
-            worksheet.getCell('J57').value = d.auditeeName || '-';
-            worksheet.getCell('J57').font = { name: 'Times New Roman', size: 10, bold: true, underline: true };
-            worksheet.getCell('J57').alignment = { horizontal: 'center' };
+            worksheet.mergeCells('J58:N58');
+            worksheet.getCell('J58').value = d.auditeeName || '-';
+            worksheet.getCell('J58').font = { name: 'Times New Roman', size: 10, bold: true };
+            worksheet.getCell('J58').alignment = { horizontal: 'center' };
+
+            // Underline under Auditor & Auditee names (Row 58 bottom border)
+            for(let c = 2; c <= 9; c++) worksheet.getRow(58).getCell(c).border = { ...(worksheet.getRow(58).getCell(c).border || {}), bottom: bMedium };
+            for(let c = 10; c <= 14; c++) worksheet.getRow(58).getCell(c).border = { ...(worksheet.getRow(58).getCell(c).border || {}), bottom: bMedium };
+
+            // Title/Role (Row 59)
+            worksheet.mergeCells('B59:I59');
+            worksheet.getCell('B59').value = "OD Spv.";
+            worksheet.getCell('B59').font = { name: 'Times New Roman', size: 9 };
+            worksheet.getCell('B59').alignment = { horizontal: 'center' };
+
+            worksheet.mergeCells('J59:N59');
+            worksheet.getCell('J59').value = "DC Spv.";
+            worksheet.getCell('J59').font = { name: 'Times New Roman', size: 9 };
+            worksheet.getCell('J59').alignment = { horizontal: 'center' };
 
             // Signatures Embed
             try {
@@ -2591,8 +2612,8 @@
                   extension: 'png',
                 });
                 worksheet.addImage(auditorImgId, {
-                  tl: { col: 3.5, row: 54 },
-                  ext: { width: 110, height: 45 }
+                  tl: { col: 3.5, row: 55 },
+                  ext: { width: 110, height: 40 }
                 });
               }
               if (d.auditeeSignature && d.auditeeSignature.startsWith('data:image')) {
@@ -2601,35 +2622,16 @@
                   extension: 'png',
                 });
                 worksheet.addImage(auditeeImgId, {
-                  tl: { col: 10.5, row: 54 },
-                  ext: { width: 110, height: 45 }
+                  tl: { col: 10.5, row: 55 },
+                  ext: { width: 110, height: 40 }
                 });
               }
             } catch(e) {
               console.log("Signature image embed skip:", e);
             }
 
-            // Borders for footer section (B53:Q58)
-            for(let r = 53; r <= 58; r++) {
-              for(let c = 2; c <= 17; c++) {
-                const cell = worksheet.getRow(r).getCell(c);
-                const existing = cell.border || {};
-                const isTop = (r === 53);
-                const isBottom = (r === 58);
-                const isLeft = (c === 2);
-                const isRight = (c === 17);
-                const isAuditorRight = (c === 9);
-                const isAuditeeLeft = (c === 10);
-                const isAuditeeRight = (c === 14);
-                const isKategoriLeft = (c === 15);
-                cell.border = {
-                  top: isTop ? { style: 'thin' } : (existing.top || undefined),
-                  bottom: isBottom ? { style: 'thin' } : (existing.bottom || undefined),
-                  left: (isLeft || isAuditeeLeft || isKategoriLeft) ? { style: 'thin' } : (existing.left || undefined),
-                  right: (isRight || isAuditorRight || isAuditeeRight) ? { style: 'thin' } : (existing.right || undefined)
-                };
-              }
-            }
+            // Set Double outer border and vertical section dividers for Footer Box (B54:Q61)
+            setBoxBorders(54, 61, 2, 17, 'double', [9, 14]);
 
             // Write File
             workbook.xlsx.writeBuffer().then((buffer) => {
